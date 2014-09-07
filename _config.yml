@@ -6,7 +6,7 @@ pygments:         true
 permalink:        pretty
 
 # Setup
-title:            ._
+title:            dotunderscore
 tagline:          by Brian Hough
 url:              http://getpoole.com
 paginate:         1
