@@ -430,3 +430,7 @@ a.pagination-item:hover {
     border-bottom-right-radius: 4px;
   }
 }
+
+.footer {
+  font-size: 0.5rem;
+}
