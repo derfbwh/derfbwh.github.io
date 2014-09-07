@@ -88,10 +88,10 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.25;
   color: #313131;
   text-rendering: optimizeLegibility;
-  text-shadow: 0px 1px 1px #737373;
 }
 h1 {
   font-size: 1.5rem;
+    text-shadow: 0px 1px 1px #737373;
 }
 h2 {
   margin-top: 1rem;
