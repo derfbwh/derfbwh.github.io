@@ -1,6 +1,6 @@
 ---
 layout: post
-title: What to realistically expect at Apple's September 9th special event
+title: 'It's not about the money.'
 ---
 
 Markus 'Notch' Persson, [on his personal site](http://notch.net/2014/09/im-leaving-mojang/ "Notch.net").
@@ -11,4 +11,4 @@ Markus 'Notch' Persson, [on his personal site](http://notch.net/2014/09/im-leavi
 
 > It’s not about the money. It’s about my sanity.
 
-It's hard to say it's not about the money when he's riding off into the sunset with a billion plus dollar check. If what he says it's true, I could suggest many worthwhile charities for him to donate to - and a place to upload the Minecraft source code to.'
+It's hard to say it's not about the money when he's riding off into the sunset with a billion plus dollar check. If what he says it's true, I could suggest many worthwhile charities for him to donate to - and a place to upload the Minecraft source code to.
