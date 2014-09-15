@@ -6,9 +6,11 @@ pygments:         true
 permalink:        pretty
 
 # Setup
+name: dotunderscore
 title:            dotunderscore
-tagline:          by Brian Hough
-url:              http://getpoole.com
+tagline:          Musings by Brian Hough.
+description: Musings by Brian Hough.
+url:              http://dotunderscore.net
 paginate:         5
 baseurl:          /
 author:
