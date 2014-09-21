@@ -1,0 +1,18 @@
+---
+layout: post
+title: 24 hours with the iPhone 6 Plus
+---
+
+Okay, first, I lied. I haven't *actually* spent a complete 24 hours with my iPhone 6 quite yet; truly, it's been more like 20 hours. Still, I've had a full day's worth of time with Apple's first jumbo, ridiculously huge sized smartphone. More than enough to flesh out some second and third impressions to go along with the standard "this is too large" first opinion.
+
+Yes, the iPhone 6 Plus is large. It's very large. It's larger than I expected - even though I went ahead and made myslf one of those paper cutouts - and it's certainly a larger smartphone than I ever, ever expected to own. But once you get past the sheer largeness of the 6 Plus, you can begin to evaluate it on better merits; some not impeded by that initial *oh my god this is ridiculously large* first impression.
+
+The iPhone 6 Plus fits in my front pockets fine, requiring no "adjustment" from my end (I wear quite baggy jeans). It doesn't really fit in my back pocket, but I can't imagine who would want to put their iPhone in their back pockets anyway. Using it one handed is hard; typing one handed just about impossible (I have medium-to-small sized hands). It feels much more natural taking a photo in landscape wit portrait; which, let's be honest here, is probably a good thing. And yes, 60 fps video recording and 240 fps slow motion video recording is even better. Oh, and did I mention that the iPhone 6 Plus is *very, very big*. The new 3x Retina HD screen is beautiful, but not as big of a jump as the original Retina display was to the 3GS's display.
+
+Using Safari, or really any other content heavy applications optimized for the iPhone 6 Plus's display, is absolutely awesome; using Safari on the iPhone 5s and prior has always felt kind of like a compromise, which lead to the proliferation of the mobile web layouts. Mobile layouts feel completely unnecessary on the iPhone 6 Plus. I find myself switching to the "Desktop" version of sites more often than not on my 6 Plus. iBooks is awesome, Mail more so. It's even better when you switch the landscape mode and get that dual-pane, iPad style view.
+
+Design wise, my initial thought has actually gotten to the point where the iPhone is now officially *too thin*. It feels almost fake, like there couldn't possibly be an entire computer in there, one something like 50x faster than that original 2007 iPhone. Like this big, thin, insanely powerful thing could not possibly be a total replacement for my old point in shoot camera. Everything about this seems unreal, yet here it is, (barely fitting) in the palm of my hand. Evidence of this is the fact that the 6's camera jettisons out like an unsightly wart.
+
+There's still somethings about the 6 Plus that I don't have a firm grasp on, like battery life, usability while rushing through the Boston subway, or the real consequences of the sheer size of this thing. The speakers are a marginal improvement over the iPhone 5s's, and they absolutely blow away the speakers on my iPad mini Retina. Touch ID seems improved, slightly more accurate. The lock button on the right takes a lot, lot, *lot* of getting used to.
+
+So about that second impression, and that third impression, I'll just say this: the iPhone 6 Plus really is super-duper big. But it's also insanely fun to use, and has some amazing usability improvements over the smaller iPhones while compromising on some convenience, like one handed use. But I think I'm ready and willing to make those compromises.
