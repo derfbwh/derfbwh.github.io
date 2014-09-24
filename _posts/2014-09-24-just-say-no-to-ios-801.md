@@ -1,6 +1,6 @@
 ---
 layout: post
-title: PSA: Avoid updating to iOS 8.0.1
+title: PSA - Avoid updating to iOS 8.0.1
 ---
 
 Me, myself, and I on [Haverzine](http://haverzine.com/2014/09/24/psa-update-idevice-ios-8-0-1/):
