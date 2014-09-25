@@ -1,0 +1,14 @@
+---
+layout: post
+title: Some thoughts on Touch ID security
+---
+
+At this point most people are probably pretty familiar with Touch ID, Apple slang for "fingerprint recognition", a feature that made its way to the iPhone lineup with the iPhone 5s last year and was improved with new iPhone 6 series this year. Essentially, Touch ID is primarily used for authenticating certain "critical" tasks, such as unlocking one's phone and verifying payments on the App Store. All in all, it works pretty well; Touch ID on my 5s was reliable I'd say at least 80% of the time, and it seems much closer to 100% on my iPhone 6 Plus. It does what Apple says it does, it's fast, and I don't have to break from my workflow to type my sometimes long passcodes and passwords to do simple tasks.
+
+Unfortunately, however, Touch ID is not pefect. Merely days after the release of the iPhone 5s last year some security experts discovered that Touch ID is fairly trivial to compromise. To get trick Touch ID, all that's really needed is a 2400 dpi (that's super, super high resolution) photograph of the owner's fingerprint, which is then laser printed at 1200 dpi and "applied" using latex milk to Touch ID. The same method, as it was confirmed today by [Mark Rogers from mobile security firm Lookout](http://arstechnica.com/security/2014/09/fake-fingerprint-fools-iphone-6-touch-id-why-its-not-so-serious/?utm_source=digg&utm_medium=twitter), works with the iPhone 6 series - albeit with a slightly lower success rate.
+
+Now, I'm not going to say that this isn't an issue. It is. If someone can unlock my iPhone using Touch ID without my fingers *actually being present*, it's a disappointing - and potentially worrying - issue with Apple's system.
+
+But let's put this in a little perspective here. The base model iPhone with Touch ID, the iPhone 5s, starts at $549. Included in that $549 is the price of the materials used to build the body of the device, the camera, the Retina display, the SoC, the battery, manual labor, distribution fees, profit... and Touch ID. Apple's fingerprint recognition hardware - which, remember, is no slouch and does a surprisingly good job, is such a tiny piece of that overall puzzle and probably makes up just a teeny, teeny, tiny percentage of the cost. It is not a state of the art, dedicated fingerprint recognition tool with best-on-the-market capabilties by nature.
+
+So when you sit down with your morning coffee, iPad or Kindle in hand, and find the blogosphere afire that Touch ID on the iPhone has been cracked and is somehow broken, try to put it in a little perspective. It's amazing that a device this small, this inexpensive, that can do this much works as well as it does and as often as it does.
