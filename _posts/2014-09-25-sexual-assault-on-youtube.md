@@ -7,4 +7,4 @@ Laci Green, a popular YouTube creator, [with a new video](https://www.youtube.co
 
 >In this video, Laci Green reviews Sam Pepper's history of sexual harassment/assault in YouTube videos and the subsequent reveal of behind the scenes sexual abuse. She also sheds light on other people assaulting women in their YouTube videos and calls the community to action with a few simple steps.
 
-This is important.s
+This is important.
