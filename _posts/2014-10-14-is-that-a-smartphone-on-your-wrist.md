@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Is that a smartphone on your wrist? (or: is that a ruler in your pocket)
+title: Is that a smartphone on your wrist?
 ---
 
 Samsung has released about forty smartwatches since the introduction of that original Galaxy Gear, so I'll excuse you if you haven't yet been introduced to the Gear S. [Long Zheng](http://www.istartedsomething.com/20141015/hands-on-with-samsungs-curved-future-gear-s-and-galaxy-note-edge/) of istartedsomething has a hands-on, complete with more than a couple of photos you really should check out:
