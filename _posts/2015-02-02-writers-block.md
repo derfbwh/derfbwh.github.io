@@ -15,6 +15,6 @@ I've always considered myself a writer of some shape or form. Whether it be scho
 
 If I'm going to continue considering myself a writer, then it's time I do what the writers do and just try to force myself to write. So the goal is this: I, Brian William Hough of Massachusetts, New England, USA (go Patriots!), will no longer suffer from writer's block, but I will benefit from it. I will write as much as I can, as often as I can. I will post - on here, on Haverzine, maybe elsewhere (who knows) - numerous times a week. 
 
-I will write about my day, I will write about why cays are better than dogs. I will write about why dogs are better than cats, and I'll write about why both are significantly worse than hedgehogs.
+I will write about my day, I will write about why cats are better than dogs. I will write about why dogs are better than cats, and I'll write about why both are significantly worse than hedgehogs.
 
 I will write about anything that, to be most plain, I feel like writing about. If you want to keep track with all my writing, definitely follow me on Twitter at [@bwhough](http://twitter.com/bwhough) - I'll definitely link out to pieces as they're published. But if nobody reads them, that's ok, too. Because I'm a writer, and at some point, to be considered a writer, one must actually write.
