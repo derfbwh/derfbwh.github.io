@@ -17,4 +17,4 @@ If I'm going to continue considering myself a writer, then it's time I do what t
 
 I will write about my day, I will write about why cats are better than dogs. I will write about why dogs are better than cats, and I'll write about why both are significantly worse than hedgehogs.
 
-I will write about anything that, to be most plain, I feel like writing about. If you want to keep track with all my writing, definitely follow me on Twitter at [@bwhough](http://twitter.com/bwhough) - I'll definitely link out to pieces as they're published. But if nobody reads them, that's ok, too. Because I'm a writer, and at some point, to be considered a writer, one must actually write.
+I will write about anything that, to be most plain, I feel like writing about. If you want to keep track of all my writing, definitely follow me on Twitter at [@bwhough](http://twitter.com/bwhough) - I'll definitely link out to pieces as they're published. But if nobody reads them, that's ok, too. Because I'm a writer, and at some point, to be considered a writer, one must actually write.
