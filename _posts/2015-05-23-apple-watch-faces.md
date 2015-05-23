@@ -17,7 +17,7 @@ I just spent a couple of days with what I find to be the most beautiful of the A
 
 Sure, I could have spent an additional three seconds swiping up to my Glances and got the same information with Solar, but in that same amount of time I could have easily gotten as much or more of the same information from my phone. When talking the utility of the Watch, every second counts. That’s kind of my problem with Glances on the whole; they’re too far away from the home screen to warrant the relatively small amount of information they provide the user. More times than not, if I’m trying to get at something more than a complication, I’ll just click the Digital Crown and launch the full blown app.
 
-<img src="http://dotunderscore.net/images/watchface.PNG" align="right" width="35%" hspace="25">Over the last couple of weeks I've spent most of my time looking at just two watch faces – first Modular, a digital display with lots of complication support, and Utility, an analogue display with decent complication support. As far as I'm concerned, you can't go wrong with either of
+<img src="http://dotunderscore.net/images/watchface.PNG" align="right" width="30%" hspace="45" style="padding:15px;">Over the last couple of weeks I've spent most of my time looking at just two watch faces – first Modular, a digital display with lots of complication support, and Utility, an analogue display with decent complication support. As far as I'm concerned, you can't go wrong with either of
 
 these faces – Utility’s digital time display is perfect when I don't feel like thinking, while Utility gives a sense of tradition while still giving me easy access to all the complications I've grown accustomed to.
 
