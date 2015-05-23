@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<html prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
+
+<meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% else %}{% endif %}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ site.title }}">
+<meta property="og:locale" content="en_US">
 
   {% include head.html %}
 

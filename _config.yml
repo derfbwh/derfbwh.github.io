@@ -22,3 +22,11 @@ author:
 version:          1.0.0
 github:
   repo:           https://github.com/poole/poole
+  
+# Open Graph
+og_image: twitterlogo.png # Default image for Open Graph tag
+og_image_type: image/png
+og_image_width: 500
+og_image_height: 500
+fb_profile_id: cooltrainer.org
+fb_admins: 542154016
