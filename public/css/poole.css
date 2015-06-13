@@ -35,7 +35,7 @@
  * Update the foundational and global aspects of the page.
  */
  
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,400,300,600);
+@import url(http://fonts.googleapis.com/css?family=Roboto:500,400italic,300,500italic,300italic,400);
 
 * {
   -webkit-box-sizing: border-box;
@@ -50,7 +50,7 @@ body {
 }
 
 html {
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Roboto', sans-serif;
   line-height: 1.5;
 }
 @media (min-width: 38em) {
@@ -71,7 +71,7 @@ body {
 a {
   color: darkseagreen;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
 }
 a strong {
   color: inherit;
