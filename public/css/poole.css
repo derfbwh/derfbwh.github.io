@@ -329,6 +329,13 @@ tbody tr:nth-child(odd) th {
   letter-spacing: 0;
 }
 
+.masthead-title small a {
+  font-size: 75%;
+  font-weight: 400;
+  color: #c0c0c0;
+  letter-spacing: 0;
+}
+
 
 /*
  * Posts and pages
