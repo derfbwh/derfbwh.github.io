@@ -345,6 +345,16 @@ tbody tr:nth-child(odd) th {
   width: 100%;
   background-color: #ffffff;
 }
+
+.banner a:hover {
+  margin-top:    -1.5rem;
+  padding-bottom: .01rem;
+  width: 100%;
+  background-color: #eb84e3;
+  color: #ffffff;
+
+}
+
 .banner-text small {
   color: #000000;
   font-size: 60%;
