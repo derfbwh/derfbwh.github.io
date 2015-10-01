@@ -312,6 +312,8 @@ tbody tr:nth-child(odd) th {
   padding-top:    1rem;
   padding-bottom: 1rem;
   margin-bottom: 3rem;
+  width: 100%;
+  background-color: #eb84e3;
 }
 .masthead-title {
   margin-top: 0;
