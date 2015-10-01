@@ -345,11 +345,13 @@ tbody tr:nth-child(odd) th {
   width: 100%;
   background-color: #ffffff;
 }
-.banner-text {
+.banner-text small {
   margin-top: 0;
   margin-bottom: 0;
   color: #000000;
-  font-weight: 800;
+  font-size: 65%;
+  font-weight: 400;
+
 }
 
 
