@@ -339,6 +339,22 @@ tbody tr:nth-child(odd) th {
   letter-spacing: 0;
 }
 
+.banner {
+  padding-top:    1rem;
+  padding-bottom: 1rem;
+  margin-bottom: 3rem;
+  width: 100%;
+  background-color: #ffffff;
+}
+.banner-text {
+  margin-top: 0;
+  margin-bottom: 0;
+  color: #000000;
+  font-weight: 800;
+  padding-left:15px;
+}
+
+
 
 /*
  * Posts and pages
