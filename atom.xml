@@ -1,28 +1,26 @@
 ---
 layout: nil
 ---
-
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-
- <title>{{ site.title }}</title>
- <link href="{{ site.url }}{{ site.baseurl }}atom.xml" rel="self"/>
- <link href="{{ site.url }}{{ site.baseurl }}"/>
- <updated>{{ site.time | date_to_xmlschema }}</updated>
- <id>{{ site.url }}</id>
- <author>
-   <name>{{ site.author.name }}</name>
-   <email>{{ site.author.email }}</email>
- </author>
-
- {% for post in site.posts %}
- <entry>
-   <title>{{ post.title }}</title>
-   <link href="{{ site.url }}{{ site.baseurl }}{{ post.url }}"/>
-   <updated>{{ post.date | date_to_xmlschema }}</updated>
-   <id>{{ site.url }}{{ post.id }}</id>
-   <content type="html">{{ post.content | xml_escape }}</content>
- </entry>
- {% endfor %}
-
+	
+	<title type="text" xml:lang="en">{{ site.root_desc }}</title>
+	<link type="application/atom+xml" href="http://dotunderscore.net/feed/" rel="self"/>
+ 	<link type="text" href="http://dotunderscore.net" rel="alternate"/>
+	<updated>{{ site.time | date_to_xmlschema }}</updated>
+	<id>http://dotunderscore.net</id>
+	<author>
+		<name>Brian Hough</name>
+	</author>
+	<rights>Copyright (c) 2004-2015, Paul Stamatiou; all rights reserved.</rights>
+	
+	{% for post in site.posts limit:20 %}
+	<entry>
+		<title>{{ post.title }}</title>
+		<link href="http://dotunderscore.net{{ post.url }}"/>
+		<updated>{{ post.date | date_to_xmlschema }}</updated>
+		<id>http://dotunderscore.net{{ post.id }}</id>
+		<content type="html">{{ post.content | xml_escape }}{% include rss_footer.html %}</content>
+	</entry>
+	{% endfor %}
 </feed>
