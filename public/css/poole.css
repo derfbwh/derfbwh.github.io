@@ -341,8 +341,6 @@ tbody tr:nth-child(odd) th {
 
 .banner {
   padding-top:    1rem;
-  padding-bottom: 1rem;
-  margin-bottom: 3rem;
   width: 100%;
   background-color: #ffffff;
 }
