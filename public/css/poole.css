@@ -320,6 +320,7 @@ tbody tr:nth-child(odd) th {
   margin-bottom: 0;
   color: #505050;
   font-weight: 800;
+  padding-left:15px;
 }
 .masthead-title a {
   color: #ffffff;
