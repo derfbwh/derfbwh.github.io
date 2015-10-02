@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Bloomberg: Apple to stop selling Apple TV and Google Chromecast"
+title: "Bloomberg: Amazon to stop selling Apple TV and Google Chromecast"
 tags:
 ---
 Spencer Soper, for [Bloomberg](http://www.bloomberg.com/news/articles/2015-10-01/amazon-will-ban-sale-of-apple-google-video-streaming-devices):
