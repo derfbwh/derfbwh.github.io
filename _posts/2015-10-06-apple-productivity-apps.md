@@ -15,7 +15,7 @@ Here I am nearly a decade later, and if I had to make that decision today I know
 
 Apple is shown next to no interest in offering worthwhile updates to any of their productivity apps, and what's worse is that the current version of iWork isn't just bad, it's  arguably <i>worse</i> than the version I purchased back in 2006. Apple rewrote the entire iWork for Mac suite in 2013 so as to make it play better with iWork for iOS, which has never been very good.
 
-So Mac users have a choice. Use the neglected and largely forgotten about iWork suite, or pay an arm and a leg for Microsoft Office 365, which receives updates and is incredibly powerful, but als has a [tendency to just refuse to run](http://www.digitaltrends.com/computing/office-2016-is-having-trouble-staying-alive-on-el-capitan/) much of the time. But hey, unlike Apple, maybe Microsoft will eventually get around to fixing it.
+So Mac users have a choice. Use the neglected and largely forgotten about iWork suite, or pay an arm and a leg for Microsoft Office 365, which does receive updates and is incredibly powerful.
 
 Of course, there's always also Google Docs, which works just as well on the Mac as it does on any other platform. It's got a limited feature set compared to the other two choices - you can't install fonts, for example - but it can open and export Microsoft Office versions fine, supports best in class collaborative editing, offers 30 GB of free cloud storage, and is totally free of charge.
 
