@@ -22,3 +22,5 @@ Of course, there's always also Google Docs, which works just as well on the Mac 
 But then again, you have to deal with Google sharing ownership with you of anything you save in Google Drive. So long story short, there's no good option anymore.
 
 And man, I really wish Apple would care enough to give us just one good option.
+
+(Update 10/7/15, Microsoft has just issued out a fix which supposedly fixes the issues El Capitan users were having with Office 2016. Given the severity of the issue and Microsoft's swiftness in fixing it, I have removed that part of my original post.)
