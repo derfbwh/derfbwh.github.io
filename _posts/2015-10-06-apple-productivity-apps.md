@@ -3,7 +3,7 @@ layout: post
 title: "Lamenting the state of Apple's productivity apps"
 tags:
 ---
-This bit by Dan Moren, for [Macworld](http://www.macworld.com/article/2988867/software-productivity/are-apples-productivity-apps-nearing-their-expiration-dates.html) got me thinking:
+This bit by Dan Moren, for [Macworld](http://www.macworld.com/article/2988867/software-productivity/are-apples-productivity-apps-nearing-their-expiration-dates.html), got me thinking:
 
 > I think those apps are still needed, though. Not least of which because I don’t really see myself forking over $10 every month for an Office 365 subscription. For all of their shortcomings, I like Apple’s productivity apps, not only because they’re well designed, but because though they may not have every bell-and-whistle, they still let me get work done, whether it be writing, giving presentations, or tracking my finances. 
 
