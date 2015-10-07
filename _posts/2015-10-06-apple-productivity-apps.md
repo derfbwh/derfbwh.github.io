@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Lamenting the current state of Apple's productivity apps"
+title: "Lamenting the state of Apple's productivity apps"
 tags:
 ---
 This bit by Dan Moren, for [Macworld](http://www.macworld.com/article/2988867/software-productivity/are-apples-productivity-apps-nearing-their-expiration-dates.html) got me thinking:
