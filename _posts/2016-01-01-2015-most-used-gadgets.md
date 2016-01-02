@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "2015’s Most Useful Gizmos and Gadgets"
+title: "2015’s most useful gizmos and gadgets"
 tags:
 ---
 Like most people in our modern day society, I don’t go through a single day without in some way using a gizmo or gadget. There are hundreds of little tools that we all use day in, day out to make life a little more enjoyable, maybe a little more tolerable, and even just a little more convenient. As is the custom this time of the year, I figured it may be useful to someone out there to put together this little list of my most used and abused of these tools, just in time for the new year.
