@@ -1,0 +1,20 @@
+---
+layout: post
+title: "CES 2016 thoughts from afar"
+tags:
+---
+One of the most fun I’ve had blogging in previous years was during CES week. Getting off the “holiday high” and landing face first into the tech-gadget-heaven that was Los Angeles during the first week of the new year has always been something I’ve looked forward to. But for whatever reason, this year has been different. When CES began earlier this month, it took me a little by surprise. Something that I’ve always actively looked forward to suddenly snuck up on me, instead.
+
+Still, I put my nose to my browser and consumed what felt like hundreds of articles, read dozens of hands ons, and watched a few amazingly produced videos from the showroom floor put together by the ever excellent video team from The Verge. It was only once I was in the middle of my deep dive of the glamorous world of consumer technologies, it began to hit me why my interest in CES had waned to this point. 
+
+CES may well home a few snippets from the future; ultra high-definition “4K” televisions that were hundred of thousands of dollars of prototype machinery just a few years ago, nearly reaching impulse territory for many at Sam’s Club today. But for every 4K television that’s managed to transcend their prototype tag, there are seemingly a thousand more instances of nothing more than a cool tech demo, mere vaporware that’s all but gone by the next year’s CES rolls around. At its worst, CES can be like looking through a window into a future that could be, but probably won’t be.
+
+Truly groundbreaking technology isn’t something that can be scheduled and showcased. Not every CES is going to have  “killer tech”, and perhaps it’s okay that CES is ultimately just a show full of some very cool, but largely impractical ideas. Occasionally, however, the problem becomes evident when a product transitions away from mere prototype to the retail. Take the darling of nearly ever CES of the early 2010s – the Oculus Rift. The Oculus Rift became famous in 2012 for presenting what many thought would remain science fiction for the foreseeable future: honest to goodness, working, affordable virtual reality for the home. Every gamer’s dream. For years we’ve tuned into the Oculus booth at CES, and for years we’ve been woo’d by the ever improving technology. 
+
+Oculus did everything right: they even proved they were more than mere a one or two shot prototype by providing developers with early, but functional development kits at an affordable price. For the most part, to this point, Oculus Rift has been the success story that CES so desperately needs. But all of that came crashing down earlier this month when the company opened up pre-orders for the initial retail version. 
+
+Oculus had been saying and doing all the right things when it came to price, but the company has nearly destroyed all of that good will by releasing the first version with an astronomical price tag of $599. Not only significantly more than what was expected by the press and fans alike, but also significantly more than the two prior Oculus Rift Development Kits. At best, this was a gross miscalculation in the otherwise impressive launch of a potentially revolutionary technology product. At worst, this was a bait and switch: a choice by Oculus to cash in as much as possible with little regard to the loyal fans they’ve justly earned. Perhaps things would have been different if Oculus hadn’t been purchased in 2014 by Facebook. But perhaps the Facebook deal was a necessary evil to even get the Rift out the door.
+
+It may sound like I’m poo-poo’ing on CES, but really, I’m not. I still spent countless hours this week visiting the fantasy land in my mind that all of the press releases and tech demos have helped create. I love the idea of CES – a trade show about the future, today. I’ve merely just grown to wish that companies would be more truthful about what sort of technology is tangible in the relatively near term. I wish that this industry was better at expectation setting, that I could expect to implement some of these amazing advances into my own daily workflow.
+
+Maybe next year.
