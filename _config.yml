@@ -1,6 +1,5 @@
 # Dependencies
 markdown:         kramdown
-pygments:         true
 
 # Permalinks
 permalink:        pretty
@@ -20,5 +19,6 @@ author:
 
 # Custom vars
 version:          1.0.0
+highlighter:      rouge
 github:
   repo:           https://github.com/poole/poole
