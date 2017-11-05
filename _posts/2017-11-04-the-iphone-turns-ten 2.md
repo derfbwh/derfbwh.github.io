@@ -37,4 +37,4 @@ There's still plenty I have yet to do on my iPhone X, and I'm planning on making
 
 The iPhone X is quintessential 2017 Apple. It's fresh, interesting, and occasionally  infuriating. It feels like magic, until it doesn't, and then it feels a little bit like too far of a step backwards then I'm totally comfortable with.
 
-But oh my goodness, guys. That screen. Holy shnickies, a screen that beautiful might make this all worth it.
+But oh my goodness, guys. That screen. Holy shnickies, a screen this beautiful might make it all worth it.
