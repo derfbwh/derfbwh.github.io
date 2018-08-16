@@ -295,6 +295,7 @@ tbody tr:nth-child(odd) th {
 
 .container {
   max-width: 41rem;
+  padding-top:25px;
   padding-left:  1rem;
   padding-right: 1rem;
   margin-left:  auto;
@@ -334,12 +335,21 @@ height:500px;
 }
 
 .masthead-title {
+position:relative;
+  max-width: 41rem;
+  padding-top:205px;
+  padding-left:  1rem;
+  padding-right: 1rem;
+  margin-left:  auto;
+  margin-right: auto;
   margin-top: 0;
   margin-bottom: 0;
   color: #505050;
   font-weight: 800;
   padding-left:15px;
+  z-index:99999;
 }
+
 .masthead-title a {
   color: #ffffff;
 }
