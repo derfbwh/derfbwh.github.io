@@ -86,7 +86,6 @@ a:focus {
 h1, h2, h3, h4, h5, h6 {
   margin-bottom: .5rem;
   font-weight: bold;
-  line-height: 1.25;
   color: #9a9a9a;
   text-rendering: optimizeLegibility;
 }
@@ -300,6 +299,7 @@ tbody tr:nth-child(odd) th {
   padding-right: 1rem;
   margin-left:  auto;
   margin-right: auto;
+  line-height: 1.5;
 }
 
 
@@ -348,6 +348,7 @@ position:relative;
   font-weight: 800;
   padding-left:15px;
   z-index:99999;
+  padding-bottom:5px;
 }
 
 .masthead-title a {
