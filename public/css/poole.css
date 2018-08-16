@@ -51,7 +51,7 @@ body {
 
 html {
   font-family: 'Open Sans', sans-serif;
-  line-height: 1.5;
+  line-height: 1.0;
 }
 @media (min-width: 38em) {
   html {
@@ -100,6 +100,7 @@ h2 {
 h3 {
   margin-top: 1.5rem;
   font-size: 1.25rem;
+  line-height: 1.5;
 }
 h4, h5, h6 {
   margin-top: 1rem;
