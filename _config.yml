@@ -6,8 +6,9 @@ permalink:        pretty
 
 # Setup
 name: dotunderscore
-title:            dotunderscore
-tagline:          by Brian Hough
+title:            Brian Hough
+tagline:          Multimedia Developer for HC Media, writer, founder of Haverzine. Afflicted with technology addiction disorder. Do what you like, like what you do.
+
 description: Musings by Brian Hough.
 url:              http://dotunderscore.net
 paginate:         5
@@ -18,7 +19,7 @@ author:
   email:          brian@haverzine.com
 
 # Custom vars
-version:          1.0.0
+version:          2.0.0
 highlighter:      rouge
 github:
   repo:           https://github.com/poole/poole
