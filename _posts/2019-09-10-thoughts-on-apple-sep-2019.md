@@ -34,7 +34,7 @@ Even so, where Apple TV+ really has to compete is on the quality of their progra
 
 Apple News+ remains a product in Apple's lineup.
 
-##The Hardware
+## The Hardware
 ### iPad
 
 Here we have something of a surprise - or at least it would have been, if you don't follow the ever presaging Mark Gurman. Although there had been virtually no rumors suggesting we'd see any new iPad hardware at this event - Apple typically saves those for its October Special Events, a frequent occurrence - Apple announced the new seventh generation iPad. That's iPad, without a qualifier.
