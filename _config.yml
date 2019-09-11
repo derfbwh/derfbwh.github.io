@@ -7,7 +7,7 @@ permalink:        pretty
 # Setup
 name: dotunderscore
 title:            Brian Hough
-tagline:          Multimedia Developer for HC Media, writer, founder of Haverzine. Afflicted with technology addiction disorder. Do what you like, like what you do.
+tagline:          Big fan of all that tech nonsense, avid walker. 'Do what you like, like what you do.'
 
 description: Musings by Brian Hough.
 url:              http://dotunderscore.net
@@ -16,7 +16,7 @@ baseurl:          /
 author:
   name:           Brian Hough
   url:            https://twitter.com/bwhough
-  email:          brian@haverzine.com
+  email:          bwhough@tuta.io
 
 # Custom vars
 version:          2.0.0
