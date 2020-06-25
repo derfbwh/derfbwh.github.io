@@ -35,8 +35,6 @@
  * Update the foundational and global aspects of the page.
  */
  
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,400,300,600);
-
 * {
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
@@ -50,7 +48,7 @@ body {
 }
 
 html {
-  font-family: 'Open Sans', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, San Francisco, Helvetica Neue, Helvetica, Ubuntu, Roboto, Noto, Segoe UI, Arial, sans-serif;
   line-height: 1.0;
 }
 @media (min-width: 38em) {
