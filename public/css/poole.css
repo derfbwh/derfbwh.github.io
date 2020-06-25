@@ -516,4 +516,8 @@ color: #A98CBC; }
 blockquote{
         border-left: .25rem solid #A98CBC;
 }
+
+.pagination-item {
+border: 1px solid #1F1C28;
+}
 }
