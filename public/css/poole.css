@@ -499,3 +499,21 @@ a.pagination-item:hover {
 .footer {
   font-size: 0.5rem;
 }
+
+@media (prefers-color-scheme: dark) {
+body {
+background-color: rgb(45, 41, 55);
+color: rgb(255, 255, 255);
+}
+
+.post-title a {
+color: #A98CBC;
+}
+
+a {
+color: #A98CBC; }
+    
+blockquote{
+        border-left: .25rem solid #A98CBC;
+}
+}
