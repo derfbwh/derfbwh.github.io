@@ -3,7 +3,7 @@ layout: post
 title: "The iPhone Turns Ten 📱"
 tags:
 ---
-![My original iPhone](http://dotunderscore.net/images/iPhone10.jpg)
+![My original iPhone](/images/iPhone10.jpg)
 
 I’m not the first person to be writing an iPhone 10-year introspective today - a day later, and a dollar short. I absolutely won’t be the last, but I can't stand to miss this chance to say a few words.
 

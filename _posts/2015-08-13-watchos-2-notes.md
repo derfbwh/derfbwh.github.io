@@ -3,7 +3,7 @@ layout: post
 title: "watchOS 2 Notes & Impressions"
 tags:
 ---
-A key theme between both [iOS 9](http://dotunderscore.net/2015/07/03/ios-9-notes-and-impressions/) and [OS X 10.11 "El Cap"](http://dotunderscore.net/2015/06/11/os-x-notes-and-impressions/), the two of Apple’s more established platforms, is refinement over reinvention. But then there’s this year’s version of Apple’s other, younger mobile platform – the watchOS, as found on the Apple Watch. Not yet even a year old, the Apple Watch isn’t yet eligible for reinvention. Instead, watchOS 2 focuses on precisely two things - filling in places where the original watchOS fell down, and native applications.
+A key theme between both [iOS 9](/2015/07/03/ios-9-notes-and-impressions/) and [OS X 10.11 "El Cap"](/2015/06/11/os-x-notes-and-impressions/), the two of Apple’s more established platforms, is refinement over reinvention. But then there’s this year’s version of Apple’s other, younger mobile platform – the watchOS, as found on the Apple Watch. Not yet even a year old, the Apple Watch isn’t yet eligible for reinvention. Instead, watchOS 2 focuses on precisely two things - filling in places where the original watchOS fell down, and native applications.
 
 In my pre-WWDC predictions post, I speculated that this year’s update to watchOS could be called watchOS 1.1, and frankly that’s more or less indicative of how watchOS 2 feels. Native third party applications and the introduction of third party complications are, frankly, the two biggest things to write home about, and the both feel like things that perhaps should have (but maybe couldn’t have) been present on launch.
 

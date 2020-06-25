@@ -3,7 +3,7 @@ layout: post
 title: "Thoughts on Apple's September 2019 Special Event"
 tags:
 ---
-![New iPhones, Apple Watches, oh my](http://dotunderscore.net/images/09-19/apple-september2019.jpg)
+![New iPhones, Apple Watches, oh my](/images/09-19/apple-september2019.jpg)
 
 The iPhone 11's camera bump is ugly. The iPhone 11 Pro Max name is bad. And what is going on with iOS 13?
 

@@ -3,7 +3,7 @@ layout: post
 title: "24 hours with the iPhone X and its notch"
 tags:
 ---
-![The new iPhone X](http://dotunderscore.net/images/iphonex/2.jpg)
+![The new iPhone X](/images/iphonex/2.jpg)
 
 Like most people who received an iPhone X this week, it's too early to really give a proper iPhone X review, and it's certainly next to impossible to really determine how this year's new flagship phone will impact the way the world interacts with smartphones. Instead, I can offer up a few preliminary thoughts - just some quick impressions after using the iPhone X for a hair over 24 hours, from the perspective of somebody who has owned the "Plus" size iPhone since the release of the iPhone 6 a few years back.
 
@@ -11,7 +11,7 @@ There are a lot - and I mean, a lot - of things to like here. The iPhone X feels
 
 That's not an exaggeration. The iPhone X's 5.8-inch display, reportedly manufactured by Samsung and engineered by Apple's display team, is exceptional. It's bright, but not eye-burning bright. It's as vivid as you can get before colors begin to look overblown and oversaturated. It's contrasty - oh, goodness, is it contrasty. Like the best of previous OLEDs, blacks are **absolutely** black. When up against a black wallpaper or titlebar, the notch becomes perfectly invisible. This is the best display Apple has ever released, and I can't wait to see a larger version hit the iPad Pro line in the future.
 
-![The new iPhone X's screen is beautiful](http://dotunderscore.net/images/iphonex/1.jpg)
+![The new iPhone X's screen is beautiful](/images/iphonex/1.jpg)
 
 Because the front of the phone is taken up completely by the OLED display, Apple has forsaken the home button - and, in turn, its Touch ID fingerprint reader technology - with what it calls Face ID, facial recognition powered by a radically enhanced front facing camera system. Next to the display, Face ID is clearly the real focus of Apple's marketing this year, and understandably so: when it works, Face ID feels like complete magic. Some early reviews have noted that using Face ID feels like having no biometric protection at all; pick up your phone, swipe up from the bottom, and you're in.
 
@@ -21,7 +21,7 @@ Worse, I have yet to be able to determine why Face ID is failing in these instan
 
 Once you're authenticated, the experience of actually using the iPhone X is another huge change, but one that I'm significantly more positive about. In all previous iPhones, the home button was a safe haven; wanted to go home? Press the home button. Want to ask Siri a question? Home button. Multitask? Home button. Reachability, to reach to the top row of icons that can't easily be reached? Home button. Given the iPhone X has no home button, Apple has implemented an entire new system of gestures to replace most of these interactions (and moved Siri to the side button), and the vast majority of these feel instantly natural. Swipe up from the bottom to go home, swipe up and hold to multitask; swipe down from the top right to access Control Center, swipe down from the top middle or top left to enter Notification Center.
 
-![There is no home button on the iPhone X](http://dotunderscore.net/images/iphonex/5.jpg)
+![There is no home button on the iPhone X](/images/iphonex/5.jpg)
 
 While these gestures truly began to feel great after just a few short minutes of using the phone, there is one big miss for me. Reachability - which is, tellingly, now disabled by default - has been relegated to a quite tricky to pull of "swipe down from below where the  dock is on the home screen, to the very bottom of the screen" gesture. Because there's a tiny few rows of pixels to manipulate below the dock, actually using Reachability is now  difficult whereas it used to be easy. It's a shame, too, given how tall the iPhone X's display is, in my eyes Reachability is actually more important than it ever was in the iPhone 6, 7, or 8 Plus models. I'm not entirely sure what a better solution than this would look like, but it does make reaching the top row of icons on the home screen much, much more difficult.
 
@@ -31,7 +31,7 @@ What I'm less sure I'll get over, however, is just how small media is on this di
 
 Using the iPhone X in landscape mode in any way, shape, or form is significantly worse than using any previous iPhone. I know, I know, I can hear you from here - but Brian, no one uses landscape mode! Well, to be honest, I do, and the iPhone X's narrow display is wrecking havoc on my usage. Before, landscape mode was the way I used Safari, Twitter, Outlook, and (I know, I'm a monster) occasionally, even the home screen. Landscape mode home screen curiously isn't even an option on the iPhone X, and the others feel far too tight to make them really usable. It's a bit of a bummer.
 
-![I'm excited to give the iPhone X's cameras a closer look](http://dotunderscore.net/images/iphonex/3.jpg)
+![I'm excited to give the iPhone X's cameras a closer look](/images/iphonex/3.jpg)
 
 There's still plenty I have yet to do on my iPhone X, and I'm planning on making use of every single day of its 14-day return policy before I decide whether or not I'm keeping it, or waiting another year. I have yet to put its vastly upgraded cameras through their paces, and I have yet to really push the best-in-class A11 Bionic SoC  - though, if benchmarks are any indication, it'll blow everything in the smartphone space away.
 

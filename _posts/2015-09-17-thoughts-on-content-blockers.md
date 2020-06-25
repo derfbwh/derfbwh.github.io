@@ -3,7 +3,7 @@ layout: post
 title: "Thoughts on iOS 9 Content Blockers"
 tags:
 ---
-When I shared my [iOS 9 Notes & Impressions](http://dotunderscore.net/2015/07/03/ios-9-notes-and-impressions/) earlier this summer, I barely touched on the platform’s built in support for a new type of extension called “Content Blockers.” That now appears to have been an oversight on my part. Since iOS 9 launched yesterday, Content Blockers have created a firestorm unlike anything I’ve seen in quite some time.
+When I shared my [iOS 9 Notes & Impressions](/2015/07/03/ios-9-notes-and-impressions/) earlier this summer, I barely touched on the platform’s built in support for a new type of extension called “Content Blockers.” That now appears to have been an oversight on my part. Since iOS 9 launched yesterday, Content Blockers have created a firestorm unlike anything I’ve seen in quite some time.
 
 Reactions have been, in hindsight, [understandably](https://twitter.com/reckless/status/644176069881409537) [split](http://www.theverge.com/2015/9/17/9338963/welcome-to-hell-apple-vs-google-vs-facebook-and-the-slow-death-of-the-web). Depending on who you ask, Content Blockers are either the biggest improvement to Mobile Safari since its inception, or a harmful feature implemented by a vindictive Apple, bent on hurting both Google and the established publishing industry in a vein attempt to redirect quality content away from the open web and towards the new Apple News application.
 

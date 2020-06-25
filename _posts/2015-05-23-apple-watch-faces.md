@@ -3,7 +3,7 @@ layout: post
 title: Apple Watch Faces
 ---
 
-I’m almost exactly a month into my time with the Apple Watch, and overwhelmingly my feelings towards the device haven't changed. At the time of my writing my previous Apple Watch piece, [47 Hours with the Watch](http://dotunderscore.net/2015/04/26/47-hours-with-the-watch/), I figured I would around now follow up with a second, comprehensive piece outlining how my feelings towards the Watch had changed. Interestingly, nearly everything I wrote back then still stands – I haven't had some sort of revolution that completely changed the way I look at the device, so if you’re interested in knowing my feelings towards the Watch as a whole, just go back and read that piece.
+I’m almost exactly a month into my time with the Apple Watch, and overwhelmingly my feelings towards the device haven't changed. At the time of my writing my previous Apple Watch piece, [47 Hours with the Watch](/2015/04/26/47-hours-with-the-watch/), I figured I would around now follow up with a second, comprehensive piece outlining how my feelings towards the Watch had changed. Interestingly, nearly everything I wrote back then still stands – I haven't had some sort of revolution that completely changed the way I look at the device, so if you’re interested in knowing my feelings towards the Watch as a whole, just go back and read that piece.
 
 Overall, I find the Watch a comprehensive, worthwhile device that pushes back and acts on you as much as you act on it. If I were to single out a singular point that most desperately needs some t.l.c., I would be compelled to say that has to be the Apple Watch’s watch face options.
 
@@ -17,7 +17,7 @@ I just spent a couple of days with what I find to be the most beautiful of the A
 
 Sure, I could have spent an additional three seconds swiping up to my Glances and got the same information with Solar, but in that same amount of time I could have easily gotten as much or more of the same information from my phone. When talking the utility of the Watch, every second counts. That’s kind of my problem with Glances on the whole; they’re too far away from the home screen to warrant the relatively small amount of information they provide the user. More times than not, if I’m trying to get at something more than a complication, I’ll just click the Digital Crown and launch the full blown app.
 
-<img src="http://dotunderscore.net/images/watchface.PNG" align="right" width="30%" style="padding:15px;">Over the last couple of weeks I've spent most of my time looking at just two watch faces – first Modular, a digital display with lots of complication support, and Utility, an analogue display with decent complication support. As far as I'm concerned, you can't go wrong with either of
+<img src="/images/watchface.PNG" align="right" width="30%" style="padding:15px;">Over the last couple of weeks I've spent most of my time looking at just two watch faces – first Modular, a digital display with lots of complication support, and Utility, an analogue display with decent complication support. As far as I'm concerned, you can't go wrong with either of
 
 these faces – Utility’s digital time display is perfect when I don't feel like thinking, while Utility gives a sense of tradition while still giving me easy access to all the complications I've grown accustomed to.
 
