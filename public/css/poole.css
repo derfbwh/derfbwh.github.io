@@ -313,7 +313,7 @@ tbody tr:nth-child(odd) th {
 height: 400px;
 width: 100%;
 /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#4c7a0f+0,22520a+100 */
-background: url(http://dotunderscore.net/images/bg.jpg);
+background: url(/images/bg.jpg);
 background-repeat: no-repeat;
 background-size: cover;
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c7a0f', endColorstr='#22520a',GradientType=0 ); /* IE6-9 */;
