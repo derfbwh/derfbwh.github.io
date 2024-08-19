@@ -109,7 +109,7 @@
                 <ellipse cx="32" cy="30" rx="16" ry="8" fill="#fff" stroke="#999" stroke-width="2"/>
             </svg>
             2024 US Presidential Election Forecast<br><div class="tagline" style="color:red;">Deluxe Edition</div>
-        </h1><br><div class="tagline"><li>Each page load runs and provides the average of 1000 electoral scenerios. Reload the page for a new set of scenerios.</li><li>Each scenerio is based on the current set of swing state polling data, provided by one of our sources.</li><li><span style="color:red;">Deluxe</span> incorporates FiveThirtyEight.com national polling average and state partisan lean.</li></div>
+        </h1><br><div class="tagline"><li>Each page load runs and provides the average of 1000 electoral scenerios. Reload the page for a new set of scenerios.</li><li>Each scenerio is based on the current set of swing state polling data, provided by one of our sources.</li><li><span style="color:red;">Deluxe</span> incorporates FiveThirtyEight.com national polling average and state partisan lean.</li><li>Considers status of Allan Lichtman's "13 Keys to the White House."</div>
 
         
         <div class="results-container">
@@ -145,6 +145,18 @@
                 <!-- Rows will be dynamically populated -->
             </tbody>
         </table>
+            <h2>Current State of Keys to the White House</h2>
+    <table id="keysTable">
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>State</th>
+            </tr>
+        </thead>
+        <tbody id="keysBody">
+            <!-- Rows will be dynamically populated -->
+        </tbody>
+    </table>
             <button class="collapsible" onclick="toggleTable()" style="margin-top:30px;">Toggle Simulation Results</button>
     <table id="simulationResults">
         <thead>
@@ -188,14 +200,14 @@ const safeStateElectoralVotes = nonSwingStates.Harris + nonSwingStates.Trump; //
 
 // Backend-like data storage for swing states with partisan lean included
 let pollData = [
-    { state: 'Florida', electoralVotes: 30, harris: 42.8, trump: 48.0, partisanLean: -1.0 }, // Leaning Republican
-    { state: 'Pennsylvania', electoralVotes: 19, harris: 46, trump: 44.5, partisanLean: 1.0 }, // Leaning Democratic
-    { state: 'Wisconsin', electoralVotes: 10, harris: 47.4, trump: 44.1, partisanLean: 1.0 }, // Leaning Democratic
-    { state: 'Michigan', electoralVotes: 15, harris: 46.0, trump: 43.0, partisanLean: 1.5 }, // Leaning Democratic
-    { state: 'Arizona', electoralVotes: 11, harris: 45.8, trump: 43.7, partisanLean: -0.5 }, // Leaning Republican
-    { state: 'Georgia', electoralVotes: 16, harris: 45.1, trump: 46.5, partisanLean: -1.0 }, // Leaning Republican
-    { state: 'Nevada', electoralVotes: 6, harris: 44.7, trump: 44.9, partisanLean: 2.0 }, // Leaning Democratic
-    { state: 'North Carolina', electoralVotes: 15, harris: 45.7, trump: 45.6, partisanLean: -0.5 } // Leaning Republican
+    { state: 'Florida', electoralVotes: 30, harris: 42.8, trump: 48.0, partisanLean: -.7396878 }, // Leaning Republican
+    { state: 'Pennsylvania', electoralVotes: 19, harris: 46, trump: 44.5, partisanLean: -.296776 }, // Leaning Democratic
+    { state: 'Wisconsin', electoralVotes: 10, harris: 47.4, trump: 44.1, partisanLean: -.3839976 }, // Leaning Democratic
+    { state: 'Michigan', electoralVotes: 15, harris: 46.0, trump: 43.0, partisanLean: -.1175974 }, // Leaning Democratic
+    { state: 'Arizona', electoralVotes: 11, harris: 45.8, trump: 43.7, partisanLean: -.7171309 }, // Leaning Republican
+    { state: 'Georgia', electoralVotes: 16, harris: 45.1, trump: 46.5, partisanLean: -.7357549 }, // Leaning Republican
+    { state: 'Nevada', electoralVotes: 6, harris: 44.7, trump: 44.9, partisanLean: -.259005 },
+    { state: 'North Carolina', electoralVotes: 15, harris: 45.7, trump: 45.6, partisanLean: -.4815506 } // Leaning Republican
 ];
 
 const comparisons = [
@@ -217,7 +229,54 @@ const comparisons = [
     { text: "finding a $100 bill on the ground", odds: 1 / 50 }
 ];
 
-const weightingFactor = .75; // Adjust this value between 0 (no influence) and 1 (full influence)
+const weightingFactor = 0.15; // Adjust this value between 0 (no influence) and 1 (full influence)
+const keyWeightingFactor = 0.1; // Light weighting for keys
+
+// Define the Keys to the White House
+const keys = {
+    partyMandate: 0,
+    noPrimaryContest: 1, // True
+    incumbentSeekingReelection: 0,
+    noThirdParty: 1, // True
+    strongLongTermEconomy: 1, // True
+    strongShortTermEconomy: 1, // True
+    majorPolicyChange: 1,
+    noSocialUnrest: 1, // True
+    noScandal: 1,
+    noForeignMilitaryFailure: 0, // True
+    majorForeignMilitarySuccess: 0, // False
+    charismaticIncumbent: 0, // True
+    uncharismaticChallenger: 1 // True
+};
+
+// Calculate the total key score
+function calculateKeyScore() {
+    return Object.values(keys).reduce((total, keyValue) => total + keyValue, 0);
+}
+
+function populateKeysTable() {
+    const keysBody = document.getElementById('keysBody');
+    keysBody.innerHTML = ''; // Clear previous content
+
+    // Iterate through the keys and create table rows
+    for (const [key, value] of Object.entries(keys)) {
+        const row = document.createElement('tr');
+
+        const keyCell = document.createElement('td');
+        keyCell.textContent = key.replace(/([A-Z])/g, ' $1').trim(); // Format key name
+
+        const stateCell = document.createElement('td');
+        stateCell.textContent = value ? 'True' : 'False'; // Display True/False
+
+        row.appendChild(keyCell);
+        row.appendChild(stateCell);
+        keysBody.appendChild(row);
+    }
+}
+
+// Call this function to populate the keys table when the page loads
+populateKeysTable();
+
 
 function loadPollingData(csvFile) {
     fetch(csvFile)
@@ -292,6 +351,10 @@ function runSimulation() {
     let harrisTotalVotes = 0;
     let trumpTotalVotes = 0;
 
+    // Calculate the key score
+    const keyScore = calculateKeyScore();
+    const weightedKeyImpact = keyScore * keyWeightingFactor;
+
     // Initialize win counters for each state
     const stateWins = pollData.map(state => ({
         state: state.state,
@@ -305,7 +368,7 @@ function runSimulation() {
 
     for (let i = 0; i < simulations; i++) {
         // Reset votes for each simulation
-        let harrisVotes = nonSwingStates.Harris;
+        let harrisVotes = nonSwingStates.Harris + weightedKeyImpact; // Add weighted key impact
         let trumpVotes = nonSwingStates.Trump;
 
         // Loop through each swing state to determine the winner and accumulate electoral votes
@@ -470,7 +533,6 @@ function populateTable() {
         const partisanLean = state.partisanLean || 0; // Use the partisan lean value from the state
         const adjustedHarris = (state.harris + partisanLean).toFixed(2);
         const adjustedTrump = (state.trump - partisanLean).toFixed(2);
-
 
         row.appendChild(stateCell);
         row.appendChild(electoralVotesCell);
