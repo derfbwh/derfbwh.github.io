@@ -163,7 +163,7 @@
                     <table id="credits" style="scale:75%;">
         <tr>
         <td>
-        <i>Swing state data last updated Mon Aug 19 at 12:48 PM.</i><br><br>
+        <i>Swing states last updated Mon Aug 19 at 12:48 PM.</i><br><br>
         Polling data sourced from FiveThirtyEight, <span style="color:green;">Nate Silver</span>, New York Times, and RealClearPolitics.<br>
         Created by <a href="https://mastodon.social/@BrianHough">Brian Hough</a> & ChatGPT</td></tr></table>
 
@@ -186,16 +186,16 @@ const totalElectoralVotes = 538; // Total electoral votes available
 const flipChance = 0.029; // 2.9% chance of flipping
 const safeStateElectoralVotes = nonSwingStates.Harris + nonSwingStates.Trump; // Total safe state electoral votes
 
-// Backend-like data storage for swing states
+// Backend-like data storage for swing states with partisan lean included
 let pollData = [
-    { state: 'Florida', electoralVotes: 30, harris: 42.8, trump: 48.0 },
-    { state: 'Pennsylvania', electoralVotes: 19, harris: 46, trump: 44.5 },
-    { state: 'Wisconsin', electoralVotes: 10, harris: 47.4, trump: 44.1 },
-    { state: 'Michigan', electoralVotes: 15, harris: 46.0, trump: 43.0 },
-    { state: 'Arizona', electoralVotes: 11, harris: 45.8, trump: 43.7 },
-    { state: 'Georgia', electoralVotes: 16, harris: 45.1, trump: 46.5 },
-    { state: 'Nevada', electoralVotes: 6, harris: 44.7, trump: 44.9 },
-    { state: 'North Carolina', electoralVotes: 15, harris: 45.7, trump: 45.6 }
+    { state: 'Florida', electoralVotes: 30, harris: 42.8, trump: 48.0, partisanLean: -1.0 }, // Leaning Republican
+    { state: 'Pennsylvania', electoralVotes: 19, harris: 46, trump: 44.5, partisanLean: 1.0 }, // Leaning Democratic
+    { state: 'Wisconsin', electoralVotes: 10, harris: 47.4, trump: 44.1, partisanLean: 1.0 }, // Leaning Democratic
+    { state: 'Michigan', electoralVotes: 15, harris: 46.0, trump: 43.0, partisanLean: 1.5 }, // Leaning Democratic
+    { state: 'Arizona', electoralVotes: 11, harris: 45.8, trump: 43.7, partisanLean: -0.5 }, // Leaning Republican
+    { state: 'Georgia', electoralVotes: 16, harris: 45.1, trump: 46.5, partisanLean: -1.0 }, // Leaning Republican
+    { state: 'Nevada', electoralVotes: 6, harris: 44.7, trump: 44.9, partisanLean: 2.0 }, // Leaning Democratic
+    { state: 'North Carolina', electoralVotes: 15, harris: 45.7, trump: 45.6, partisanLean: -0.5 } // Leaning Republican
 ];
 
 const comparisons = [
@@ -217,7 +217,7 @@ const comparisons = [
     { text: "finding a $100 bill on the ground", odds: 1 / 50 }
 ];
 
-const weightingFactor = 0.5; // Adjust this value between 0 (no influence) and 1 (full influence)
+const weightingFactor = .75; // Adjust this value between 0 (no influence) and 1 (full influence)
 
 function loadPollingData(csvFile) {
     fetch(csvFile)
@@ -265,33 +265,6 @@ function processPollingData(pollDataCSV) {
     updatePollDataWithAverages(candidateAverages);
 }
 
-let partisanLeanData = {}; // Object to store partisan lean values
-
-function loadPartisanLeanData(csvFile) {
-    fetch(csvFile)
-        .then(response => response.text())
-        .then(data => {
-            Papa.parse(data, {
-                header: true,
-                complete: function(results) {
-                    processPartisanLeanData(results.data);
-                }
-            });
-        })
-        .catch(error => console.error('Error loading Partisan Lean CSV:', error));
-}
-
-function processPartisanLeanData(partisanDataCSV) {
-    partisanDataCSV.forEach(row => {
-        const stateName = row.state;
-        const leanValue = parseFloat(row['2022']);
-        if (!isNaN(leanValue)) {
-            partisanLeanData[stateName] = leanValue; // Store the lean value by state
-        }
-    });
-}
-
-
 function updatePollDataWithAverages(averages) {
     // Update the pollData array with the averages, applying the weighting factor
     pollData.forEach(state => {
@@ -303,6 +276,11 @@ function updatePollDataWithAverages(averages) {
             // Blend the original value with the new average based on the weighting factor
             state.trump = (state.trump * (1 - weightingFactor)) + (averages['Donald Trump'] * weightingFactor);
         }
+
+        // Apply partisan lean adjustment
+        const partisanLean = state.partisanLean || 0; // Use the partisan lean value from the state
+        state.harris += partisanLean; // Adjust Harris's percentage
+        state.trump -= partisanLean; // Adjust Trump's percentage
     });
 
     // Run the simulation after updating the polling data
@@ -321,11 +299,6 @@ function runSimulation() {
         trumpWins: 0
     }));
 
-    // Reset the winner display for each state
-    pollData.forEach(state => {
-        document.getElementById(state.state).textContent = ''; // Clear previous winner
-    });
-
     // Clear previous simulation results
     const simulationBody = document.getElementById('simulationBody');
     simulationBody.innerHTML = '';
@@ -339,11 +312,6 @@ function runSimulation() {
         pollData.forEach(state => {
             let adjustedHarris = state.harris;
             let adjustedTrump = state.trump;
-
-            // Apply partisan lean adjustment
-            const partisanLean = partisanLeanData[state.state] || 0; // Default to 0 if not found
-            adjustedHarris += partisanLean; // Adjust Harris's percentage
-            adjustedTrump -= partisanLean; // Adjust Trump's percentage
 
             // Simulate possible fluctuations based on time left until Election Day
             const maxFluctuation = 8; // Max percentage fluctuation
@@ -443,7 +411,6 @@ function runSimulation() {
     determineUpsetOdds(averageHarrisVotes, averageTrumpVotes);
 }
 
-
 function calculateWinProbability(harrisVotes, trumpVotes) {
     let harrisChance = (harrisVotes / totalElectoralVotes) * 100;
     let trumpChance = (trumpVotes / totalElectoralVotes) * 100;
@@ -491,13 +458,19 @@ function populateTable() {
         electoralVotesCell.textContent = state.electoralVotes;
 
         const harrisCell = document.createElement('td');
-        harrisCell.textContent = `${state.harris}%`;
+        harrisCell.textContent = `${state.harris}%`; // Unadjusted percentage
 
         const trumpCell = document.createElement('td');
-        trumpCell.textContent = `${state.trump}%`;
+        trumpCell.textContent = `${state.trump}%`; // Unadjusted percentage
 
         const winnerCell = document.createElement('td');
         winnerCell.id = state.state; // Set ID for winner display
+
+        // Apply partisan lean to the display for simulations only
+        const partisanLean = state.partisanLean || 0; // Use the partisan lean value from the state
+        const adjustedHarris = (state.harris + partisanLean).toFixed(2);
+        const adjustedTrump = (state.trump - partisanLean).toFixed(2);
+
 
         row.appendChild(stateCell);
         row.appendChild(electoralVotesCell);
@@ -512,8 +485,10 @@ function populateTable() {
 // Initialize the page
 populateTable();
 loadPollingData('https://projects.fivethirtyeight.com/polls/data/president_polls.csv'); // Update with the correct path to your CSV
-loadPartisanLeanData('https://github.com/fivethirtyeight/data/raw/master/partisan-lean/fivethirtyeight_partisan_lean_STATES.csv'); // Update with the correct path to your partisan lean CSV
+
 </script>
+
+
 
 
 </body>
