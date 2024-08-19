@@ -338,7 +338,28 @@
     runSimulation();
 </script>
 
+   <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const pollBody = document.getElementById("pollBody");
+            const rows = pollBody.getElementsByTagName("tr");
 
+            // Iterate through each row in the pollBody
+            for (let row of rows) {
+                const cells = row.getElementsByTagName("td");
+
+                // Apply background color and font color based on the content of the cells
+                for (let cell of cells) {
+                    if (cell.textContent.trim() === "Kamala Harris") {
+                        cell.style.backgroundColor = "#0037ba"; // Blue for Kamala Harris
+                        cell.style.color = "white"; // White font color
+                    } else if (cell.textContent.trim() === "Donald Trump") {
+                        cell.style.backgroundColor = "#870707"; // Red for Donald Trump
+                        cell.style.color = "white"; // White font color
+                    }
+                }
+            }
+        });
+    </script>
 
 </body>
 </html>
