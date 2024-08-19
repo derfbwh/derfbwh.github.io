@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2024 US Presidential Election Forecast</title>
+    
     <style>
     @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@200;400;600;700;800&display=swap");
     @import url("https://use.typekit.net/htk2wjy.css");
@@ -86,6 +87,7 @@
                 margin-bottom: 20px; /* Add spacing between stacked items */
             }
         }
+        
     </style>
 </head>
 <body>
@@ -135,13 +137,27 @@
                     <th>Electoral Votes</th>
                     <th>Kamala Harris (D)</th>
                     <th>Donald Trump (R)</th>
-                    <th>Winner</th>
+                    <th>Simulated Winner</th>
                 </tr>
             </thead>
             <tbody id="pollBody">
                 <!-- Rows will be dynamically populated -->
             </tbody>
         </table>
+            <button class="collapsible" onclick="toggleTable()" style="margin-top:30px;">Toggle Simulation Results</button>
+    <table id="simulationResults">
+        <thead>
+            <tr>
+                <th>Simulation #</th>
+                <th>Harris Electoral Votes</th>
+                <th>Trump Electoral Votes</th>
+            </tr>
+        </thead>
+        <tbody id="simulationBody">
+            <!-- Simulation results will be populated here -->
+        </tbody>
+    </table>
+
     </div>
                     <table id="credits" style="scale:75%;">
         <tr>
@@ -159,6 +175,16 @@
     const today = new Date(); // Current Date
     const daysUntilElection = Math.max(0, (electionDate - today) / (1000 * 60 * 60 * 24)); // Days left
 
+    // Electoral votes based on the 2020 election results for non-swing states
+    const nonSwingStates = {
+        'Harris': 212, // States that went to Biden (Democrat)
+        'Trump': 126   // States that went to Trump (Republican)
+    };
+
+    const totalElectoralVotes = 538; // Total electoral votes available
+    const flipChance = 0.029; // 2.9% chance of flipping
+    const safeStateElectoralVotes = nonSwingStates.Harris + nonSwingStates.Trump; // Total safe state electoral votes
+
     // Backend-like data storage for swing states
     const pollData = [
         { state: 'Florida', electoralVotes: 30, harris: 42.8, trump: 48.0 },
@@ -170,14 +196,6 @@
         { state: 'Nevada', electoralVotes: 6, harris: 44.7, trump: 44.9 },
         { state: 'North Carolina', electoralVotes: 15, harris: 45.7, trump: 45.6 }
     ];
-
-    // Electoral votes based on the 2020 election results for non-swing states
-    const nonSwingStates = {
-        'Harris': 212, // States that went to Biden (Democrat)
-        'Trump': 126   // States that went to Trump (Republican)
-    };
-
-    const totalElectoralVotes = 538; // Total electoral votes available
 
     const comparisons = [
         { text: "drawing a specific card from a full deck of 52 cards", odds: 1 / 52 },
@@ -199,14 +217,25 @@
     ];
 
     function runSimulation() {
-        const simulations = 100; // Number of simulations
+        const simulations = 1000; // Number of simulations
         let harrisTotalVotes = 0;
         let trumpTotalVotes = 0;
+
+        // Initialize win counters for each state
+        const stateWins = pollData.map(state => ({
+            state: state.state,
+            harrisWins: 0,
+            trumpWins: 0
+        }));
 
         // Reset the winner display for each state
         pollData.forEach(state => {
             document.getElementById(state.state).textContent = ''; // Clear previous winner
         });
+
+        // Clear previous simulation results
+        const simulationBody = document.getElementById('simulationBody');
+        simulationBody.innerHTML = '';
 
         for (let i = 0; i < simulations; i++) {
             // Reset votes for each simulation
@@ -234,10 +263,10 @@
 
                 if (adjustedHarris > adjustedTrump) {
                     harrisVotes += state.electoralVotes;
-                    document.getElementById(state.state).textContent = 'Kamala Harris'; // Set winner
+                    stateWins.find(s => s.state === state.state).harrisWins++;
                 } else {
                     trumpVotes += state.electoralVotes;
-                    document.getElementById(state.state).textContent = 'Donald Trump'; // Set winner
+                    stateWins.find(s => s.state === state.state).trumpWins++;
                 }
             });
 
@@ -258,10 +287,48 @@
                 }
             }
 
+            // Factor in the chance of flipping safe states
+            if (Math.random() < flipChance) {
+                // Randomly choose to flip the total safe state votes
+                if (Math.random() < 0.5) { // 50% chance to flip to Trump
+                    harrisVotes -= safeStateElectoralVotes;
+                    trumpVotes += safeStateElectoralVotes;
+                } else { // 50% chance to flip to Harris
+                    trumpVotes -= safeStateElectoralVotes;
+                    harrisVotes += safeStateElectoralVotes;
+                }
+            }
+
             // Accumulate the results
             harrisTotalVotes += harrisVotes;
             trumpTotalVotes += trumpVotes;
+
+            // Add the results of this simulation to the table
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${i + 1}</td><td>${harrisVotes}</td><td>${trumpVotes}</td>`;
+            simulationBody.appendChild(row);
         }
+
+        // Calculate percentages and update the table
+        stateWins.forEach(stateWin => {
+            const totalSimulations = simulations;
+            const harrisWinPercentage = (stateWin.harrisWins / totalSimulations * 100).toFixed(2);
+            const trumpWinPercentage = (stateWin.trumpWins / totalSimulations * 100).toFixed(2);
+            const winnerCell = document.getElementById(stateWin.state);
+            winnerCell.textContent = `Kamala Harris ${harrisWinPercentage}% of the Time, Donald Trump ${trumpWinPercentage}% of the Time`;
+
+            // Change cell color based on who won more times
+            if (stateWin.harrisWins > stateWin.trumpWins) {
+                winnerCell.style.backgroundColor = "#0037ba"; // Blue for Kamala Harris
+                winnerCell.style.color = "white"; // White font color
+            } else if (stateWin.trumpWins > stateWin.harrisWins) {
+                winnerCell.style.backgroundColor = "#870707"; // Red for Donald Trump
+                winnerCell.style.color = "white"; // White font color
+            } else {
+                winnerCell.style.backgroundColor = ""; // Reset color if tied
+                winnerCell.style.color = ""; // Reset color if tied
+            }
+        });
 
         // Calculate averages
         const averageHarrisVotes = harrisTotalVotes / simulations;
@@ -301,6 +368,16 @@
         document.getElementById('upsetOdds').textContent = `Odds of an upset are about the odds of ${closestComparison.text}.`;
     }
 
+    // Add this function to toggle the visibility of the simulation results table
+    function toggleTable() {
+        const table = document.getElementById('simulationResults');
+        if (table.style.display === 'none') {
+            table.style.display = 'table'; // Show the table
+        } else {
+            table.style.display = 'none'; // Hide the table
+        }
+    }
+
     // Populate the table with initial data
     function populateTable() {
         const pollBody = document.getElementById('pollBody');
@@ -338,28 +415,6 @@
     runSimulation();
 </script>
 
-   <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const pollBody = document.getElementById("pollBody");
-            const rows = pollBody.getElementsByTagName("tr");
-
-            // Iterate through each row in the pollBody
-            for (let row of rows) {
-                const cells = row.getElementsByTagName("td");
-
-                // Apply background color and font color based on the content of the cells
-                for (let cell of cells) {
-                    if (cell.textContent.trim() === "Kamala Harris") {
-                        cell.style.backgroundColor = "#0037ba"; // Blue for Kamala Harris
-                        cell.style.color = "white"; // White font color
-                    } else if (cell.textContent.trim() === "Donald Trump") {
-                        cell.style.backgroundColor = "#870707"; // Red for Donald Trump
-                        cell.style.color = "white"; // White font color
-                    }
-                }
-            }
-        });
-    </script>
 
 </body>
 </html>
