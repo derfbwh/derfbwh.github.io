@@ -109,7 +109,7 @@
             </svg>
             2024 US Presidential Election Forecast
         </h1><br><div class="tagline">Each page load runs and provides the average of 1000 electoral scenerios. Reload the page for a new set of scenerios. <br>Each scenerio is based on the current set of swing state polling data, provided by one of our sources.</div>
-
+<center><div class="tagline" align="center" style="margin-top:0px;"><a href="index-deluxe.html">Switch to Deluxe</a></div></center>
         
         <div class="results-container">
             <div class="results">
@@ -143,7 +143,7 @@
             <tbody id="pollBody">
                 <!-- Rows will be dynamically populated -->
             </tbody>
-        </table>
+        </table><div style="display:none;">
             <button class="collapsible" onclick="toggleTable()" style="margin-top:30px;">Toggle Simulation Results</button>
     <table id="simulationResults">
         <thead>
@@ -156,7 +156,7 @@
         <tbody id="simulationBody">
             <!-- Simulation results will be populated here -->
         </tbody>
-    </table>
+    </table></div>
 
     </div>
                     <table id="credits" style="scale:75%;">
@@ -167,7 +167,6 @@
         Created by <a href="https://mastodon.social/@BrianHough">Brian Hough</a> & ChatGPT</td></tr></table>
 
 
-        <svg id="usMap" viewBox="0 0 1000 600"></svg>
 
 
 <script>
