@@ -108,7 +108,7 @@
                 <!-- Toilet Seat -->
                 <ellipse cx="32" cy="30" rx="16" ry="8" fill="#fff" stroke="#999" stroke-width="2"/>
             </svg>
-            2024 US Presidential Election Forecast
+            2024 US Presidential Election Forecast<br><div class="tagline" style="color:red;">Deluxe Edition</div>
         </h1><br><div class="tagline">Each page load runs and provides the average of 1000 electoral scenerios. Reload the page for a new set of scenerios. <br>Each scenerio is based on the current set of swing state polling data, provided by one of our sources.</div>
 
         
@@ -217,6 +217,8 @@ const comparisons = [
     { text: "finding a $100 bill on the ground", odds: 1 / 50 }
 ];
 
+const weightingFactor = 0.5; // Adjust this value between 0 (no influence) and 1 (full influence)
+
 function loadPollingData(csvFile) {
     fetch(csvFile)
         .then(response => response.text())
@@ -263,14 +265,43 @@ function processPollingData(pollDataCSV) {
     updatePollDataWithAverages(candidateAverages);
 }
 
+let partisanLeanData = {}; // Object to store partisan lean values
+
+function loadPartisanLeanData(csvFile) {
+    fetch(csvFile)
+        .then(response => response.text())
+        .then(data => {
+            Papa.parse(data, {
+                header: true,
+                complete: function(results) {
+                    processPartisanLeanData(results.data);
+                }
+            });
+        })
+        .catch(error => console.error('Error loading Partisan Lean CSV:', error));
+}
+
+function processPartisanLeanData(partisanDataCSV) {
+    partisanDataCSV.forEach(row => {
+        const stateName = row.state;
+        const leanValue = parseFloat(row['2022']);
+        if (!isNaN(leanValue)) {
+            partisanLeanData[stateName] = leanValue; // Store the lean value by state
+        }
+    });
+}
+
+
 function updatePollDataWithAverages(averages) {
-    // Update the pollData array with the averages
+    // Update the pollData array with the averages, applying the weighting factor
     pollData.forEach(state => {
         if (averages['Kamala Harris']) {
-            state.harris = averages['Kamala Harris'];
+            // Blend the original value with the new average based on the weighting factor
+            state.harris = (state.harris * (1 - weightingFactor)) + (averages['Kamala Harris'] * weightingFactor);
         }
         if (averages['Donald Trump']) {
-            state.trump = averages['Donald Trump'];
+            // Blend the original value with the new average based on the weighting factor
+            state.trump = (state.trump * (1 - weightingFactor)) + (averages['Donald Trump'] * weightingFactor);
         }
     });
 
@@ -308,6 +339,11 @@ function runSimulation() {
         pollData.forEach(state => {
             let adjustedHarris = state.harris;
             let adjustedTrump = state.trump;
+
+            // Apply partisan lean adjustment
+            const partisanLean = partisanLeanData[state.state] || 0; // Default to 0 if not found
+            adjustedHarris += partisanLean; // Adjust Harris's percentage
+            adjustedTrump -= partisanLean; // Adjust Trump's percentage
 
             // Simulate possible fluctuations based on time left until Election Day
             const maxFluctuation = 8; // Max percentage fluctuation
@@ -407,6 +443,7 @@ function runSimulation() {
     determineUpsetOdds(averageHarrisVotes, averageTrumpVotes);
 }
 
+
 function calculateWinProbability(harrisVotes, trumpVotes) {
     let harrisChance = (harrisVotes / totalElectoralVotes) * 100;
     let trumpChance = (trumpVotes / totalElectoralVotes) * 100;
@@ -475,7 +512,7 @@ function populateTable() {
 // Initialize the page
 populateTable();
 loadPollingData('https://projects.fivethirtyeight.com/polls/data/president_polls.csv'); // Update with the correct path to your CSV
-
+loadPartisanLeanData('https://github.com/fivethirtyeight/data/raw/master/partisan-lean/fivethirtyeight_partisan_lean_STATES.csv'); // Update with the correct path to your partisan lean CSV
 </script>
 
 
