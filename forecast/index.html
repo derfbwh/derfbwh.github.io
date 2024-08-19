@@ -23,6 +23,11 @@
             height: auto; /* Maintain aspect ratio */
             vertical-align: middle;
         }
+        .tagline {
+        margin-top:-35px;
+        padding-bottom:25px;
+
+        }
         .container {
             max-width: 1024px;
             margin: 0 auto;
@@ -100,7 +105,8 @@
                 <ellipse cx="32" cy="30" rx="16" ry="8" fill="#fff" stroke="#999" stroke-width="2"/>
             </svg>
             2024 US Presidential Election Forecast
-        </h1>
+        </h1><br><div class="tagline">Each page load generates a scenerio. Reload the page for a new electoral scenerio. <br>Each scenerio takes the current swing state polling data, provided by one of our sources, into account.</div>
+
         
         <div class="results-container">
             <div class="results">
@@ -136,13 +142,13 @@
             </tbody>
         </table>
     </div>
-
-        <table id="credits" style="scale:75%;">
+                    <table id="credits" style="scale:75%;">
         <tr>
         <td>
         <i>Last updated Mon Aug 19 at 12:48 PM.</i><br><br>
-        Polling data averaged from FiveThirtyEight, NateSilver, New York Times, and RealClearPolitics.<br>
+        Polling data sourced from FiveThirtyEight, <span style="color:green;">Nate Silver</span>, New York Times, and RealClearPolitics.<br>
         Created by <a href="https://mastodon.social/@BrianHough">Brian Hough</a> & ChatGPT</td></tr></table>
+
 
         <svg id="usMap" viewBox="0 0 1000 600"></svg>
 
@@ -173,53 +179,70 @@
     const totalElectoralVotes = 538; // Total electoral votes available
     const winningThreshold = 270; // Votes needed to win the election
 
-    function calculateElectoralVotes() {
-        let harrisVotes = nonSwingStates.Harris;
-        let trumpVotes = nonSwingStates.Trump;
+function calculateElectoralVotes() {
+    let harrisVotes = nonSwingStates.Harris;
+    let trumpVotes = nonSwingStates.Trump;
 
-        // Loop through each swing state to determine the winner and accumulate electoral votes
-        pollData.forEach(state => {
-            let adjustedHarris = state.harris;
-            let adjustedTrump = state.trump;
+    // Loop through each swing state to determine the winner and accumulate electoral votes
+    pollData.forEach(state => {
+        let adjustedHarris = state.harris;
+        let adjustedTrump = state.trump;
 
-            // Simulate possible fluctuations based on time left until Election Day
-            const maxFluctuation = 8; // Max percentage fluctuation
-            const minFluctuation = 2; // Min percentage fluctuation
-            const fluctuationRange = maxFluctuation - minFluctuation;
-            const uncertaintyFactor = Math.min(1, daysUntilElection / 365); // 1 year = 365 days
+        // Simulate possible fluctuations based on time left until Election Day
+        const maxFluctuation = 8; // Max percentage fluctuation
+        const minFluctuation = 2; // Min percentage fluctuation
+        const fluctuationRange = maxFluctuation - minFluctuation;
+        const uncertaintyFactor = Math.min(1, daysUntilElection / 365); // 1 year = 365 days
 
-            // Randomly adjust the poll numbers based on the time left until Election Day
-            const fluctuation = Math.random() * fluctuationRange + minFluctuation;
-            const harrisFluctuation = (Math.random() < 0.5 ? -1 : 1) * fluctuation * uncertaintyFactor;
-            const trumpFluctuation = (Math.random() < 0.5 ? -1 : 1) * fluctuation * uncertaintyFactor;
+        // Randomly adjust the poll numbers based on the time left until Election Day
+        const fluctuation = Math.random() * fluctuationRange + minFluctuation;
+        const harrisFluctuation = (Math.random() < 0.5 ? -1 : 1) * fluctuation * uncertaintyFactor;
+        const trumpFluctuation = (Math.random() < 0.5 ? -1 : 1) * fluctuation * uncertaintyFactor;
 
-            adjustedHarris = Math.min(100, Math.max(0, adjustedHarris + harrisFluctuation));
-            adjustedTrump = Math.min(100, Math.max(0, adjustedTrump + trumpFluctuation));
+        adjustedHarris = Math.min(100, Math.max(0, adjustedHarris + harrisFluctuation));
+        adjustedTrump = Math.min(100, Math.max(0, adjustedTrump + trumpFluctuation));
 
-            let winner = '';
+        let winner = '';
 
-            if (adjustedHarris > adjustedTrump) {
-                harrisVotes += state.electoralVotes;
-                winner = 'Kamala Harris';
-            } else if (adjustedTrump > adjustedHarris) {
-                trumpVotes += state.electoralVotes;
-                winner = 'Donald Trump';
-            } else {
-                // If there's a tie, split the votes (not realistic but keeps it simple)
-                harrisVotes += state.electoralVotes / 2;
-                trumpVotes += state.electoralVotes / 2;
-                winner = 'Tie';
-            }
+        if (adjustedHarris > adjustedTrump) {
+            harrisVotes += state.electoralVotes;
+            winner = 'Kamala Harris';
+        } else if (adjustedTrump > adjustedHarris) {
+            trumpVotes += state.electoralVotes;
+            winner = 'Donald Trump';
+        } else {
+            // If there's a tie, split the votes (not realistic but keeps it simple)
+            harrisVotes += state.electoralVotes / 2;
+            trumpVotes += state.electoralVotes / 2;
+            winner = 'Tie';
+        }
 
-            document.getElementById(state.state).textContent = winner;
-        });
+        document.getElementById(state.state).textContent = winner;
+    });
 
-        document.getElementById('harrisVotes').textContent = `Kamala Harris: ${harrisVotes.toFixed(0)} Electoral Votes`;
-        document.getElementById('trumpVotes').textContent = `Donald Trump: ${trumpVotes.toFixed(0)} Electoral Votes`;
+    // Adjust the votes to ensure they sum to 538
+    const totalVotes = harrisVotes + trumpVotes;
+    const adjustmentFactor = 538 / totalVotes;
 
-        calculateWinProbability(harrisVotes, trumpVotes);
-        updateMap();
+    harrisVotes = Math.round(harrisVotes * adjustmentFactor);
+    trumpVotes = Math.round(trumpVotes * adjustmentFactor);
+
+    // Ensure the total is exactly 538 by adjusting the larger candidate's votes
+    const totalAdjustedVotes = harrisVotes + trumpVotes;
+    if (totalAdjustedVotes !== 538) {
+        if (harrisVotes > trumpVotes) {
+            harrisVotes += (538 - totalAdjustedVotes);
+        } else {
+            trumpVotes += (538 - totalAdjustedVotes);
+        }
     }
+
+    document.getElementById('harrisVotes').textContent = `Kamala Harris: ${harrisVotes.toFixed(0)} Electoral Votes`;
+    document.getElementById('trumpVotes').textContent = `Donald Trump: ${trumpVotes.toFixed(0)} Electoral Votes`;
+
+    calculateWinProbability(harrisVotes, trumpVotes);
+    updateMap();
+}
 
     function calculateWinProbability(harrisVotes, trumpVotes) {
         let harrisChance = 0;
