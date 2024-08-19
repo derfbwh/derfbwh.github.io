@@ -135,16 +135,16 @@
                 <!-- Rows will be dynamically populated -->
             </tbody>
         </table>
-
-        <svg id="usMap" viewBox="0 0 1000 600"></svg>
     </div>
 
         <table id="credits" style="scale:75%;">
         <tr>
         <td>
-        <i>Last updated Mon Aug 19 at 12:19 PM.</i><br><br>
+        <i>Last updated Mon Aug 19 at 12:48 PM.</i><br><br>
         Polling data averaged from FiveThirtyEight, NateSilver, New York Times, and RealClearPolitics.<br>
         Created by <a href="https://mastodon.social/@BrianHough">Brian Hough</a> & ChatGPT</td></tr></table>
+
+        <svg id="usMap" viewBox="0 0 1000 600"></svg>
 
 
 <script>
@@ -154,14 +154,14 @@
 
     // Backend-like data storage for swing states
     const pollData = [
-        { state: 'Florida', electoralVotes: 30, harris: 43.3, trump: 47.8 },
-        { state: 'Pennsylvania', electoralVotes: 19, harris: 46.3, trump: 44.8 },
+        { state: 'Florida', electoralVotes: 30, harris: 42.8, trump: 48.0 },
+        { state: 'Pennsylvania', electoralVotes: 19, harris: 46, trump: 44.5 },
         { state: 'Wisconsin', electoralVotes: 10, harris: 47.4, trump: 44.1 },
-        { state: 'Michigan', electoralVotes: 15, harris: 46.5, trump: 43.3 },
-        { state: 'Arizona', electoralVotes: 11, harris: 45.3, trump: 44.4 },
-        { state: 'Georgia', electoralVotes: 16, harris: 46.7, trump: 45.2 },
-        { state: 'Nevada', electoralVotes: 6, harris: 47.0, trump: 45.0 },
-        { state: 'North Carolina', electoralVotes: 15, harris: 45.0, trump: 46.0 }
+        { state: 'Michigan', electoralVotes: 15, harris: 46.0, trump: 43.0 },
+        { state: 'Arizona', electoralVotes: 11, harris: 45.8, trump: 43.7 },
+        { state: 'Georgia', electoralVotes: 16, harris: 45.1, trump: 46.5 },
+        { state: 'Nevada', electoralVotes: 6, harris: 44.7, trump: 44.9 },
+        { state: 'North Carolina', electoralVotes: 15, harris: 45.7, trump: 45.6 }
     ];
 
     // Electoral votes based on the 2020 election results for non-swing states
