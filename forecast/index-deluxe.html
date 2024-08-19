@@ -413,7 +413,7 @@ function runSimulation() {
         const harrisWinPercentage = (stateWin.harrisWins / totalSimulations * 100).toFixed(2);
         const trumpWinPercentage = (stateWin.trumpWins / totalSimulations * 100).toFixed(2);
         const winnerCell = document.getElementById(stateWin.state);
-        winnerCell.textContent = `Kamala Harris ${harrisWinPercentage}% of the Time, Donald Trump ${trumpWinPercentage}% of the Time`;
+        winnerCell.textContent = `Kamala Harris ${harrisWinPercentage}% of simulations, Donald Trump ${trumpWinPercentage}% of simulations`;
 
         // Change cell color based on who won more times
         if (stateWin.harrisWins > stateWin.trumpWins) {
