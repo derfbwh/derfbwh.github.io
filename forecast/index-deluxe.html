@@ -267,7 +267,7 @@ populateKeysTable();
 
 const bounceStartDate = new Date('2023-08-28'); // Start of the convention bounce
 const bounceEndDate = new Date('2023-09-14'); // End of the convention bounce
-const bouncePercentage = 0.025; // 2.5% bounce
+const bouncePercentage = 0.025; // 2.5% decrease
 
 function applyConventionBounce(state) {
     const today = new Date();
@@ -279,8 +279,8 @@ function applyConventionBounce(state) {
         // Calculate the fade effect based on the number of days
         const fadeFactor = Math.max(0, (bounceEndDate - today) / (bounceEndDate - bounceStartDate));
         
-        // Apply the bounce effect
-        state.harris += bouncePercentage * fadeFactor; // Increase Harris's polling percentage
+        // Apply the bounce effect (decrease)
+        state.harris -= bouncePercentage * fadeFactor; // Decrease Harris's polling percentage
     }
 }
 
@@ -556,7 +556,6 @@ function populateTable() {
 // Initialize the page
 populateTable();
 loadPollingData('https://projects.fivethirtyeight.com/polls/data/president_polls.csv'); // Update with the correct path to your CSV
-
 </script>
 
 
