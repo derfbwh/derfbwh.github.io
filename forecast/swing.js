@@ -12,7 +12,7 @@ let pollData = [
 
 // Function to fetch the last modified date of the JavaScript file
 function updateLastModifiedDate() {
-    const scriptFile = 'script.js'; // Name of your JavaScript file
+    const scriptFile = 'swing.js'; // Name of your JavaScript file
     fetch(scriptFile, { method: 'HEAD' })
         .then(response => {
             const lastModified = response.headers.get('Last-Modified');
