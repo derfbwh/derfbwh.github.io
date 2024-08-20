@@ -9,3 +9,25 @@ let pollData = [
     { state: 'Nevada', electoralVotes: 6, harris: 44.7, trump: 44.9, partisanLean: -.259005 },
     { state: 'North Carolina', electoralVotes: 15, harris: 45.7, trump: 45.6, partisanLean: -.4815506 } // Leaning Republican
 ]
+
+// Function to fetch the last modified date of the JavaScript file
+function updateLastModifiedDate() {
+    const scriptFile = 'script.js'; // Name of your JavaScript file
+    fetch(scriptFile, { method: 'HEAD' })
+        .then(response => {
+            const lastModified = response.headers.get('Last-Modified');
+            if (lastModified) {
+                const date = new Date(lastModified);
+                document.getElementById('update-date').textContent = date.toLocaleString();
+            } else {
+                document.getElementById('update-date').textContent = 'Unknown';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching last modified date:', error);
+            document.getElementById('update-date').textContent = 'Error fetching date';
+        });
+}
+
+// Call the function when the script loads
+updateLastModifiedDate();
