@@ -1,6 +1,6 @@
 // Backend-like data storage for swing states with partisan lean included
 let pollData = [
-    { state: 'Florida', electoralVotes: 30, harris: 43.4, trump: 47.8, partisanLean: -.7396878 }, // Leaning Republican
+    { state: 'Florida', electoralVotes: 30, harris: 44.1, trump: 48.7, partisanLean: -.7396878 }, // Leaning Republican
     { state: 'Pennsylvania', electoralVotes: 19, harris: 47.7, trump: 46, partisanLean: -.296776 }, // Leaning Democratic
     { state: 'Wisconsin', electoralVotes: 10, harris: 48.9, trump: 45.5, partisanLean: -.3839976 }, // Leaning Democratic
     { state: 'Michigan', electoralVotes: 15, harris: 48, trump: 44.6, partisanLean: -.1175974 }, // Leaning Democratic
