@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2024 US Presidential Election Forecast</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    <style>
+    @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@200;400;600;700;800&display=swap");
+    @import url("https://use.typekit.net/htk2wjy.css");
+        body {
+            font-family: JetBrains Mono, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        #mappyLogo {
+            width: 50px; /* Set Mappy width to 50 pixels */
+            height: auto; /* Maintain aspect ratio */
+            vertical-align: middle;
+        }
+        .tagline {
+        margin-top:-35px;
+        padding-bottom:25px;
+        font-size:14px;
+
+        }
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+        }
+        .results-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .results {
+            flex: 1 1 100%;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .results h2 {
+            margin-top: 0;
+        }
+        .results:nth-of-type(2),
+        .results:nth-of-type(3) {
+            flex: 1;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        svg {
+            width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
+        .state {
+            stroke: #000;
+            stroke-width: 0.5;
+        }
+        #last-updated {
+      	    font-family: JetBrains Mono, sans-serif;
+		}
+
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .results-container {
+                flex-direction: column;
+            }
+            .results:nth-of-type(1) {
+                margin-bottom: 20px; /* Add spacing between stacked items */
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <svg id="mappyLogo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <!-- Toilet Base -->
+                <rect x="8" y="40" width="48" height="12" fill="#ddd" stroke="#999" stroke-width="2"/>
+                <!-- Toilet Bowl -->
+                <rect x="16" y="20" width="32" height="20" rx="5" ry="5" fill="#ccc" stroke="#999" stroke-width="2"/>
+                <!-- Toilet Tank -->
+                <rect x="20" y="10" width="24" height="10" rx="4" ry="4" fill="#ccc" stroke="#999" stroke-width="2"/>
+                <!-- Toilet Lid -->
+                <rect x="22" y="8" width="20" height="4" rx="2" ry="2" fill="#eee" stroke="#999" stroke-width="2"/>
+                <!-- Flush Handle -->
+                <line x1="46" y1="12" x2="50" y2="16" stroke="#999" stroke-width="2"/>
+                <!-- Toilet Seat -->
+                <ellipse cx="32" cy="30" rx="16" ry="8" fill="#fff" stroke="#999" stroke-width="2"/>
+            </svg>
+            2024 US Presidential Election Forecast<br><div class="tagline" style="color:red;">Deluxe Edition</div>
+        </h1><br><div class="tagline"><li>Each page load runs and provides the average of 1000 electoral scenerios. Reload the page for a new set of scenerios.</li><li>Each scenerio is based on the current set of swing state polling data, provided by one of our sources.</li><li><span style="color:red;">Deluxe</span> incorporates FiveThirtyEight.com national polling average and state partisan lean.</li><li><span style="color:red;">Deluxe</span> considers status of Allan Lichtman's "13 Keys to the White House."</div>
+<center><div class="tagline" align="center" style="margin-top:30px;"><a href="index.html">Switch to Standard</a></div></center>
+        
+        <div class="results-container">
+            <div class="results">
+                <h2>Overall Chance of Winning the Electoral College</h2>
+                <center><p id="harrisChance">Kamala Harris: 0%</p>
+                <p id="trumpChance">Donald Trump: 0%</p></center>
+            </div>
+
+            <div class="results">
+                <h2>Electoral Votes</h2>
+                <p id="harrisVotes">Kamala Harris: 0 Electoral Votes</p>
+                <p id="trumpVotes">Donald Trump: 0 Electoral Votes</p>
+            </div>
+
+            <div class="results">
+                <h2>Odds of an upset are about the odds of...</h2>
+                <p id="upsetOdds">Comparison will be displayed here.</p>
+            </div>
+        </div>
+
+        <table id="pollTable">
+            <thead>
+                <tr>
+                    <th>State</th>
+                    <th>Electoral Votes</th>
+                    <th>Kamala Harris (D)</th>
+                    <th>Donald Trump (R)</th>
+                    <th>Simulated Winner</th>
+                </tr>
+            </thead>
+            <tbody id="pollBody">
+                <!-- Rows will be dynamically populated -->
+            </tbody>
+        </table>
+            <h2>Current State of Keys to the White House</h2>
+    <table id="keysTable">
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>State</th>
+            </tr>
+        </thead>
+        <tbody id="keysBody">
+            <!-- Rows will be dynamically populated -->
+        </tbody>
+    </table>
+    <div style="display:none;">
+            <button class="collapsible" onclick="toggleTable()" style="margin-top:30px;">Toggle Simulation Results</button>
+    <table id="simulationResults">
+        <thead>
+            <tr>
+                <th>Simulation #</th>
+                <th>Harris Electoral Votes</th>
+                <th>Trump Electoral Votes</th>
+            </tr>
+        </thead>
+        <tbody id="simulationBody">
+            <!-- Simulation results will be populated here -->
+        </tbody>
+    </table></div>
+
+    </div>
+                    <table id="credits" style="scale:75%;">
+        <tr>
+        <td>
+        <i>Swing states last updated <span id="update-date"></span></i><br><br>
+        Polling data sourced from FiveThirtyEight, <span style="color:green;">Nate Silver</span>, New York Times, and RealClearPolitics.<br>
+        Created by <a href="https://mastodon.social/@BrianHough">Brian Hough</a> & ChatGPT</td></tr></table>
+
+
+    <script src="swing.js"></script> 
+
+<script>
+const electionDate = new Date('2024-08-30'); // Election Day
+const today = new Date(); // Current Date
+const daysUntilElection = Math.max(0, (electionDate - today) / (1000 * 60 * 60 * 24)); // Days left
+
+// Electoral votes based on the 2020 election results for non-swing states
+const nonSwingStates = {
+    'Harris': 212, // States that went to Biden (Democrat)
+    'Trump': 126   // States that went to Trump (Republican)
+};
+
+const totalElectoralVotes = 538; // Total electoral votes available
+const flipChance = 0.029; // 2.9% chance of flipping
+const safeStateElectoralVotes = nonSwingStates.Harris + nonSwingStates.Trump; // Total safe state electoral votes
+
+const comparisons = [
+    { text: "drawing a specific card from a full deck of 52 cards", odds: 1 / 52 },
+    { text: "winning a small lottery prize", odds: 1 / 50 },
+    { text: "finding a $20 bill on the ground", odds: 1 / 50 },
+    { text: "hitting a hole-in-one in mini golf (trickier course)", odds: 1 / 50 },
+    { text: "winning a free ticket in a scratch-off lottery", odds: 1 / 20 },
+    { text: "making a successful free throw in basketball (average player)", odds: 1 / 10 },
+    { text: "correctly guessing a random 3-digit number", odds: 1 / 1000 },
+    { text: "scoring a goal in a non-professional soccer match", odds: 1 / 10 },
+    { text: "drawing a face card from a deck of 52 cards", odds: 3 / 52 },
+    { text: "hitting a bullseye in darts (intermediate player)", odds: 1 / 10 },
+    { text: "drawing a full house in Poker", odds: 1 / 40 },
+    { text: "hitting a home run in a baseball game (professional player)", odds: 1 / 20 },
+    { text: "flipping a coin and getting heads or tails (50/50)", odds: 1 / 2 },
+    { text: "a WNBA player making a three-point shot", odds: 1 / 3 },
+    { text: "getting a full house in Poker", odds: 1 / 40 },
+    { text: "finding a $100 bill on the ground", odds: 1 / 50 }
+];
+
+const weightingFactor = 0.15; // Adjust this value between 0 (no influence) and 1 (full influence)
+const keyWeightingFactor = 0.1; // Light weighting for keys
+
+// Define the Keys to the White House
+const keys = {
+    partyMandate: 0,
+    noPrimaryContest: 1, // True
+    incumbentSeekingReelection: 0,
+    noThirdParty: 1, // True
+    strongLongTermEconomy: 1, // True
+    strongShortTermEconomy: 1, // True
+    majorPolicyChange: 1,
+    noSocialUnrest: 1, // True
+    noScandal: 1,
+    noForeignMilitaryFailure: 0, // True
+    majorForeignMilitarySuccess: 0, // False
+    charismaticIncumbent: 0, // True
+    uncharismaticChallenger: 1 // True
+};
+
+// Calculate the total key score
+function calculateKeyScore() {
+    return Object.values(keys).reduce((total, keyValue) => total + keyValue, 0);
+}
+
+function populateKeysTable() {
+    const keysBody = document.getElementById('keysBody');
+    keysBody.innerHTML = ''; // Clear previous content
+
+    // Iterate through the keys and create table rows
+    for (const [key, value] of Object.entries(keys)) {
+        const row = document.createElement('tr');
+
+        const keyCell = document.createElement('td');
+        keyCell.textContent = key.replace(/([A-Z])/g, ' $1').trim(); // Format key name
+
+        const stateCell = document.createElement('td');
+        stateCell.textContent = value ? 'True' : 'False'; // Display True/False
+
+        row.appendChild(keyCell);
+        row.appendChild(stateCell);
+        keysBody.appendChild(row);
+    }
+}
+
+// Call this function to populate the keys table when the page loads
+populateKeysTable();
+
+const bounceStartDate = new Date('2024-08-22'); // Start of the convention bounce
+const bounceEndDate = new Date('2024-09-14'); // End of the convention bounce
+const bouncePercentage = 0.025; // 2.5% decrease
+
+function applyConventionBounce(state) {
+    const today = new Date();
+    
+    if (today >= bounceStartDate && today <= bounceEndDate) {
+        // Calculate the number of days since the bounce started
+        const daysSinceBounceStart = Math.floor((today - bounceStartDate) / (1000 * 60 * 60 * 24));
+        
+        // Calculate the fade effect based on the number of days
+        const fadeFactor = Math.max(0, (bounceEndDate - today) / (bounceEndDate - bounceStartDate));
+        
+        // Apply the bounce effect (decrease)
+        state.harris -= bouncePercentage * fadeFactor; // Decrease Harris's polling percentage
+    }
+}
+
+function loadPollingData(csvFile) {
+    fetch(csvFile)
+        .then(response => response.text())
+        .then(data => {
+            Papa.parse(data, {
+                header: true,
+                complete: function(results) {
+                    processPollingData(results.data);
+                }
+            });
+        })
+        .catch(error => console.error('Error loading CSV:', error));
+}
+
+function processPollingData(pollDataCSV) {
+    const candidateTotals = {};
+    const candidateCounts = {};
+
+    // Iterate through the parsed data
+    pollDataCSV.forEach(row => {
+        const candidateName = row.candidate_name;
+        const pct = parseFloat(row.pct);
+
+        if (!isNaN(pct)) {
+            // Initialize totals and counts for each candidate
+            if (!candidateTotals[candidateName]) {
+                candidateTotals[candidateName] = 0;
+                candidateCounts[candidateName] = 0;
+            }
+
+            // Accumulate totals and counts
+            candidateTotals[candidateName] += pct;
+            candidateCounts[candidateName] += 1;
+        }
+    });
+
+    // Calculate averages
+    const candidateAverages = {};
+    for (const candidate in candidateTotals) {
+        candidateAverages[candidate] = candidateTotals[candidate] / candidateCounts[candidate];
+    }
+
+    // Update pollData with averages
+    updatePollDataWithAverages(candidateAverages);
+}
+
+function updatePollDataWithAverages(averages) {
+    // Update the pollData array with the averages, applying the weighting factor
+    pollData.forEach(state => {
+        if (averages['Kamala Harris']) {
+            // Blend the original value with the new average based on the weighting factor
+            state.harris = (state.harris * (1 - weightingFactor)) + (averages['Kamala Harris'] * weightingFactor);
+        }
+        if (averages['Donald Trump']) {
+            // Blend the original value with the new average based on the weighting factor
+            state.trump = (state.trump * (1 - weightingFactor)) + (averages['Donald Trump'] * weightingFactor);
+        }
+
+        // Apply the convention bounce effect
+        applyConventionBounce(state);
+
+        // Apply partisan lean adjustment
+        const partisanLean = state.partisanLean || 0; // Use the partisan lean value from the state
+        state.harris += partisanLean; // Adjust Harris's percentage
+        state.trump -= partisanLean; // Adjust Trump's percentage
+    });
+
+    // Run the simulation after updating the polling data
+    runSimulation();
+}
+
+function runSimulation() {
+    const simulations = 1000; // Number of simulations
+    let harrisTotalVotes = 0;
+    let trumpTotalVotes = 0;
+
+    // Calculate the key score
+    const keyScore = calculateKeyScore();
+    const weightedKeyImpact = keyScore * keyWeightingFactor;
+
+    // Initialize win counters for each state
+    const stateWins = pollData.map(state => ({
+        state: state.state,
+        harrisWins: 0,
+        trumpWins: 0
+    }));
+
+    // Clear previous simulation results
+    const simulationBody = document.getElementById('simulationBody');
+    simulationBody.innerHTML = '';
+
+    for (let i = 0; i < simulations; i++) {
+        // Reset votes for each simulation
+        let harrisVotes = nonSwingStates.Harris + weightedKeyImpact; // Add weighted key impact
+        let trumpVotes = nonSwingStates.Trump;
+
+        // Loop through each swing state to determine the winner and accumulate electoral votes
+        pollData.forEach(state => {
+            let adjustedHarris = state.harris;
+            let adjustedTrump = state.trump;
+
+            // Simulate possible fluctuations based on time left until Election Day
+            const maxFluctuation = 8; // Max percentage fluctuation
+            const minFluctuation = 2; // Min percentage fluctuation
+            const fluctuationRange = maxFluctuation - minFluctuation;
+            const uncertaintyFactor = Math.min(1, daysUntilElection / 365); // 1 year = 365 days
+
+            // Randomly adjust the poll numbers based on the time left until Election Day
+            const fluctuation = Math.random() * fluctuationRange + minFluctuation;
+            const harrisFluctuation = (Math.random() < 0.5 ? -1 : 1) * fluctuation * uncertaintyFactor;
+            const trumpFluctuation = (Math.random() < 0.5 ? -1 : 1) * fluctuation * uncertaintyFactor;
+
+            adjustedHarris = Math.min(100, Math.max(0, adjustedHarris + harrisFluctuation));
+            adjustedTrump = Math.min(100, Math.max(0, adjustedTrump + trumpFluctuation));
+
+            if (adjustedHarris > adjustedTrump) {
+                harrisVotes += state.electoralVotes;
+                stateWins.find(s => s.state === state.state).harrisWins++;
+            } else {
+                trumpVotes += state.electoralVotes;
+                stateWins.find(s => s.state === state.state).trumpWins++;
+            }
+        });
+
+        // Adjust the votes to ensure they sum to 538
+        const totalVotes = harrisVotes + trumpVotes;
+        const adjustmentFactor = totalElectoralVotes / totalVotes;
+
+        harrisVotes = Math.round(harrisVotes * adjustmentFactor);
+        trumpVotes = Math.round(trumpVotes * adjustmentFactor);
+
+        // Ensure the total is exactly 538 by adjusting the larger candidate's votes
+        const totalAdjustedVotes = harrisVotes + trumpVotes;
+        if (totalAdjustedVotes !== totalElectoralVotes) {
+            if (harrisVotes > trumpVotes) {
+                harrisVotes += (totalElectoralVotes - totalAdjustedVotes);
+            } else {
+                trumpVotes += (totalElectoralVotes - totalAdjustedVotes);
+            }
+        }
+
+        // Factor in the chance of flipping safe states
+        if (Math.random() < flipChance) {
+            // Randomly choose to flip the total safe state votes
+            if (Math.random() < 0.5) { // 50% chance to flip to Trump
+                harrisVotes -= safeStateElectoralVotes;
+                trumpVotes += safeStateElectoralVotes;
+            } else { // 50% chance to flip to Harris
+                trumpVotes -= safeStateElectoralVotes;
+                harrisVotes += safeStateElectoralVotes;
+            }
+        }
+
+        // Accumulate the results
+        harrisTotalVotes += harrisVotes;
+        trumpTotalVotes += trumpVotes;
+
+        // Add the results of this simulation to the table
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${i + 1}</td><td>${harrisVotes}</td><td>${trumpVotes}</td>`;
+        simulationBody.appendChild(row);
+    }
+
+    // Calculate percentages and update the table
+    stateWins.forEach(stateWin => {
+        const totalSimulations = simulations;
+        const harrisWinPercentage = (stateWin.harrisWins / totalSimulations * 100).toFixed(2);
+        const trumpWinPercentage = (stateWin.trumpWins / totalSimulations * 100).toFixed(2);
+        const winnerCell = document.getElementById(stateWin.state);
+        winnerCell.textContent = `Kamala Harris ${harrisWinPercentage}% of simulations, Donald Trump ${trumpWinPercentage}% of simulations`;
+
+        // Change cell color based on who won more times
+        if (stateWin.harrisWins > stateWin.trumpWins) {
+            winnerCell.style.backgroundColor = "#0037ba"; // Blue for Kamala Harris
+            winnerCell.style.color = "white"; // White font color
+        } else if (stateWin.trumpWins > stateWin.harrisWins) {
+            winnerCell.style.backgroundColor = "#870707"; // Red for Donald Trump
+            winnerCell.style.color = "white"; // White font color
+        } else {
+            winnerCell.style.backgroundColor = ""; // Reset color if tied
+            winnerCell.style.color = ""; // Reset color if tied
+        }
+    });
+
+    // Calculate averages
+    const averageHarrisVotes = harrisTotalVotes / simulations;
+    const averageTrumpVotes = trumpTotalVotes / simulations;
+
+    // Display the results
+    document.getElementById('harrisVotes').textContent = `Kamala Harris: ${averageHarrisVotes.toFixed(0)} Electoral Votes (Average)`;
+    document.getElementById('trumpVotes').textContent = `Donald Trump: ${averageTrumpVotes.toFixed(0)} Electoral Votes (Average)`;
+
+    // Calculate and display win probabilities
+    calculateWinProbability(averageHarrisVotes, averageTrumpVotes);
+
+    // Calculate and display upset odds
+    determineUpsetOdds(averageHarrisVotes, averageTrumpVotes);
+}
+
+function calculateWinProbability(harrisVotes, trumpVotes) {
+    let harrisChance = (harrisVotes / totalElectoralVotes) * 100;
+    let trumpChance = (trumpVotes / totalElectoralVotes) * 100;
+
+    // Adjust the probabilities so they add up to 100%
+    const totalChance = harrisChance + trumpChance;
+    harrisChance = (harrisChance / totalChance) * 100;
+    trumpChance = (trumpChance / totalChance) * 100;
+
+    document.getElementById('harrisChance').textContent = `Kamala Harris: ${harrisChance.toFixed(2)}%`;
+    document.getElementById('trumpChance').textContent = `Donald Trump: ${trumpChance.toFixed(2)}%`;
+}
+
+function determineUpsetOdds(harrisVotes, trumpVotes) {
+    const upsetChance = Math.min(harrisVotes, trumpVotes) / totalElectoralVotes * 100;
+
+    let closestComparison = comparisons.reduce((prev, curr) => {
+        return (Math.abs(curr.odds * 100 - upsetChance) < Math.abs(prev.odds * 100 - upsetChance) ? curr : prev);
+    });
+
+    document.getElementById('upsetOdds').textContent = `Odds of an upset are about the odds of ${closestComparison.text}.`;
+}
+
+// Add this function to toggle the visibility of the simulation results table
+function toggleTable() {
+    const table = document.getElementById('simulationResults');
+    if (table.style.display === 'none') {
+        table.style.display = 'table'; // Show the table
+    } else {
+        table.style.display = 'none'; // Hide the table
+    }
+}
+
+// Populate the table with initial data
+function populateTable() {
+    const pollBody = document.getElementById('pollBody');
+
+    pollData.forEach(state => {
+        const row = document.createElement('tr');
+
+        const stateCell = document.createElement('td');
+        stateCell.textContent = state.state;
+
+        const electoralVotesCell = document.createElement('td');
+        electoralVotesCell.textContent = state.electoralVotes;
+
+        const harrisCell = document.createElement('td');
+        harrisCell.textContent = `${state.harris}%`; // Unadjusted percentage
+
+        const trumpCell = document.createElement('td');
+        trumpCell.textContent = `${state.trump}%`; // Unadjusted percentage
+
+        const winnerCell = document.createElement('td');
+        winnerCell.id = state.state; // Set ID for winner display
+
+        // Apply partisan lean to the display for simulations only
+        const partisanLean = state.partisanLean || 0; // Use the partisan lean value from the state
+        const adjustedHarris = (state.harris + partisanLean).toFixed(2);
+        const adjustedTrump = (state.trump - partisanLean).toFixed(2);
+
+        row.appendChild(stateCell);
+        row.appendChild(electoralVotesCell);
+        row.appendChild(harrisCell);
+        row.appendChild(trumpCell);
+        row.appendChild(winnerCell);
+
+        pollBody.appendChild(row);
+    });
+}
+
+// Initialize the page
+populateTable();
+loadPollingData('https://projects.fivethirtyeight.com/polls/data/president_polls.csv'); // Update with the correct path to your CSV
+</script>
+
+
+
+
+</body>
+</html>
