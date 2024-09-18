@@ -7,7 +7,7 @@ let pollData = [
     { state: 'Arizona', electoralVotes: 11, harris: 47.3, trump: 47.6, partisanLean: -.7171309 },
     { state: 'Georgia', electoralVotes: 16, harris: 47.0, trump: 47.5, partisanLean: -.7357549 },
     { state: 'Nevada', electoralVotes: 6, harris: 48.1, trump: 47.2, partisanLean: -.259005 },
-    { state: 'North Carolina', electoralVotes: 15, harris: 48.1, trump: 47.7, partisanLean: -.4815506 }
+    { state: 'North Carolina', electoralVotes: 15, harris: 48.1, trump: 47.8, partisanLean: -.4815506 }
 ]
 
 // Function to fetch the last modified date of the JavaScript file
