@@ -1,13 +1,13 @@
 // Backend-like data storage for swing states with partisan lean included
 let pollData = [
-    { state: 'Florida', electoralVotes: 30, harris: 46.6, trump: 50.3, partisanLean: -.7396878 },
-    { state: 'Pennsylvania', electoralVotes: 19, harris: 49.3, trump: 47.5, partisanLean: -.296776 },
-    { state: 'Wisconsin', electoralVotes: 10, harris: 49.6, trump: 47.8, partisanLean: -.3839976 },
-    { state: 'Michigan', electoralVotes: 15, harris: 50, trump: 47.1, partisanLean: -.1175974 },
-    { state: 'Arizona', electoralVotes: 11, harris: 48, trump: 48, partisanLean: -.7171309 },
-    { state: 'Georgia', electoralVotes: 16, harris: 47.3, trump: 48.5, partisanLean: -.7357549 },
-    { state: 'Nevada', electoralVotes: 6, harris: 49.1, trump: 47.6, partisanLean: -.259005 },
-    { state: 'North Carolina', electoralVotes: 15, harris: 48.1, trump: 47.9, partisanLean: -.4815506 }
+    { state: 'Florida', electoralVotes: 30, harris: 46.3, trump: 50.1, partisanLean: -.7396878 },
+    { state: 'Pennsylvania', electoralVotes: 19, harris: 49.1, trump: 47.6, partisanLean: -.296776 },
+    { state: 'Wisconsin', electoralVotes: 10, harris: 50, trump: 47.5, partisanLean: -.3839976 },
+    { state: 'Michigan', electoralVotes: 15, harris: 49.6, trump: 47.8, partisanLean: -.1175974 },
+    { state: 'Arizona', electoralVotes: 11, harris: 47.1, trump: 48.4, partisanLean: -.7171309 },
+    { state: 'Georgia', electoralVotes: 16, harris: 46.9, trump: 48.4, partisanLean: -.7357549 },
+    { state: 'Nevada', electoralVotes: 6, harris: 48.9, trump: 47.5, partisanLean: -.259005 },
+    { state: 'North Carolina', electoralVotes: 15, harris: 47.4, trump: 48.1, partisanLean: -.4815506 }
 ]
 
 // Function to fetch the last modified date of the JavaScript file
