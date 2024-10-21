@@ -246,23 +246,23 @@
 function updateNeedlePosition(harrisPercent, trumpPercent) {
     const needle = document.getElementById('needle');
     
-    // Determine percentage for Harris and Trump
-    let harrisChance = harrisPercent;
-    let trumpChance = trumpPercent;
+    // Calculate the difference between Harris and Trump percentages
+    const margin = harrisPercent - trumpPercent;
 
-    // Calculate the range and set rotation in degrees based on which range the value falls into
+    // Initialize rotation degrees (negative is to the left, positive to the right)
     let rotationDeg = 0;
 
-    if (harrisChance >= 80) {
+    // Determine the needle's rotation based on the margin between Harris and Trump
+    if (margin >= 30) {
         rotationDeg = -60; // Tilt D
-    } else if (harrisChance >= 70) {
+    } else if (margin >= 20) {
         rotationDeg = -30; // Lean D
-    } else if (harrisChance >= 50) {
-        rotationDeg = 0;   // Tossup
-    } else if (trumpChance >= 70) {
-        rotationDeg = 30;  // Lean R
-    } else if (trumpChance >= 80) {
-        rotationDeg = 60;  // Tilt R
+    } else if (margin >= -10 && margin <= 10) {
+        rotationDeg = 0; // Tossup
+    } else if (margin <= -20) {
+        rotationDeg = 30; // Lean R
+    } else if (margin <= -30) {
+        rotationDeg = 60; // Tilt R
     }
 
     // Update the needle's rotation
