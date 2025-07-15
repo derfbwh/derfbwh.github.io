@@ -128,7 +128,18 @@
                     // Group all data readings by day
                     const dailyData = {};
                     rawData.forEach(entry => {
-                        const date = startOfDay(new Date(entry.date));
+                        // FIX: The date format "YYYY-MM-DD HH:MM:SS" is not consistently parsed.
+                        // Replacing the space with a 'T' converts it to the standard ISO 8601
+                        // format "YYYY-MM-DDTHH:MM:SS" which is universally understood.
+                        const parsableDateString = entry.date.replace(' ', 'T');
+                        const date = startOfDay(new Date(parsableDateString));
+                        
+                        // Check if the date is valid before proceeding
+                        if (isNaN(date)) {
+                            console.warn(`Skipping invalid date format: ${entry.date}`);
+                            return; // Skip this entry
+                        }
+
                         const dateString = date.toISOString().split('T')[0];
                         
                         if (!dailyData[dateString]) {
@@ -159,7 +170,7 @@
                     const highTempData = [];
                     const lowTempData = [];
                     const avgHumidityData = [];
-                    const today = rawData.length > 0 ? startOfDay(new Date(rawData[0].date)) : startOfDay(new Date());
+                    const today = rawData.length > 0 ? startOfDay(new Date(rawData[0].date.replace(' ', 'T'))) : startOfDay(new Date());
 
                     for (let i = 6; i >= 0; i--) {
                         const date = subDays(today, i);
