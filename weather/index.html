@@ -66,18 +66,43 @@
     </div>
 
     <script>
-        // This function will contain all the logic for the dashboard.
-        // It will be called by the `onload` event of the date-fns script tag.
-        function initializeDashboard() {
+        document.addEventListener('DOMContentLoaded', function () {
             
-            // Check if the date-fns library loaded correctly
-            if (typeof dateFns === 'undefined') {
-                handleScriptError();
-                return; // Stop execution if the library is missing
+            // --- VANILLA JAVASCRIPT DATE HELPERS ---
+            // Replaces the need for the external date-fns library.
+
+            /**
+             * Returns the start of a day for the given date.
+             * @param {Date} date - The original date.
+             * @returns {Date} - A new Date object set to the beginning of the day.
+             */
+            function startOfDay(date) {
+                const newDate = new Date(date);
+                newDate.setHours(0, 0, 0, 0);
+                return newDate;
             }
 
-            // Destructure the functions we need from the dateFns object for cleaner code
-            const { startOfDay, subDays, format } = dateFns;
+            /**
+             * Subtracts a number of days from a date.
+             * @param {Date} date - The original date.
+             * @param {number} amount - The number of days to subtract.
+             * @returns {Date} - A new Date object representing the result.
+             */
+            function subDays(date, amount) {
+                const newDate = new Date(date);
+                newDate.setDate(newDate.getDate() - amount);
+                return newDate;
+            }
+
+            /**
+             * Formats a date into a short weekday string (e.g., "Mon").
+             * @param {Date} date - The date to format.
+             * @returns {string} - The abbreviated weekday name.
+             */
+            function formatToShortDay(date) {
+                return date.toLocaleDateString('en-US', { weekday: 'short' });
+            }
+
 
             // This async function fetches and processes the data
             async function loadAndProcessData() {
@@ -128,7 +153,7 @@
                         const date = subDays(today, i);
                         const dateString = date.toISOString().split('T')[0];
                         
-                        chartLabels.push(format(date, 'EEE'));
+                        chartLabels.push(formatToShortDay(date));
                         
                         chartData.push(dailyAverages[dateString] ? dailyAverages[dateString].toFixed(1) : null);
                     }
@@ -219,19 +244,8 @@
 
             // Initial load
             loadAndProcessData();
-        }
-
-        // This function handles the case where the date-fns script fails to load.
-        function handleScriptError() {
-            const errorMsg = 'Error: A required library (date-fns) failed to load. Please check your internet connection and refresh.';
-            console.error(errorMsg);
-            document.getElementById('loading-message').textContent = errorMsg;
-        }
+        });
     </script>
     
-    <!-- FIX: The `onload` attribute calls `initializeDashboard` only after this script has loaded successfully. -->
-    <!-- The `onerror` attribute calls our error handler if the script fails to load. -->
-    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/cdn.min.js" onload="initializeDashboard()" onerror="handleScriptError()"></script>
-
 </body>
 </html>
