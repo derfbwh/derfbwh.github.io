@@ -8,8 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for creating charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- date-fns for easier date manipulation -->
-    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/cdn.min.js"></script>
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,19 +65,29 @@
         </div>
     </div>
 
+    <!-- FIX: Moved date-fns script here to ensure it loads before our main script that uses it. -->
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/cdn.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             
+            // Check if the date-fns library loaded correctly
+            if (typeof dateFns === 'undefined') {
+                const errorMsg = 'Error: A required library (date-fns) failed to load. Please check your internet connection and refresh.';
+                console.error(errorMsg);
+                document.getElementById('loading-message').textContent = errorMsg;
+                return; // Stop execution
+            }
+
+            // Destructure the functions we need from the dateFns object for cleaner code
+            const { startOfDay, subDays, format } = dateFns;
+
             // This async function fetches and processes the data
             async function loadAndProcessData() {
                 try {
-                    // FIX #1: Construct a full URL to the JSON file. This is more reliable than
-                    // a relative path like './' when deployed on services like GitHub Pages.
                     const jsonURL = new URL('weather_data.json', window.location.href);
                     const response = await fetch(jsonURL);
 
                     if (!response.ok) {
-                        // If the file isn't found (404), it's likely the repository is private.
                         if (response.status === 404) {
                              throw new Error(`File not found. Is your GitHub repository set to "Public"?`);
                         }
@@ -89,20 +97,16 @@
                     
                     // --- DATA PROCESSING ---
 
-                    // 1. Set the current temperature from the most recent entry
                     if (rawData && rawData.length > 0) {
-                        // FIX #2: The data is sorted with the newest entry at the top (index 0).
                         const latestEntry = rawData[0];
                         const latestTemp = parseFloat(latestEntry.temperature).toFixed(1);
                         document.getElementById('current-temp').textContent = latestTemp;
                     }
 
-                    // 2. Group temperatures by day
                     const dailyTemperatures = {};
                     rawData.forEach(entry => {
-                        // Use date-fns to reliably parse and format the date
-                        const date = dateFns.startOfDay(new Date(entry.date));
-                        const dateString = date.toISOString().split('T')[0]; // Use YYYY-MM-DD as key
+                        const date = startOfDay(new Date(entry.date));
+                        const dateString = date.toISOString().split('T')[0];
                         
                         if (!dailyTemperatures[dateString]) {
                             dailyTemperatures[dateString] = [];
@@ -110,7 +114,6 @@
                         dailyTemperatures[dateString].push(parseFloat(entry.temperature));
                     });
 
-                    // 3. Calculate the average temperature for each day
                     const dailyAverages = {};
                     for (const dateString in dailyTemperatures) {
                         const temps = dailyTemperatures[dateString];
@@ -119,19 +122,16 @@
                         dailyAverages[dateString] = avg;
                     }
 
-                    // 4. Prepare data for the last 7 days for the chart
                     const chartLabels = [];
                     const chartData = [];
-                    // Use the date of the latest data point as the reference for "today"
-                    const today = rawData.length > 0 ? dateFns.startOfDay(new Date(rawData[0].date)) : dateFns.startOfDay(new Date());
+                    const today = rawData.length > 0 ? startOfDay(new Date(rawData[0].date)) : startOfDay(new Date());
 
                     for (let i = 6; i >= 0; i--) {
-                        const date = dateFns.subDays(today, i);
+                        const date = subDays(today, i);
                         const dateString = date.toISOString().split('T')[0];
                         
-                        chartLabels.push(dateFns.format(date, 'EEE')); // Format as "Mon", "Tue", etc.
+                        chartLabels.push(format(date, 'EEE'));
                         
-                        // Use the calculated average, or null if no data for that day
                         chartData.push(dailyAverages[dateString] ? dailyAverages[dateString].toFixed(1) : null);
                     }
 
@@ -146,7 +146,6 @@
             }
 
             function renderTemperatureChart(labels, data) {
-                // Destroy existing chart instance if it exists to prevent conflicts
                 const chartCanvas = document.getElementById('temperatureChart');
                 const existingChart = Chart.getChart(chartCanvas);
                 if (existingChart) {
@@ -195,7 +194,7 @@
                             }
                         }
                     },
-                    spanGaps: true // This will make the line connect over days with no data
+                    spanGaps: true
                 };
 
                 const tempCtx = chartCanvas.getContext('2d');
