@@ -1,5 +1,11 @@
 [
   {
+    "date": "Timestamp",
+    "temperature": "CurrentTemp",
+    "humidity": "CurrentHumidity",
+    "pressure": null
+  },
+  {
     "date": "2025-07-15 12:00:28",
     "temperature": "89.53",
     "humidity": "60",
