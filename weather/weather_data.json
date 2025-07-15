@@ -1,38 +1,8 @@
 [
   {
     "date": "Timestamp",
-    "temperature": "CurrentTemp",
-    "humidity": "CurrentHumidity",
-    "pressure": null
-  },
-  {
-    "date": "Timestamp",
-    "temperature": "CurrentTemp",
-    "humidity": "CurrentHumidity",
-    "pressure": null
-  },
-  {
-    "date": "Timestamp",
-    "temperature": "CurrentTemp",
-    "humidity": "CurrentHumidity",
-    "pressure": null
-  },
-  {
-    "date": "Timestamp",
-    "temperature": "CurrentTemp",
-    "humidity": "CurrentHumidity",
-    "pressure": null
-  },
-  {
-    "date": "Timestamp",
-    "temperature": "CurrentTemp",
-    "humidity": "CurrentHumidity",
-    "pressure": null
-  },
-  {
-    "date": "2025-07-15 12:00:28",
-    "temperature": "89.53",
-    "humidity": "60",
+    "temperature": "34.66°C",
+    "humidity": "49.71",
     "pressure": null
   },
   {
