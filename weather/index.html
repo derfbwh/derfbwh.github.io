@@ -73,7 +73,10 @@
             // This async function fetches and processes the data
             async function loadAndProcessData() {
                 try {
-                    const response = await fetch('weather_data.json');
+                    // FIX: Use a more explicit relative path './' to ensure the browser 
+                    // looks in the current directory. This is more reliable on web servers
+                    // like GitHub Pages.
+                    const response = await fetch('./weather_data.json');
                     if (!response.ok) {
                         throw new Error(`Network response was not ok: ${response.statusText}`);
                     }
@@ -83,7 +86,9 @@
 
                     // 1. Set the current temperature from the most recent entry
                     if (rawData && rawData.length > 0) {
-                        const latestTemp = parseFloat(rawData[0].temperature).toFixed(1);
+                        // The data is sorted oldest to newest, so get the last item.
+                        const latestEntry = rawData[rawData.length - 1];
+                        const latestTemp = parseFloat(latestEntry.temperature).toFixed(1);
                         document.getElementById('current-temp').textContent = latestTemp;
                     }
 
@@ -119,7 +124,7 @@
                         
                         chartLabels.push(dateFns.format(date, 'EEE')); // Format as "Mon", "Tue", etc.
                         
-                        // Use the calculated average, or 0 if no data for that day
+                        // Use the calculated average, or null if no data for that day
                         chartData.push(dailyAverages[dateString] ? dailyAverages[dateString].toFixed(1) : null);
                     }
 
@@ -129,7 +134,7 @@
 
                 } catch (error) {
                     console.error('Failed to load or process weather data:', error);
-                    document.getElementById('loading-message').textContent = 'Error: Could not load weather_data.json. Make sure the file is in the same directory.';
+                    document.getElementById('loading-message').textContent = 'Error: Could not load weather_data.json. Make sure the file is in the same directory and the repository is public.';
                 }
             }
 
