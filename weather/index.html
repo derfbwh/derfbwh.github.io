@@ -49,7 +49,8 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <h2 class="text-xl font-semibold text-white">Temperature</h2>
-                        <p class="text-gray-400">Last 7 days (Daily Average)</p>
+                        <!-- Subtitle updated to reflect the new chart data -->
+                        <p id="temperature-card-subtitle" class="text-gray-400">Last 7 Days (High & Low)</p>
                     </div>
                     <div class="text-right">
                          <p class="text-3xl font-bold text-white" id="current-temp">-</p>
@@ -69,40 +70,21 @@
         document.addEventListener('DOMContentLoaded', function () {
             
             // --- VANILLA JAVASCRIPT DATE HELPERS ---
-            // Replaces the need for the external date-fns library.
-
-            /**
-             * Returns the start of a day for the given date.
-             * @param {Date} date - The original date.
-             * @returns {Date} - A new Date object set to the beginning of the day.
-             */
             function startOfDay(date) {
                 const newDate = new Date(date);
                 newDate.setHours(0, 0, 0, 0);
                 return newDate;
             }
 
-            /**
-             * Subtracts a number of days from a date.
-             * @param {Date} date - The original date.
-             * @param {number} amount - The number of days to subtract.
-             * @returns {Date} - A new Date object representing the result.
-             */
             function subDays(date, amount) {
                 const newDate = new Date(date);
                 newDate.setDate(newDate.getDate() - amount);
                 return newDate;
             }
 
-            /**
-             * Formats a date into a short weekday string (e.g., "Mon").
-             * @param {Date} date - The date to format.
-             * @returns {string} - The abbreviated weekday name.
-             */
             function formatToShortDay(date) {
                 return date.toLocaleDateString('en-US', { weekday: 'short' });
             }
-
 
             // This async function fetches and processes the data
             async function loadAndProcessData() {
@@ -126,27 +108,32 @@
                         document.getElementById('current-temp').textContent = latestTemp;
                     }
 
-                    const dailyTemperatures = {};
+                    // Group all temperature readings by day
+                    const dailyData = {};
                     rawData.forEach(entry => {
                         const date = startOfDay(new Date(entry.date));
                         const dateString = date.toISOString().split('T')[0];
                         
-                        if (!dailyTemperatures[dateString]) {
-                            dailyTemperatures[dateString] = [];
+                        if (!dailyData[dateString]) {
+                            dailyData[dateString] = [];
                         }
-                        dailyTemperatures[dateString].push(parseFloat(entry.temperature));
+                        dailyData[dateString].push(parseFloat(entry.temperature));
                     });
 
-                    const dailyAverages = {};
-                    for (const dateString in dailyTemperatures) {
-                        const temps = dailyTemperatures[dateString];
-                        const sum = temps.reduce((a, b) => a + b, 0);
-                        const avg = sum / temps.length;
-                        dailyAverages[dateString] = avg;
+                    // Find the min and max temperature for each day
+                    const dailyHighsAndLows = {};
+                    for (const dateString in dailyData) {
+                        const temps = dailyData[dateString];
+                        dailyHighsAndLows[dateString] = {
+                            high: Math.max(...temps),
+                            low: Math.min(...temps)
+                        };
                     }
 
+                    // Prepare the data arrays for the chart
                     const chartLabels = [];
-                    const chartData = [];
+                    const highData = [];
+                    const lowData = [];
                     const today = rawData.length > 0 ? startOfDay(new Date(rawData[0].date)) : startOfDay(new Date());
 
                     for (let i = 6; i >= 0; i--) {
@@ -155,11 +142,18 @@
                         
                         chartLabels.push(formatToShortDay(date));
                         
-                        chartData.push(dailyAverages[dateString] ? dailyAverages[dateString].toFixed(1) : null);
+                        if (dailyHighsAndLows[dateString]) {
+                            highData.push(dailyHighsAndLows[dateString].high.toFixed(1));
+                            lowData.push(dailyHighsAndLows[dateString].low.toFixed(1));
+                        } else {
+                            // If there's no data for a day, push null
+                            highData.push(null);
+                            lowData.push(null);
+                        }
                     }
 
                     // --- RENDER CHART ---
-                    renderTemperatureChart(chartLabels, chartData);
+                    renderTemperatureChart(chartLabels, highData, lowData);
                     document.getElementById('loading-message').style.display = 'none';
 
                 } catch (error) {
@@ -168,7 +162,7 @@
                 }
             }
 
-            function renderTemperatureChart(labels, data) {
+            function renderTemperatureChart(labels, highs, lows) {
                 const chartCanvas = document.getElementById('temperatureChart');
                 const existingChart = Chart.getChart(chartCanvas);
                 if (existingChart) {
@@ -179,7 +173,13 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false },
+                        // Display the legend to identify High and Low lines
+                        legend: { 
+                            display: true,
+                            labels: {
+                                color: '#9ca3af' // Legend text color
+                            }
+                        },
                         tooltip: {
                             mode: 'index',
                             intersect: false,
@@ -225,18 +225,32 @@
                     type: 'line',
                     data: {
                         labels: labels,
-                        datasets: [{
-                            label: 'Avg Temperature',
-                            data: data,
-                            borderColor: '#f87171',
-                            backgroundColor: 'rgba(248, 113, 113, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: '#f87171',
-                            pointBorderColor: '#fff',
-                            pointHoverRadius: 7,
-                            pointRadius: 5,
-                        }]
+                        datasets: [
+                            {
+                                label: 'High',
+                                data: highs,
+                                borderColor: '#f87171', // Red for high temps
+                                backgroundColor: 'rgba(248, 113, 113, 0.1)',
+                                fill: false, // We only fill the area between high and low
+                                tension: 0.4,
+                                pointBackgroundColor: '#f87171',
+                                pointBorderColor: '#fff',
+                                pointHoverRadius: 7,
+                                pointRadius: 5,
+                            },
+                            {
+                                label: 'Low',
+                                data: lows,
+                                borderColor: '#60a5fa', // Blue for low temps
+                                backgroundColor: 'rgba(96, 165, 250, 0.2)',
+                                fill: '+1', // Fill the area up to the dataset above (the 'High' line)
+                                tension: 0.4,
+                                pointBackgroundColor: '#60a5fa',
+                                pointBorderColor: '#fff',
+                                pointHoverRadius: 7,
+                                pointRadius: 5,
+                            }
+                        ]
                     },
                     options: chartOptions
                 });
