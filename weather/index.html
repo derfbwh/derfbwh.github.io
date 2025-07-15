@@ -34,22 +34,21 @@
 </head>
 <body class="p-4 sm:p-6 lg:p-8">
 
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <header class="mb-8">
             <h1 class="text-3xl font-bold text-white">7-Day Weather Dashboard</h1>
             <p class="text-gray-400 mt-1">Visualizing data from your EVE Weather station.</p>
         </header>
 
-        <!-- Dashboard Grid -->
-        <div class="grid grid-cols-1 gap-8">
+        <!-- Dashboard Grid - Updated to a 2-column layout on medium screens and up -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
             <!-- Temperature Card -->
             <div class="card">
                 <div class="flex justify-between items-start">
                     <div>
                         <h2 class="text-xl font-semibold text-white">Temperature</h2>
-                        <!-- Subtitle updated to reflect the new chart data -->
                         <p id="temperature-card-subtitle" class="text-gray-400">Last 7 Days (High & Low)</p>
                     </div>
                     <div class="text-right">
@@ -60,7 +59,25 @@
                 <div class="chart-container mt-4">
                     <canvas id="temperatureChart"></canvas>
                 </div>
-                 <p id="loading-message" class="text-center text-gray-400 mt-4">Loading data...</p>
+                 <p id="loading-message-temp" class="text-center text-gray-400 mt-4">Loading data...</p>
+            </div>
+
+            <!-- Humidity Card -->
+            <div class="card">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h2 class="text-xl font-semibold text-white">Humidity</h2>
+                        <p class="text-gray-400">Last 7 Days (Daily Average)</p>
+                    </div>
+                    <div class="text-right">
+                         <p class="text-3xl font-bold text-white" id="current-humidity">-</p>
+                         <p class="text-gray-400">%</p>
+                    </div>
+                </div>
+                <div class="chart-container mt-4">
+                    <canvas id="humidityChart"></canvas>
+                </div>
+                 <p id="loading-message-humidity" class="text-center text-gray-400 mt-4">Loading data...</p>
             </div>
 
         </div>
@@ -104,36 +121,44 @@
 
                     if (rawData && rawData.length > 0) {
                         const latestEntry = rawData[0];
-                        const latestTemp = parseFloat(latestEntry.temperature).toFixed(1);
-                        document.getElementById('current-temp').textContent = latestTemp;
+                        document.getElementById('current-temp').textContent = parseFloat(latestEntry.temperature).toFixed(1);
+                        document.getElementById('current-humidity').textContent = parseFloat(latestEntry.humidity).toFixed(0);
                     }
 
-                    // Group all temperature readings by day
+                    // Group all data readings by day
                     const dailyData = {};
                     rawData.forEach(entry => {
                         const date = startOfDay(new Date(entry.date));
                         const dateString = date.toISOString().split('T')[0];
                         
                         if (!dailyData[dateString]) {
-                            dailyData[dateString] = [];
+                            dailyData[dateString] = { temps: [], humidities: [] };
                         }
-                        dailyData[dateString].push(parseFloat(entry.temperature));
+                        dailyData[dateString].temps.push(parseFloat(entry.temperature));
+                        if(entry.humidity) {
+                            dailyData[dateString].humidities.push(parseFloat(entry.humidity));
+                        }
                     });
 
-                    // Find the min and max temperature for each day
-                    const dailyHighsAndLows = {};
+                    // Find the min/max temperature and average humidity for each day
+                    const dailyMetrics = {};
                     for (const dateString in dailyData) {
-                        const temps = dailyData[dateString];
-                        dailyHighsAndLows[dateString] = {
-                            high: Math.max(...temps),
-                            low: Math.min(...temps)
+                        const day = dailyData[dateString];
+                        const tempSum = day.temps.reduce((a, b) => a + b, 0);
+                        const humiditySum = day.humidities.reduce((a, b) => a + b, 0);
+                        
+                        dailyMetrics[dateString] = {
+                            high: Math.max(...day.temps),
+                            low: Math.min(...day.temps),
+                            avgHumidity: day.humidities.length > 0 ? (humiditySum / day.humidities.length) : null
                         };
                     }
 
-                    // Prepare the data arrays for the chart
+                    // Prepare the data arrays for the charts
                     const chartLabels = [];
-                    const highData = [];
-                    const lowData = [];
+                    const highTempData = [];
+                    const lowTempData = [];
+                    const avgHumidityData = [];
                     const today = rawData.length > 0 ? startOfDay(new Date(rawData[0].date)) : startOfDay(new Date());
 
                     for (let i = 6; i >= 0; i--) {
@@ -142,115 +167,110 @@
                         
                         chartLabels.push(formatToShortDay(date));
                         
-                        if (dailyHighsAndLows[dateString]) {
-                            highData.push(dailyHighsAndLows[dateString].high.toFixed(1));
-                            lowData.push(dailyHighsAndLows[dateString].low.toFixed(1));
+                        if (dailyMetrics[dateString]) {
+                            highTempData.push(dailyMetrics[dateString].high.toFixed(1));
+                            lowTempData.push(dailyMetrics[dateString].low.toFixed(1));
+                            avgHumidityData.push(dailyMetrics[dateString].avgHumidity ? dailyMetrics[dateString].avgHumidity.toFixed(0) : null);
                         } else {
-                            // If there's no data for a day, push null
-                            highData.push(null);
-                            lowData.push(null);
+                            highTempData.push(null);
+                            lowTempData.push(null);
+                            avgHumidityData.push(null);
                         }
                     }
 
-                    // --- RENDER CHART ---
-                    renderTemperatureChart(chartLabels, highData, lowData);
-                    document.getElementById('loading-message').style.display = 'none';
+                    // --- RENDER CHARTS ---
+                    renderTemperatureChart(chartLabels, highTempData, lowTempData);
+                    renderHumidityChart(chartLabels, avgHumidityData);
+                    document.getElementById('loading-message-temp').style.display = 'none';
+                    document.getElementById('loading-message-humidity').style.display = 'none';
 
                 } catch (error) {
+                    const errorMessage = `Error: ${error.message}`;
                     console.error('Failed to load or process weather data:', error);
-                    document.getElementById('loading-message').textContent = `Error: ${error.message}`;
+                    document.getElementById('loading-message-temp').textContent = errorMessage;
+                    document.getElementById('loading-message-humidity').textContent = errorMessage;
                 }
             }
 
             function renderTemperatureChart(labels, highs, lows) {
                 const chartCanvas = document.getElementById('temperatureChart');
                 const existingChart = Chart.getChart(chartCanvas);
-                if (existingChart) {
-                    existingChart.destroy();
-                }
+                if (existingChart) { existingChart.destroy(); }
 
                 const chartOptions = {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: {
-                        // Display the legend to identify High and Low lines
-                        legend: { 
-                            display: true,
-                            labels: {
-                                color: '#9ca3af' // Legend text color
-                            }
-                        },
+                        legend: { display: true, labels: { color: '#9ca3af' } },
                         tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: '#374151',
-                            titleFont: { size: 14, weight: 'bold' },
-                            bodyFont: { size: 12 },
-                            padding: 10,
-                            cornerRadius: 4,
+                            mode: 'index', intersect: false, backgroundColor: '#374151',
+                            titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 },
+                            padding: 10, cornerRadius: 4,
                             callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += context.parsed.y + ' °F';
-                                    }
-                                    return label;
-                                }
+                                label: (context) => `${context.dataset.label || ''}: ${context.parsed.y !== null ? context.parsed.y + ' °F' : ''}`
                             }
                         }
                     },
                     scales: {
-                        x: {
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: '#9ca3af' }
-                        },
-                        y: {
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: '#9ca3af' },
-                            title: {
-                                display: true,
-                                text: 'Temperature (°F)',
-                                color: '#9ca3af'
-                            }
-                        }
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9ca3af' } },
+                        y: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9ca3af' }, title: { display: true, text: 'Temperature (°F)', color: '#9ca3af' } }
                     },
                     spanGaps: true
                 };
 
-                const tempCtx = chartCanvas.getContext('2d');
-                new Chart(tempCtx, {
+                new Chart(chartCanvas.getContext('2d'), {
                     type: 'line',
                     data: {
                         labels: labels,
                         datasets: [
-                            {
-                                label: 'High',
-                                data: highs,
-                                borderColor: '#f87171', // Red for high temps
-                                backgroundColor: 'rgba(248, 113, 113, 0.1)',
-                                fill: false, // We only fill the area between high and low
-                                tension: 0.4,
-                                pointBackgroundColor: '#f87171',
-                                pointBorderColor: '#fff',
-                                pointHoverRadius: 7,
-                                pointRadius: 5,
-                            },
-                            {
-                                label: 'Low',
-                                data: lows,
-                                borderColor: '#60a5fa', // Blue for low temps
-                                backgroundColor: 'rgba(96, 165, 250, 0.2)',
-                                fill: '+1', // Fill the area up to the dataset above (the 'High' line)
-                                tension: 0.4,
-                                pointBackgroundColor: '#60a5fa',
-                                pointBorderColor: '#fff',
-                                pointHoverRadius: 7,
-                                pointRadius: 5,
-                            }
+                            { label: 'High', data: highs, borderColor: '#f87171', fill: false, tension: 0.4, pointBackgroundColor: '#f87171', pointBorderColor: '#fff', pointHoverRadius: 7, pointRadius: 5 },
+                            { label: 'Low', data: lows, borderColor: '#60a5fa', backgroundColor: 'rgba(96, 165, 250, 0.2)', fill: '+1', tension: 0.4, pointBackgroundColor: '#60a5fa', pointBorderColor: '#fff', pointHoverRadius: 7, pointRadius: 5 }
                         ]
+                    },
+                    options: chartOptions
+                });
+            }
+
+            function renderHumidityChart(labels, avgHumidity) {
+                const chartCanvas = document.getElementById('humidityChart');
+                const existingChart = Chart.getChart(chartCanvas);
+                if (existingChart) { existingChart.destroy(); }
+
+                const chartOptions = {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index', intersect: false, backgroundColor: '#374151',
+                            titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 },
+                            padding: 10, cornerRadius: 4,
+                            callbacks: {
+                                label: (context) => `${context.dataset.label || ''}: ${context.parsed.y !== null ? context.parsed.y + '%' : ''}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9ca3af' } },
+                        y: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9ca3af' }, title: { display: true, text: 'Humidity (%)', color: '#9ca3af' } }
+                    },
+                    spanGaps: true
+                };
+
+                new Chart(chartCanvas.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Avg Humidity',
+                            data: avgHumidity,
+                            borderColor: '#4ade80', // Green for humidity
+                            backgroundColor: 'rgba(74, 222, 128, 0.2)',
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#4ade80',
+                            pointBorderColor: '#fff',
+                            pointHoverRadius: 7,
+                            pointRadius: 5,
+                        }]
                     },
                     options: chartOptions
                 });

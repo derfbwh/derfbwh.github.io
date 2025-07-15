@@ -1,2162 +1,3242 @@
 [
   {
-    "date": "2025-07-15T12:00:28",
-    "temperature": "89.53"
+    "date": "2025-07-15 12:00:28",
+    "temperature": "89.53",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T11:50:28",
-    "temperature": "88.97"
+    "date": "2025-07-15 11:50:28",
+    "temperature": "88.97",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T11:40:28",
-    "temperature": "87.94"
+    "date": "2025-07-15 11:40:28",
+    "temperature": "87.94",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T11:30:28",
-    "temperature": "87.85"
+    "date": "2025-07-15 11:30:28",
+    "temperature": "87.85",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T11:20:28",
-    "temperature": "87.1"
+    "date": "2025-07-15 11:20:28",
+    "temperature": "87.1",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T11:10:28",
-    "temperature": "86.36"
+    "date": "2025-07-15 11:10:28",
+    "temperature": "86.36",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T11:00:28",
-    "temperature": "85.77"
+    "date": "2025-07-15 11:00:28",
+    "temperature": "85.77",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T10:50:28",
-    "temperature": "85.03"
+    "date": "2025-07-15 10:50:28",
+    "temperature": "85.03",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T10:40:28",
-    "temperature": "84.49"
+    "date": "2025-07-15 10:40:28",
+    "temperature": "84.49",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T10:30:28",
-    "temperature": "84.38"
+    "date": "2025-07-15 10:30:28",
+    "temperature": "84.38",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T10:20:28",
-    "temperature": "84.11"
+    "date": "2025-07-15 10:20:28",
+    "temperature": "84.11",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T10:10:28",
-    "temperature": "84.42"
+    "date": "2025-07-15 10:10:28",
+    "temperature": "84.42",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T10:00:28",
-    "temperature": "84.38"
+    "date": "2025-07-15 10:00:28",
+    "temperature": "84.38",
+    "humidity": "68",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T09:50:28",
-    "temperature": "84.24"
+    "date": "2025-07-15 9:50:28",
+    "temperature": "84.24",
+    "humidity": "68",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T09:40:28",
-    "temperature": "84.43"
+    "date": "2025-07-15 9:40:28",
+    "temperature": "84.43",
+    "humidity": "69",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T09:30:28",
-    "temperature": "84.13"
+    "date": "2025-07-15 9:30:28",
+    "temperature": "84.13",
+    "humidity": "70",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T09:20:28",
-    "temperature": "83.3"
+    "date": "2025-07-15 9:20:28",
+    "temperature": "83.3",
+    "humidity": "69",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T09:10:28",
-    "temperature": "83.75"
+    "date": "2025-07-15 9:10:28",
+    "temperature": "83.75",
+    "humidity": "71",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T09:00:28",
-    "temperature": "83.98"
+    "date": "2025-07-15 9:00:28",
+    "temperature": "83.98",
+    "humidity": "70",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T08:50:28",
-    "temperature": "83.19"
+    "date": "2025-07-15 8:50:28",
+    "temperature": "83.19",
+    "humidity": "71",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T08:40:28",
-    "temperature": "81.73"
+    "date": "2025-07-15 8:40:28",
+    "temperature": "81.73",
+    "humidity": "74",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T08:30:28",
-    "temperature": "81.95"
+    "date": "2025-07-15 8:30:28",
+    "temperature": "81.95",
+    "humidity": "72",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T08:20:28",
-    "temperature": "81.43"
+    "date": "2025-07-15 8:20:28",
+    "temperature": "81.43",
+    "humidity": "74",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T08:10:28",
-    "temperature": "80.8"
+    "date": "2025-07-15 8:10:28",
+    "temperature": "80.8",
+    "humidity": "75",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T08:00:28",
-    "temperature": "80.65"
+    "date": "2025-07-15 8:00:28",
+    "temperature": "80.65",
+    "humidity": "74",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T07:50:28",
-    "temperature": "80.87"
+    "date": "2025-07-15 7:50:28",
+    "temperature": "80.87",
+    "humidity": "73",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T07:40:28",
-    "temperature": "81.07"
+    "date": "2025-07-15 7:40:28",
+    "temperature": "81.07",
+    "humidity": "76",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T07:30:28",
-    "temperature": "76.35"
+    "date": "2025-07-15 7:30:28",
+    "temperature": "76.35",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T07:20:28",
-    "temperature": "75.9"
+    "date": "2025-07-15 7:20:28",
+    "temperature": "75.9",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T07:10:28",
-    "temperature": "75.79"
+    "date": "2025-07-15 7:10:28",
+    "temperature": "75.79",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T07:00:28",
-    "temperature": "75.69"
+    "date": "2025-07-15 7:00:28",
+    "temperature": "75.69",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T06:50:28",
-    "temperature": "75.38"
+    "date": "2025-07-15 6:50:28",
+    "temperature": "75.38",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T06:40:28",
-    "temperature": "74.98"
+    "date": "2025-07-15 6:40:28",
+    "temperature": "74.98",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T06:30:28",
-    "temperature": "74.7"
+    "date": "2025-07-15 6:30:28",
+    "temperature": "74.7",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T06:20:28",
-    "temperature": "74.46"
+    "date": "2025-07-15 6:20:28",
+    "temperature": "74.46",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T06:10:28",
-    "temperature": "74.34"
+    "date": "2025-07-15 6:10:28",
+    "temperature": "74.34",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T06:00:28",
-    "temperature": "74.26"
+    "date": "2025-07-15 6:00:28",
+    "temperature": "74.26",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T05:50:28",
-    "temperature": "74.28"
+    "date": "2025-07-15 5:50:28",
+    "temperature": "74.28",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T05:40:28",
-    "temperature": "74.41"
+    "date": "2025-07-15 5:40:28",
+    "temperature": "74.41",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T05:30:28",
-    "temperature": "74.41"
+    "date": "2025-07-15 5:30:28",
+    "temperature": "74.41",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T05:20:28",
-    "temperature": "74.46"
+    "date": "2025-07-15 5:20:28",
+    "temperature": "74.46",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T05:10:28",
-    "temperature": "74.52"
+    "date": "2025-07-15 5:10:28",
+    "temperature": "74.52",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T05:00:28",
-    "temperature": "74.48"
+    "date": "2025-07-15 5:00:28",
+    "temperature": "74.48",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T04:50:28",
-    "temperature": "74.5"
+    "date": "2025-07-15 4:50:28",
+    "temperature": "74.5",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T04:40:28",
-    "temperature": "74.52"
+    "date": "2025-07-15 4:40:28",
+    "temperature": "74.52",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T04:30:28",
-    "temperature": "74.52"
+    "date": "2025-07-15 4:30:28",
+    "temperature": "74.52",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T04:20:28",
-    "temperature": "74.5"
+    "date": "2025-07-15 4:20:28",
+    "temperature": "74.5",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T04:10:28",
-    "temperature": "74.46"
+    "date": "2025-07-15 4:10:28",
+    "temperature": "74.46",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T04:00:28",
-    "temperature": "74.46"
+    "date": "2025-07-15 4:00:28",
+    "temperature": "74.46",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T03:50:28",
-    "temperature": "74.53"
+    "date": "2025-07-15 3:50:28",
+    "temperature": "74.53",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T03:40:28",
-    "temperature": "74.53"
+    "date": "2025-07-15 3:40:28",
+    "temperature": "74.53",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T03:30:28",
-    "temperature": "74.61"
+    "date": "2025-07-15 3:30:28",
+    "temperature": "74.61",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T03:20:28",
-    "temperature": "74.77"
+    "date": "2025-07-15 3:20:28",
+    "temperature": "74.77",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T03:10:28",
-    "temperature": "74.88"
+    "date": "2025-07-15 3:10:28",
+    "temperature": "74.88",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T03:00:28",
-    "temperature": "74.88"
+    "date": "2025-07-15 3:00:28",
+    "temperature": "74.88",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T02:50:28",
-    "temperature": "74.95"
+    "date": "2025-07-15 2:50:28",
+    "temperature": "74.95",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T02:40:28",
-    "temperature": "75.02"
+    "date": "2025-07-15 2:40:28",
+    "temperature": "75.02",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T02:30:28",
-    "temperature": "75.11"
+    "date": "2025-07-15 2:30:28",
+    "temperature": "75.11",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T02:20:28",
-    "temperature": "75.16"
+    "date": "2025-07-15 2:20:28",
+    "temperature": "75.16",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T02:10:28",
-    "temperature": "75.29"
+    "date": "2025-07-15 2:10:28",
+    "temperature": "75.29",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T02:00:28",
-    "temperature": "75.25"
+    "date": "2025-07-15 2:00:28",
+    "temperature": "75.25",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T01:50:28",
-    "temperature": "75.36"
+    "date": "2025-07-15 1:50:28",
+    "temperature": "75.36",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T01:40:28",
-    "temperature": "75.4"
+    "date": "2025-07-15 1:40:28",
+    "temperature": "75.4",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T01:30:28",
-    "temperature": "75.43"
+    "date": "2025-07-15 1:30:28",
+    "temperature": "75.43",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T01:20:28",
-    "temperature": "75.58"
+    "date": "2025-07-15 1:20:28",
+    "temperature": "75.58",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T01:10:28",
-    "temperature": "75.72"
+    "date": "2025-07-15 1:10:28",
+    "temperature": "75.72",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T01:00:28",
-    "temperature": "75.72"
+    "date": "2025-07-15 1:00:28",
+    "temperature": "75.72",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T00:50:28",
-    "temperature": "75.79"
+    "date": "2025-07-15 0:50:28",
+    "temperature": "75.79",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T00:40:28",
-    "temperature": "75.9"
+    "date": "2025-07-15 0:40:28",
+    "temperature": "75.9",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T00:30:28",
-    "temperature": "76.06"
+    "date": "2025-07-15 0:30:28",
+    "temperature": "76.06",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T00:20:28",
-    "temperature": "76.15"
+    "date": "2025-07-15 0:20:28",
+    "temperature": "76.15",
+    "humidity": "81",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T00:10:28",
-    "temperature": "76.26"
+    "date": "2025-07-15 0:10:28",
+    "temperature": "76.26",
+    "humidity": "81",
+    "pressure": null
   },
   {
-    "date": "2025-07-15T00:00:28",
-    "temperature": "76.33"
+    "date": "2025-07-15 0:00:28",
+    "temperature": "76.33",
+    "humidity": "81",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T23:50:28",
-    "temperature": "76.42"
+    "date": "2025-07-14 23:50:28",
+    "temperature": "76.42",
+    "humidity": "80",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T23:40:28",
-    "temperature": "76.53"
+    "date": "2025-07-14 23:40:28",
+    "temperature": "76.53",
+    "humidity": "80",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T23:30:28",
-    "temperature": "76.78"
+    "date": "2025-07-14 23:30:28",
+    "temperature": "76.78",
+    "humidity": "80",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T23:20:28",
-    "temperature": "76.8"
+    "date": "2025-07-14 23:20:28",
+    "temperature": "76.8",
+    "humidity": "80",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T23:10:28",
-    "temperature": "76.89"
+    "date": "2025-07-14 23:10:28",
+    "temperature": "76.89",
+    "humidity": "80",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T23:00:28",
-    "temperature": "76.93"
+    "date": "2025-07-14 23:00:28",
+    "temperature": "76.93",
+    "humidity": "80",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T22:50:28",
-    "temperature": "77.14"
+    "date": "2025-07-14 22:50:28",
+    "temperature": "77.14",
+    "humidity": "79",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T22:40:28",
-    "temperature": "77.2"
+    "date": "2025-07-14 22:40:28",
+    "temperature": "77.2",
+    "humidity": "79",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T22:30:28",
-    "temperature": "77.27"
+    "date": "2025-07-14 22:30:28",
+    "temperature": "77.27",
+    "humidity": "79",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T22:20:28",
-    "temperature": "77.32"
+    "date": "2025-07-14 22:20:28",
+    "temperature": "77.32",
+    "humidity": "79",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T22:10:28",
-    "temperature": "77.36"
+    "date": "2025-07-14 22:10:28",
+    "temperature": "77.36",
+    "humidity": "79",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T22:00:28",
-    "temperature": "77.45"
+    "date": "2025-07-14 22:00:28",
+    "temperature": "77.45",
+    "humidity": "79",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T21:50:28",
-    "temperature": "77.67"
+    "date": "2025-07-14 21:50:28",
+    "temperature": "77.67",
+    "humidity": "78",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T21:40:28",
-    "temperature": "77.83"
+    "date": "2025-07-14 21:40:28",
+    "temperature": "77.83",
+    "humidity": "78",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T21:30:28",
-    "temperature": "77.85"
+    "date": "2025-07-14 21:30:28",
+    "temperature": "77.85",
+    "humidity": "78",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T21:20:28",
-    "temperature": "77.92"
+    "date": "2025-07-14 21:20:28",
+    "temperature": "77.92",
+    "humidity": "78",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T21:10:28",
-    "temperature": "78.08"
+    "date": "2025-07-14 21:10:28",
+    "temperature": "78.08",
+    "humidity": "77",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T21:00:28",
-    "temperature": "78.22"
+    "date": "2025-07-14 21:00:28",
+    "temperature": "78.22",
+    "humidity": "77",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T20:50:28",
-    "temperature": "78.49"
+    "date": "2025-07-14 20:50:28",
+    "temperature": "78.49",
+    "humidity": "76",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T20:40:28",
-    "temperature": "78.76"
+    "date": "2025-07-14 20:40:28",
+    "temperature": "78.76",
+    "humidity": "76",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T20:30:28",
-    "temperature": "78.98"
+    "date": "2025-07-14 20:30:28",
+    "temperature": "78.98",
+    "humidity": "76",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T20:20:28",
-    "temperature": "79.21"
+    "date": "2025-07-14 20:20:28",
+    "temperature": "79.21",
+    "humidity": "75",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T20:10:28",
-    "temperature": "79.5"
+    "date": "2025-07-14 20:10:28",
+    "temperature": "79.5",
+    "humidity": "75",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T20:00:28",
-    "temperature": "79.79"
+    "date": "2025-07-14 20:00:28",
+    "temperature": "79.79",
+    "humidity": "74",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T19:50:28",
-    "temperature": "80.11"
+    "date": "2025-07-14 19:50:28",
+    "temperature": "80.11",
+    "humidity": "73",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T19:40:28",
-    "temperature": "80.76"
+    "date": "2025-07-14 19:40:28",
+    "temperature": "80.76",
+    "humidity": "72",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T19:30:28",
-    "temperature": "81.55"
+    "date": "2025-07-14 19:30:28",
+    "temperature": "81.55",
+    "humidity": "71",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T19:20:28",
-    "temperature": "82.53"
+    "date": "2025-07-14 19:20:28",
+    "temperature": "82.53",
+    "humidity": "69",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T19:10:28",
-    "temperature": "83.71"
+    "date": "2025-07-14 19:10:28",
+    "temperature": "83.71",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T19:00:28",
-    "temperature": "84.45"
+    "date": "2025-07-14 19:00:28",
+    "temperature": "84.45",
+    "humidity": "66",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T18:50:28",
-    "temperature": "85.1"
+    "date": "2025-07-14 18:50:28",
+    "temperature": "85.1",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T18:40:28",
-    "temperature": "85.33"
+    "date": "2025-07-14 18:40:28",
+    "temperature": "85.33",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T18:30:28",
-    "temperature": "85.35"
+    "date": "2025-07-14 18:30:28",
+    "temperature": "85.35",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T18:20:28",
-    "temperature": "86.36"
+    "date": "2025-07-14 18:20:28",
+    "temperature": "86.36",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T18:10:28",
-    "temperature": "87.8"
+    "date": "2025-07-14 18:10:28",
+    "temperature": "87.8",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T18:00:28",
-    "temperature": "88.09"
+    "date": "2025-07-14 18:00:28",
+    "temperature": "88.09",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T17:50:30",
-    "temperature": "87.58"
+    "date": "2025-07-14 17:50:30",
+    "temperature": "87.58",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T17:40:30",
-    "temperature": "85.08"
+    "date": "2025-07-14 17:40:30",
+    "temperature": "85.08",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T17:30:30",
-    "temperature": "83.44"
+    "date": "2025-07-14 17:30:30",
+    "temperature": "83.44",
+    "humidity": "70",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T17:20:30",
-    "temperature": "82.56"
+    "date": "2025-07-14 17:20:30",
+    "temperature": "82.56",
+    "humidity": "72",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T17:10:30",
-    "temperature": "82.18"
+    "date": "2025-07-14 17:10:30",
+    "temperature": "82.18",
+    "humidity": "71",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T17:00:30",
-    "temperature": "82.53"
+    "date": "2025-07-14 17:00:30",
+    "temperature": "82.53",
+    "humidity": "69",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T16:50:30",
-    "temperature": "83.28"
+    "date": "2025-07-14 16:50:30",
+    "temperature": "83.28",
+    "humidity": "68",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T16:40:30",
-    "temperature": "84.43"
+    "date": "2025-07-14 16:40:30",
+    "temperature": "84.43",
+    "humidity": "66",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T16:30:30",
-    "temperature": "85.24"
+    "date": "2025-07-14 16:30:30",
+    "temperature": "85.24",
+    "humidity": "66",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T16:20:30",
-    "temperature": "84.97"
+    "date": "2025-07-14 16:20:30",
+    "temperature": "84.97",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T16:10:30",
-    "temperature": "85.3"
+    "date": "2025-07-14 16:10:30",
+    "temperature": "85.3",
+    "humidity": "66",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T16:00:30",
-    "temperature": "86.29"
+    "date": "2025-07-14 16:00:30",
+    "temperature": "86.29",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T15:50:30",
-    "temperature": "87.4"
+    "date": "2025-07-14 15:50:30",
+    "temperature": "87.4",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T15:40:30",
-    "temperature": "87.57"
+    "date": "2025-07-14 15:40:30",
+    "temperature": "87.57",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T15:30:30",
-    "temperature": "88.97"
+    "date": "2025-07-14 15:30:30",
+    "temperature": "88.97",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T15:20:30",
-    "temperature": "90.91"
+    "date": "2025-07-14 15:20:30",
+    "temperature": "90.91",
+    "humidity": "57",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T15:10:30",
-    "temperature": "90.16"
+    "date": "2025-07-14 15:10:30",
+    "temperature": "90.16",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T15:00:30",
-    "temperature": "88.92"
+    "date": "2025-07-14 15:00:30",
+    "temperature": "88.92",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T14:50:30",
-    "temperature": "88.93"
+    "date": "2025-07-14 14:50:30",
+    "temperature": "88.93",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T14:40:30",
-    "temperature": "89.33"
+    "date": "2025-07-14 14:40:30",
+    "temperature": "89.33",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T14:30:30",
-    "temperature": "89.31"
+    "date": "2025-07-14 14:30:30",
+    "temperature": "89.31",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T14:20:30",
-    "temperature": "89.64"
+    "date": "2025-07-14 14:20:30",
+    "temperature": "89.64",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T14:10:30",
-    "temperature": "89.76"
+    "date": "2025-07-14 14:10:30",
+    "temperature": "89.76",
+    "humidity": "58",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T14:00:30",
-    "temperature": "88.39"
+    "date": "2025-07-14 14:00:30",
+    "temperature": "88.39",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T13:50:30",
-    "temperature": "87.6"
+    "date": "2025-07-14 13:50:30",
+    "temperature": "87.6",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T13:40:30",
-    "temperature": "88.03"
+    "date": "2025-07-14 13:40:30",
+    "temperature": "88.03",
+    "humidity": "58",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T13:30:30",
-    "temperature": "88.95"
+    "date": "2025-07-14 13:30:30",
+    "temperature": "88.95",
+    "humidity": "58",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T13:20:30",
-    "temperature": "88.36"
+    "date": "2025-07-14 13:20:30",
+    "temperature": "88.36",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T13:10:30",
-    "temperature": "87.73"
+    "date": "2025-07-14 13:10:30",
+    "temperature": "87.73",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T13:00:30",
-    "temperature": "87.22"
+    "date": "2025-07-14 13:00:30",
+    "temperature": "87.22",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T12:50:30",
-    "temperature": "86.36"
+    "date": "2025-07-14 12:50:30",
+    "temperature": "86.36",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T12:40:30",
-    "temperature": "87.1"
+    "date": "2025-07-14 12:40:30",
+    "temperature": "87.1",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T12:30:30",
-    "temperature": "86.79"
+    "date": "2025-07-14 12:30:30",
+    "temperature": "86.79",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T12:20:30",
-    "temperature": "87.06"
+    "date": "2025-07-14 12:20:30",
+    "temperature": "87.06",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T12:10:30",
-    "temperature": "87.21"
+    "date": "2025-07-14 12:10:30",
+    "temperature": "87.21",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T12:00:30",
-    "temperature": "86.65"
+    "date": "2025-07-14 12:00:30",
+    "temperature": "86.65",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T11:50:30",
-    "temperature": "86.49"
+    "date": "2025-07-14 11:50:30",
+    "temperature": "86.49",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T11:40:30",
-    "temperature": "85.87"
+    "date": "2025-07-14 11:40:30",
+    "temperature": "85.87",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T11:30:30",
-    "temperature": "85.3"
+    "date": "2025-07-14 11:30:30",
+    "temperature": "85.3",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T11:20:30",
-    "temperature": "84.83"
+    "date": "2025-07-14 11:20:30",
+    "temperature": "84.83",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T11:10:30",
-    "temperature": "84.49"
+    "date": "2025-07-14 11:10:30",
+    "temperature": "84.49",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T11:00:30",
-    "temperature": "84.6"
+    "date": "2025-07-14 11:00:30",
+    "temperature": "84.6",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T10:50:30",
-    "temperature": "83.59"
+    "date": "2025-07-14 10:50:30",
+    "temperature": "83.59",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T10:40:30",
-    "temperature": "83.21"
+    "date": "2025-07-14 10:40:30",
+    "temperature": "83.21",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T10:30:30",
-    "temperature": "82.51"
+    "date": "2025-07-14 10:30:30",
+    "temperature": "82.51",
+    "humidity": "66",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T10:20:30",
-    "temperature": "82.15"
+    "date": "2025-07-14 10:20:30",
+    "temperature": "82.15",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T10:10:30",
-    "temperature": "82.04"
+    "date": "2025-07-14 10:10:30",
+    "temperature": "82.04",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T10:00:30",
-    "temperature": "81.73"
+    "date": "2025-07-14 10:00:30",
+    "temperature": "81.73",
+    "humidity": "68",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T09:50:30",
-    "temperature": "81.57"
+    "date": "2025-07-14 9:50:30",
+    "temperature": "81.57",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T09:40:30",
-    "temperature": "81.7"
+    "date": "2025-07-14 9:40:30",
+    "temperature": "81.7",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T09:30:30",
-    "temperature": "81.27"
+    "date": "2025-07-14 9:30:30",
+    "temperature": "81.27",
+    "humidity": "66",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T09:20:30",
-    "temperature": "80.02"
+    "date": "2025-07-14 9:20:30",
+    "temperature": "80.02",
+    "humidity": "69",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T09:10:30",
-    "temperature": "79.81"
+    "date": "2025-07-14 9:10:30",
+    "temperature": "79.81",
+    "humidity": "69",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T09:00:30",
-    "temperature": "80.31"
+    "date": "2025-07-14 9:00:30",
+    "temperature": "80.31",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T08:50:30",
-    "temperature": "80.91"
+    "date": "2025-07-14 8:50:30",
+    "temperature": "80.91",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T08:40:30",
-    "temperature": "81.41"
+    "date": "2025-07-14 8:40:30",
+    "temperature": "81.41",
+    "humidity": "66",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T08:30:30",
-    "temperature": "81.39"
+    "date": "2025-07-14 8:30:30",
+    "temperature": "81.39",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T08:20:30",
-    "temperature": "82.27"
+    "date": "2025-07-14 8:20:30",
+    "temperature": "82.27",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T08:10:30",
-    "temperature": "85.03"
+    "date": "2025-07-14 8:10:30",
+    "temperature": "85.03",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T08:00:30",
-    "temperature": "88.92"
+    "date": "2025-07-14 8:00:30",
+    "temperature": "88.92",
+    "humidity": "55",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T07:50:30",
-    "temperature": "88.68"
+    "date": "2025-07-14 7:50:30",
+    "temperature": "88.68",
+    "humidity": "55",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T07:40:30",
-    "temperature": "91.85"
+    "date": "2025-07-14 7:40:30",
+    "temperature": "91.85",
+    "humidity": "52",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T07:30:30",
-    "temperature": "87.89"
+    "date": "2025-07-14 7:30:30",
+    "temperature": "87.89",
+    "humidity": "58",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T07:20:30",
-    "temperature": "76.78"
+    "date": "2025-07-14 7:20:30",
+    "temperature": "76.78",
+    "humidity": "76",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T07:10:30",
-    "temperature": "72.18"
+    "date": "2025-07-14 7:10:30",
+    "temperature": "72.18",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T07:00:30",
-    "temperature": "71.76"
+    "date": "2025-07-14 7:00:30",
+    "temperature": "71.76",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T06:50:30",
-    "temperature": "71.49"
+    "date": "2025-07-14 6:50:30",
+    "temperature": "71.49",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T06:40:30",
-    "temperature": "71.37"
+    "date": "2025-07-14 6:40:30",
+    "temperature": "71.37",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T06:30:30",
-    "temperature": "70.97"
+    "date": "2025-07-14 6:30:30",
+    "temperature": "70.97",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T06:20:30",
-    "temperature": "70.77"
+    "date": "2025-07-14 6:20:30",
+    "temperature": "70.77",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T06:10:30",
-    "temperature": "70.5"
+    "date": "2025-07-14 6:10:30",
+    "temperature": "70.5",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T06:00:30",
-    "temperature": "70.3"
+    "date": "2025-07-14 6:00:30",
+    "temperature": "70.3",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T05:50:30",
-    "temperature": "70.07"
+    "date": "2025-07-14 5:50:30",
+    "temperature": "70.07",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T05:40:30",
-    "temperature": "70.03"
+    "date": "2025-07-14 5:40:30",
+    "temperature": "70.03",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T05:30:30",
-    "temperature": "69.94"
+    "date": "2025-07-14 5:30:30",
+    "temperature": "69.94",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T05:20:30",
-    "temperature": "69.84"
+    "date": "2025-07-14 5:20:30",
+    "temperature": "69.84",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T05:10:30",
-    "temperature": "69.87"
+    "date": "2025-07-14 5:10:30",
+    "temperature": "69.87",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T05:00:30",
-    "temperature": "69.78"
+    "date": "2025-07-14 5:00:30",
+    "temperature": "69.78",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T04:50:30",
-    "temperature": "69.78"
+    "date": "2025-07-14 4:50:30",
+    "temperature": "69.78",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T04:40:30",
-    "temperature": "69.82"
+    "date": "2025-07-14 4:40:30",
+    "temperature": "69.82",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T04:30:30",
-    "temperature": "69.73"
+    "date": "2025-07-14 4:30:30",
+    "temperature": "69.73",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T04:20:30",
-    "temperature": "69.73"
+    "date": "2025-07-14 4:20:30",
+    "temperature": "69.73",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T04:10:30",
-    "temperature": "69.71"
+    "date": "2025-07-14 4:10:30",
+    "temperature": "69.71",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T04:00:30",
-    "temperature": "69.69"
+    "date": "2025-07-14 4:00:30",
+    "temperature": "69.69",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T03:50:30",
-    "temperature": "69.58"
+    "date": "2025-07-14 3:50:30",
+    "temperature": "69.58",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T03:40:30",
-    "temperature": "69.53"
+    "date": "2025-07-14 3:40:30",
+    "temperature": "69.53",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T03:30:30",
-    "temperature": "69.44"
+    "date": "2025-07-14 3:30:30",
+    "temperature": "69.44",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T03:20:30",
-    "temperature": "69.4"
+    "date": "2025-07-14 3:20:30",
+    "temperature": "69.4",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T03:10:30",
-    "temperature": "69.31"
+    "date": "2025-07-14 3:10:30",
+    "temperature": "69.31",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T03:00:30",
-    "temperature": "69.21"
+    "date": "2025-07-14 3:00:30",
+    "temperature": "69.21",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T02:50:30",
-    "temperature": "69.15"
+    "date": "2025-07-14 2:50:30",
+    "temperature": "69.15",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T02:40:30",
-    "temperature": "69.08"
+    "date": "2025-07-14 2:40:30",
+    "temperature": "69.08",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T02:30:30",
-    "temperature": "68.88"
+    "date": "2025-07-14 2:30:30",
+    "temperature": "68.88",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T02:20:30",
-    "temperature": "68.7"
+    "date": "2025-07-14 2:20:30",
+    "temperature": "68.7",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T02:10:30",
-    "temperature": "68.38"
+    "date": "2025-07-14 2:10:30",
+    "temperature": "68.38",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T02:00:30",
-    "temperature": "68.07"
+    "date": "2025-07-14 2:00:30",
+    "temperature": "68.07",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T01:50:30",
-    "temperature": "68.07"
+    "date": "2025-07-14 1:50:30",
+    "temperature": "68.07",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T01:40:30",
-    "temperature": "68.14"
+    "date": "2025-07-14 1:40:30",
+    "temperature": "68.14",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T01:30:30",
-    "temperature": "68.16"
+    "date": "2025-07-14 1:30:30",
+    "temperature": "68.16",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T01:20:30",
-    "temperature": "68.22"
+    "date": "2025-07-14 1:20:30",
+    "temperature": "68.22",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T01:10:30",
-    "temperature": "68.25"
+    "date": "2025-07-14 1:10:30",
+    "temperature": "68.25",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T01:00:30",
-    "temperature": "68.31"
+    "date": "2025-07-14 1:00:30",
+    "temperature": "68.31",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T00:50:30",
-    "temperature": "68.34"
+    "date": "2025-07-14 0:50:30",
+    "temperature": "68.34",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T00:40:30",
-    "temperature": "68.38"
+    "date": "2025-07-14 0:40:30",
+    "temperature": "68.38",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T00:30:30",
-    "temperature": "68.43"
+    "date": "2025-07-14 0:30:30",
+    "temperature": "68.43",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T00:20:30",
-    "temperature": "68.36"
+    "date": "2025-07-14 0:20:30",
+    "temperature": "68.36",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T00:10:30",
-    "temperature": "68.34"
+    "date": "2025-07-14 0:10:30",
+    "temperature": "68.34",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-14T00:00:30",
-    "temperature": "68.36"
+    "date": "2025-07-14 0:00:30",
+    "temperature": "68.36",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T23:50:30",
-    "temperature": "68.47"
+    "date": "2025-07-13 23:50:30",
+    "temperature": "68.47",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T23:40:30",
-    "temperature": "68.58"
+    "date": "2025-07-13 23:40:30",
+    "temperature": "68.58",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T23:30:30",
-    "temperature": "68.72"
+    "date": "2025-07-13 23:30:30",
+    "temperature": "68.72",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T23:20:30",
-    "temperature": "68.81"
+    "date": "2025-07-13 23:20:30",
+    "temperature": "68.81",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T23:10:30",
-    "temperature": "68.99"
+    "date": "2025-07-13 23:10:30",
+    "temperature": "68.99",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T23:00:30",
-    "temperature": "69.13"
+    "date": "2025-07-13 23:00:30",
+    "temperature": "69.13",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T22:50:30",
-    "temperature": "69.21"
+    "date": "2025-07-13 22:50:30",
+    "temperature": "69.21",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T22:40:30",
-    "temperature": "69.3"
+    "date": "2025-07-13 22:40:30",
+    "temperature": "69.3",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T22:30:30",
-    "temperature": "69.33"
+    "date": "2025-07-13 22:30:30",
+    "temperature": "69.33",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T22:20:30",
-    "temperature": "69.48"
+    "date": "2025-07-13 22:20:30",
+    "temperature": "69.48",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T22:10:30",
-    "temperature": "69.51"
+    "date": "2025-07-13 22:10:30",
+    "temperature": "69.51",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T22:00:30",
-    "temperature": "69.73"
+    "date": "2025-07-13 22:00:30",
+    "temperature": "69.73",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T21:50:30",
-    "temperature": "69.93"
+    "date": "2025-07-13 21:50:30",
+    "temperature": "69.93",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T21:40:30",
-    "temperature": "70.07"
+    "date": "2025-07-13 21:40:30",
+    "temperature": "70.07",
+    "humidity": "81",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T21:30:30",
-    "temperature": "70.43"
+    "date": "2025-07-13 21:30:30",
+    "temperature": "70.43",
+    "humidity": "80",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T21:20:30",
-    "temperature": "70.7"
+    "date": "2025-07-13 21:20:30",
+    "temperature": "70.7",
+    "humidity": "79",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T21:10:30",
-    "temperature": "70.93"
+    "date": "2025-07-13 21:10:30",
+    "temperature": "70.93",
+    "humidity": "79",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T21:00:30",
-    "temperature": "71.28"
+    "date": "2025-07-13 21:00:30",
+    "temperature": "71.28",
+    "humidity": "78",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T20:50:30",
-    "temperature": "71.62"
+    "date": "2025-07-13 20:50:30",
+    "temperature": "71.62",
+    "humidity": "78",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T20:40:30",
-    "temperature": "71.87"
+    "date": "2025-07-13 20:40:30",
+    "temperature": "71.87",
+    "humidity": "78",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T20:30:30",
-    "temperature": "72.27"
+    "date": "2025-07-13 20:30:30",
+    "temperature": "72.27",
+    "humidity": "77",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T20:20:30",
-    "temperature": "72.75"
+    "date": "2025-07-13 20:20:30",
+    "temperature": "72.75",
+    "humidity": "76",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T20:10:30",
-    "temperature": "73.29"
+    "date": "2025-07-13 20:10:30",
+    "temperature": "73.29",
+    "humidity": "75",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T20:00:30",
-    "temperature": "74.03"
+    "date": "2025-07-13 20:00:30",
+    "temperature": "74.03",
+    "humidity": "73",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T19:50:30",
-    "temperature": "75.11"
+    "date": "2025-07-13 19:50:30",
+    "temperature": "75.11",
+    "humidity": "72",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T19:40:30",
-    "temperature": "76.19"
+    "date": "2025-07-13 19:40:30",
+    "temperature": "76.19",
+    "humidity": "70",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T19:30:30",
-    "temperature": "76.78"
+    "date": "2025-07-13 19:30:30",
+    "temperature": "76.78",
+    "humidity": "70",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T19:20:30",
-    "temperature": "77.47"
+    "date": "2025-07-13 19:20:30",
+    "temperature": "77.47",
+    "humidity": "68",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T19:10:30",
-    "temperature": "78.39"
+    "date": "2025-07-13 19:10:30",
+    "temperature": "78.39",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T19:00:30",
-    "temperature": "78.98"
+    "date": "2025-07-13 19:00:30",
+    "temperature": "78.98",
+    "humidity": "66",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T18:50:30",
-    "temperature": "79.57"
+    "date": "2025-07-13 18:50:30",
+    "temperature": "79.57",
+    "humidity": "66",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T18:40:30",
-    "temperature": "79.77"
+    "date": "2025-07-13 18:40:30",
+    "temperature": "79.77",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T18:30:30",
-    "temperature": "80.2"
+    "date": "2025-07-13 18:30:30",
+    "temperature": "80.2",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T18:20:30",
-    "temperature": "80.64"
+    "date": "2025-07-13 18:20:30",
+    "temperature": "80.64",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T18:10:30",
-    "temperature": "80.85"
+    "date": "2025-07-13 18:10:30",
+    "temperature": "80.85",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T18:00:30",
-    "temperature": "81.37"
+    "date": "2025-07-13 18:00:30",
+    "temperature": "81.37",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T17:50:33",
-    "temperature": "81.61"
+    "date": "2025-07-13 17:50:33",
+    "temperature": "81.61",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T17:40:33",
-    "temperature": "81.84"
+    "date": "2025-07-13 17:40:33",
+    "temperature": "81.84",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T17:30:33",
-    "temperature": "81.93"
+    "date": "2025-07-13 17:30:33",
+    "temperature": "81.93",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T17:20:33",
-    "temperature": "82.4"
+    "date": "2025-07-13 17:20:33",
+    "temperature": "82.4",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T17:10:33",
-    "temperature": "83.16"
+    "date": "2025-07-13 17:10:33",
+    "temperature": "83.16",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T17:00:33",
-    "temperature": "84.02"
+    "date": "2025-07-13 17:00:33",
+    "temperature": "84.02",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T16:50:33",
-    "temperature": "84.67"
+    "date": "2025-07-13 16:50:33",
+    "temperature": "84.67",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T16:40:33",
-    "temperature": "84.88"
+    "date": "2025-07-13 16:40:33",
+    "temperature": "84.88",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T16:30:33",
-    "temperature": "85.05"
+    "date": "2025-07-13 16:30:33",
+    "temperature": "85.05",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T16:20:33",
-    "temperature": "85.17"
+    "date": "2025-07-13 16:20:33",
+    "temperature": "85.17",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T16:10:33",
-    "temperature": "85.64"
+    "date": "2025-07-13 16:10:33",
+    "temperature": "85.64",
+    "humidity": "58",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T16:00:33",
-    "temperature": "86.27"
+    "date": "2025-07-13 16:00:33",
+    "temperature": "86.27",
+    "humidity": "57",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T15:50:33",
-    "temperature": "86.38"
+    "date": "2025-07-13 15:50:33",
+    "temperature": "86.38",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T15:40:33",
-    "temperature": "86.31"
+    "date": "2025-07-13 15:40:33",
+    "temperature": "86.31",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T15:30:33",
-    "temperature": "86.14"
+    "date": "2025-07-13 15:30:33",
+    "temperature": "86.14",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T15:20:33",
-    "temperature": "86.09"
+    "date": "2025-07-13 15:20:33",
+    "temperature": "86.09",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T15:10:33",
-    "temperature": "86.36"
+    "date": "2025-07-13 15:10:33",
+    "temperature": "86.36",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T15:00:33",
-    "temperature": "86.38"
+    "date": "2025-07-13 15:00:33",
+    "temperature": "86.38",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T14:50:33",
-    "temperature": "85.93"
+    "date": "2025-07-13 14:50:33",
+    "temperature": "85.93",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T14:40:33",
-    "temperature": "86.2"
+    "date": "2025-07-13 14:40:33",
+    "temperature": "86.2",
+    "humidity": "58",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T14:30:33",
-    "temperature": "85.3"
+    "date": "2025-07-13 14:30:33",
+    "temperature": "85.3",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T14:20:33",
-    "temperature": "85.84"
+    "date": "2025-07-13 14:20:33",
+    "temperature": "85.84",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T14:10:33",
-    "temperature": "85.1"
+    "date": "2025-07-13 14:10:33",
+    "temperature": "85.1",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T14:00:33",
-    "temperature": "84.4"
+    "date": "2025-07-13 14:00:33",
+    "temperature": "84.4",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T13:50:33",
-    "temperature": "84.4"
+    "date": "2025-07-13 13:50:33",
+    "temperature": "84.4",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T13:40:33",
-    "temperature": "84.81"
+    "date": "2025-07-13 13:40:33",
+    "temperature": "84.81",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T13:30:33",
-    "temperature": "84.38"
+    "date": "2025-07-13 13:30:33",
+    "temperature": "84.38",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T13:20:33",
-    "temperature": "83.77"
+    "date": "2025-07-13 13:20:33",
+    "temperature": "83.77",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T13:10:33",
-    "temperature": "83.57"
+    "date": "2025-07-13 13:10:33",
+    "temperature": "83.57",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T13:00:33",
-    "temperature": "83.48"
+    "date": "2025-07-13 13:00:33",
+    "temperature": "83.48",
+    "humidity": "58",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T12:50:33",
-    "temperature": "83.8"
+    "date": "2025-07-13 12:50:33",
+    "temperature": "83.8",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T12:40:33",
-    "temperature": "83.88"
+    "date": "2025-07-13 12:40:33",
+    "temperature": "83.88",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T12:30:33",
-    "temperature": "83.43"
+    "date": "2025-07-13 12:30:33",
+    "temperature": "83.43",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T12:20:33",
-    "temperature": "83.34"
+    "date": "2025-07-13 12:20:33",
+    "temperature": "83.34",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T12:10:33",
-    "temperature": "82.94"
+    "date": "2025-07-13 12:10:33",
+    "temperature": "82.94",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T12:00:33",
-    "temperature": "82.81"
+    "date": "2025-07-13 12:00:33",
+    "temperature": "82.81",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T11:50:33",
-    "temperature": "82.78"
+    "date": "2025-07-13 11:50:33",
+    "temperature": "82.78",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T11:40:33",
-    "temperature": "82.44"
+    "date": "2025-07-13 11:40:33",
+    "temperature": "82.44",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T11:30:33",
-    "temperature": "81.66"
+    "date": "2025-07-13 11:30:33",
+    "temperature": "81.66",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T11:20:33",
-    "temperature": "80.98"
+    "date": "2025-07-13 11:20:33",
+    "temperature": "80.98",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T11:10:33",
-    "temperature": "80.89"
+    "date": "2025-07-13 11:10:33",
+    "temperature": "80.89",
+    "humidity": "66",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T11:00:33",
-    "temperature": "80.55"
+    "date": "2025-07-13 11:00:33",
+    "temperature": "80.55",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T10:50:33",
-    "temperature": "80.24"
+    "date": "2025-07-13 10:50:33",
+    "temperature": "80.24",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T10:40:33",
-    "temperature": "79.47"
+    "date": "2025-07-13 10:40:33",
+    "temperature": "79.47",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T10:30:33",
-    "temperature": "78.85"
+    "date": "2025-07-13 10:30:33",
+    "temperature": "78.85",
+    "humidity": "68",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T10:20:33",
-    "temperature": "78.3"
+    "date": "2025-07-13 10:20:33",
+    "temperature": "78.3",
+    "humidity": "69",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T10:10:33",
-    "temperature": "77.34"
+    "date": "2025-07-13 10:10:33",
+    "temperature": "77.34",
+    "humidity": "70",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T10:00:33",
-    "temperature": "76.37"
+    "date": "2025-07-13 10:00:33",
+    "temperature": "76.37",
+    "humidity": "70",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T09:50:33",
-    "temperature": "75.06"
+    "date": "2025-07-13 9:50:33",
+    "temperature": "75.06",
+    "humidity": "75",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T09:40:33",
-    "temperature": "74.01"
+    "date": "2025-07-13 9:40:33",
+    "temperature": "74.01",
+    "humidity": "77",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T09:30:33",
-    "temperature": "73.45"
+    "date": "2025-07-13 9:30:33",
+    "temperature": "73.45",
+    "humidity": "76",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T09:20:33",
-    "temperature": "72.72"
+    "date": "2025-07-13 9:20:33",
+    "temperature": "72.72",
+    "humidity": "79",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T09:10:33",
-    "temperature": "72.23"
+    "date": "2025-07-13 9:10:33",
+    "temperature": "72.23",
+    "humidity": "80",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T09:00:33",
-    "temperature": "71.58"
+    "date": "2025-07-13 9:00:33",
+    "temperature": "71.58",
+    "humidity": "81",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T08:50:33",
-    "temperature": "70.79"
+    "date": "2025-07-13 8:50:33",
+    "temperature": "70.79",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T08:40:33",
-    "temperature": "70.27"
+    "date": "2025-07-13 8:40:33",
+    "temperature": "70.27",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T08:30:33",
-    "temperature": "69.51"
+    "date": "2025-07-13 8:30:33",
+    "temperature": "69.51",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T08:20:33",
-    "temperature": "69.3"
+    "date": "2025-07-13 8:20:33",
+    "temperature": "69.3",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T08:10:33",
-    "temperature": "68.94"
+    "date": "2025-07-13 8:10:33",
+    "temperature": "68.94",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T08:00:33",
-    "temperature": "68.52"
+    "date": "2025-07-13 8:00:33",
+    "temperature": "68.52",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T07:50:33",
-    "temperature": "68.29"
+    "date": "2025-07-13 7:50:33",
+    "temperature": "68.29",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T07:40:33",
-    "temperature": "68.13"
+    "date": "2025-07-13 7:40:33",
+    "temperature": "68.13",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T07:30:33",
-    "temperature": "67.8"
+    "date": "2025-07-13 7:30:33",
+    "temperature": "67.8",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T07:20:33",
-    "temperature": "67.28"
+    "date": "2025-07-13 7:20:33",
+    "temperature": "67.28",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T07:10:33",
-    "temperature": "66.7"
+    "date": "2025-07-13 7:10:33",
+    "temperature": "66.7",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T07:00:33",
-    "temperature": "66.45"
+    "date": "2025-07-13 7:00:33",
+    "temperature": "66.45",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T06:50:33",
-    "temperature": "66.11"
+    "date": "2025-07-13 6:50:33",
+    "temperature": "66.11",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T06:40:33",
-    "temperature": "65.86"
+    "date": "2025-07-13 6:40:33",
+    "temperature": "65.86",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T06:30:33",
-    "temperature": "65.59"
+    "date": "2025-07-13 6:30:33",
+    "temperature": "65.59",
+    "humidity": "89",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T06:20:33",
-    "temperature": "65.57"
+    "date": "2025-07-13 6:20:33",
+    "temperature": "65.57",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T06:10:33",
-    "temperature": "65.66"
+    "date": "2025-07-13 6:10:33",
+    "temperature": "65.66",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T06:00:33",
-    "temperature": "65.52"
+    "date": "2025-07-13 6:00:33",
+    "temperature": "65.52",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T05:50:33",
-    "temperature": "65.52"
+    "date": "2025-07-13 5:50:33",
+    "temperature": "65.52",
+    "humidity": "89",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T05:40:33",
-    "temperature": "65.5"
+    "date": "2025-07-13 5:40:33",
+    "temperature": "65.5",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T05:30:33",
-    "temperature": "65.48"
+    "date": "2025-07-13 5:30:33",
+    "temperature": "65.48",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T05:20:33",
-    "temperature": "65.52"
+    "date": "2025-07-13 5:20:33",
+    "temperature": "65.52",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T05:10:33",
-    "temperature": "65.52"
+    "date": "2025-07-13 5:10:33",
+    "temperature": "65.52",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T05:00:33",
-    "temperature": "65.66"
+    "date": "2025-07-13 5:00:33",
+    "temperature": "65.66",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T04:50:33",
-    "temperature": "65.93"
+    "date": "2025-07-13 4:50:33",
+    "temperature": "65.93",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T04:40:33",
-    "temperature": "65.86"
+    "date": "2025-07-13 4:40:33",
+    "temperature": "65.86",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T04:30:33",
-    "temperature": "65.95"
+    "date": "2025-07-13 4:30:33",
+    "temperature": "65.95",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T04:20:33",
-    "temperature": "65.88"
+    "date": "2025-07-13 4:20:33",
+    "temperature": "65.88",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T04:10:33",
-    "temperature": "65.89"
+    "date": "2025-07-13 4:10:33",
+    "temperature": "65.89",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T04:00:33",
-    "temperature": "66.02"
+    "date": "2025-07-13 4:00:33",
+    "temperature": "66.02",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T03:50:33",
-    "temperature": "65.97"
+    "date": "2025-07-13 3:50:33",
+    "temperature": "65.97",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T03:40:33",
-    "temperature": "65.97"
+    "date": "2025-07-13 3:40:33",
+    "temperature": "65.97",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T03:30:33",
-    "temperature": "66.4"
+    "date": "2025-07-13 3:30:33",
+    "temperature": "66.4",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T03:20:33",
-    "temperature": "66.42"
+    "date": "2025-07-13 3:20:33",
+    "temperature": "66.42",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T03:10:33",
-    "temperature": "66.49"
+    "date": "2025-07-13 3:10:33",
+    "temperature": "66.49",
+    "humidity": "88",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T03:00:33",
-    "temperature": "66.58"
+    "date": "2025-07-13 3:00:33",
+    "temperature": "66.58",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T02:50:33",
-    "temperature": "66.52"
+    "date": "2025-07-13 2:50:33",
+    "temperature": "66.52",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T02:40:33",
-    "temperature": "66.63"
+    "date": "2025-07-13 2:40:33",
+    "temperature": "66.63",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T02:30:33",
-    "temperature": "66.54"
+    "date": "2025-07-13 2:30:33",
+    "temperature": "66.54",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T02:20:33",
-    "temperature": "66.58"
+    "date": "2025-07-13 2:20:33",
+    "temperature": "66.58",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T02:10:33",
-    "temperature": "66.76"
+    "date": "2025-07-13 2:10:33",
+    "temperature": "66.76",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T02:00:33",
-    "temperature": "66.79"
+    "date": "2025-07-13 2:00:33",
+    "temperature": "66.79",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T01:50:33",
-    "temperature": "66.81"
+    "date": "2025-07-13 1:50:33",
+    "temperature": "66.81",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T01:40:33",
-    "temperature": "66.92"
+    "date": "2025-07-13 1:40:33",
+    "temperature": "66.92",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T01:30:33",
-    "temperature": "66.83"
+    "date": "2025-07-13 1:30:33",
+    "temperature": "66.83",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T01:20:33",
-    "temperature": "66.78"
+    "date": "2025-07-13 1:20:33",
+    "temperature": "66.78",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T01:10:33",
-    "temperature": "66.76"
+    "date": "2025-07-13 1:10:33",
+    "temperature": "66.76",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T01:00:33",
-    "temperature": "66.69"
+    "date": "2025-07-13 1:00:33",
+    "temperature": "66.69",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T00:50:33",
-    "temperature": "66.7"
+    "date": "2025-07-13 0:50:33",
+    "temperature": "66.7",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T00:40:33",
-    "temperature": "66.65"
+    "date": "2025-07-13 0:40:33",
+    "temperature": "66.65",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T00:30:33",
-    "temperature": "66.63"
+    "date": "2025-07-13 0:30:33",
+    "temperature": "66.63",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T00:20:33",
-    "temperature": "66.83"
+    "date": "2025-07-13 0:20:33",
+    "temperature": "66.83",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T00:10:33",
-    "temperature": "66.81"
+    "date": "2025-07-13 0:10:33",
+    "temperature": "66.81",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-13T00:00:33",
-    "temperature": "66.79"
+    "date": "2025-07-13 0:00:33",
+    "temperature": "66.79",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T23:50:33",
-    "temperature": "66.83"
+    "date": "2025-07-12 23:50:33",
+    "temperature": "66.83",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T23:40:33",
-    "temperature": "66.9"
+    "date": "2025-07-12 23:40:33",
+    "temperature": "66.9",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T23:30:33",
-    "temperature": "66.97"
+    "date": "2025-07-12 23:30:33",
+    "temperature": "66.97",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T23:20:33",
-    "temperature": "67.26"
+    "date": "2025-07-12 23:20:33",
+    "temperature": "67.26",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T23:10:33",
-    "temperature": "67.39"
+    "date": "2025-07-12 23:10:33",
+    "temperature": "67.39",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T23:00:33",
-    "temperature": "67.46"
+    "date": "2025-07-12 23:00:33",
+    "temperature": "67.46",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T22:50:33",
-    "temperature": "67.62"
+    "date": "2025-07-12 22:50:33",
+    "temperature": "67.62",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T22:40:33",
-    "temperature": "67.8"
+    "date": "2025-07-12 22:40:33",
+    "temperature": "67.8",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T22:30:33",
-    "temperature": "67.91"
+    "date": "2025-07-12 22:30:33",
+    "temperature": "67.91",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T22:20:33",
-    "temperature": "68.14"
+    "date": "2025-07-12 22:20:33",
+    "temperature": "68.14",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T22:10:33",
-    "temperature": "68.36"
+    "date": "2025-07-12 22:10:33",
+    "temperature": "68.36",
+    "humidity": "81",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T22:00:33",
-    "temperature": "68.52"
+    "date": "2025-07-12 22:00:33",
+    "temperature": "68.52",
+    "humidity": "81",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T21:50:33",
-    "temperature": "68.77"
+    "date": "2025-07-12 21:50:33",
+    "temperature": "68.77",
+    "humidity": "80",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T21:40:33",
-    "temperature": "69.04"
+    "date": "2025-07-12 21:40:33",
+    "temperature": "69.04",
+    "humidity": "80",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T21:30:33",
-    "temperature": "69.4"
+    "date": "2025-07-12 21:30:33",
+    "temperature": "69.4",
+    "humidity": "79",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T21:20:33",
-    "temperature": "69.67"
+    "date": "2025-07-12 21:20:33",
+    "temperature": "69.67",
+    "humidity": "79",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T21:10:33",
-    "temperature": "70.14"
+    "date": "2025-07-12 21:10:33",
+    "temperature": "70.14",
+    "humidity": "78",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T21:00:33",
-    "temperature": "70.41"
+    "date": "2025-07-12 21:00:33",
+    "temperature": "70.41",
+    "humidity": "78",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T20:50:33",
-    "temperature": "71.11"
+    "date": "2025-07-12 20:50:33",
+    "temperature": "71.11",
+    "humidity": "77",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T20:40:33",
-    "temperature": "71.44"
+    "date": "2025-07-12 20:40:33",
+    "temperature": "71.44",
+    "humidity": "76",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T20:30:33",
-    "temperature": "71.96"
+    "date": "2025-07-12 20:30:33",
+    "temperature": "71.96",
+    "humidity": "75",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T20:20:33",
-    "temperature": "72.55"
+    "date": "2025-07-12 20:20:33",
+    "temperature": "72.55",
+    "humidity": "74",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T20:10:33",
-    "temperature": "73.4"
+    "date": "2025-07-12 20:10:33",
+    "temperature": "73.4",
+    "humidity": "73",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T20:00:33",
-    "temperature": "73.81"
+    "date": "2025-07-12 20:00:33",
+    "temperature": "73.81",
+    "humidity": "73",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T19:50:33",
-    "temperature": "74.44"
+    "date": "2025-07-12 19:50:33",
+    "temperature": "74.44",
+    "humidity": "71",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T19:40:33",
-    "temperature": "75.36"
+    "date": "2025-07-12 19:40:33",
+    "temperature": "75.36",
+    "humidity": "69",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T19:30:33",
-    "temperature": "76.84"
+    "date": "2025-07-12 19:30:33",
+    "temperature": "76.84",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T19:20:33",
-    "temperature": "77.38"
+    "date": "2025-07-12 19:20:33",
+    "temperature": "77.38",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T19:10:33",
-    "temperature": "78.08"
+    "date": "2025-07-12 19:10:33",
+    "temperature": "78.08",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T19:00:33",
-    "temperature": "78.78"
+    "date": "2025-07-12 19:00:33",
+    "temperature": "78.78",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T18:50:33",
-    "temperature": "79.09"
+    "date": "2025-07-12 18:50:33",
+    "temperature": "79.09",
+    "humidity": "66",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T18:40:33",
-    "temperature": "78.98"
+    "date": "2025-07-12 18:40:33",
+    "temperature": "78.98",
+    "humidity": "66",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T18:30:33",
-    "temperature": "79.48"
+    "date": "2025-07-12 18:30:33",
+    "temperature": "79.48",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T18:20:33",
-    "temperature": "80.82"
+    "date": "2025-07-12 18:20:33",
+    "temperature": "80.82",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T18:02:15",
-    "temperature": "80.65"
+    "date": "2025-07-12 18:02:15",
+    "temperature": "80.65",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T17:52:15",
-    "temperature": "80.89"
+    "date": "2025-07-12 17:52:15",
+    "temperature": "80.89",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T17:42:15",
-    "temperature": "82.44"
+    "date": "2025-07-12 17:42:15",
+    "temperature": "82.44",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T17:32:15",
-    "temperature": "83.16"
+    "date": "2025-07-12 17:32:15",
+    "temperature": "83.16",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T17:22:15",
-    "temperature": "82.9"
+    "date": "2025-07-12 17:22:15",
+    "temperature": "82.9",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T17:12:15",
-    "temperature": "83.35"
+    "date": "2025-07-12 17:12:15",
+    "temperature": "83.35",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T17:02:15",
-    "temperature": "83.62"
+    "date": "2025-07-12 17:02:15",
+    "temperature": "83.62",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T16:52:15",
-    "temperature": "84.11"
+    "date": "2025-07-12 16:52:15",
+    "temperature": "84.11",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T16:42:15",
-    "temperature": "84.47"
+    "date": "2025-07-12 16:42:15",
+    "temperature": "84.47",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T16:32:15",
-    "temperature": "84.04"
+    "date": "2025-07-12 16:32:15",
+    "temperature": "84.04",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T16:22:15",
-    "temperature": "83.97"
+    "date": "2025-07-12 16:22:15",
+    "temperature": "83.97",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T16:12:15",
-    "temperature": "83.95"
+    "date": "2025-07-12 16:12:15",
+    "temperature": "83.95",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T16:02:15",
-    "temperature": "84.94"
+    "date": "2025-07-12 16:02:15",
+    "temperature": "84.94",
+    "humidity": "56",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T15:52:15",
-    "temperature": "84.92"
+    "date": "2025-07-12 15:52:15",
+    "temperature": "84.92",
+    "humidity": "58",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T15:42:15",
-    "temperature": "85.06"
+    "date": "2025-07-12 15:42:15",
+    "temperature": "85.06",
+    "humidity": "56",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T15:32:15",
-    "temperature": "85.42"
+    "date": "2025-07-12 15:32:15",
+    "temperature": "85.42",
+    "humidity": "57",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T15:22:15",
-    "temperature": "85.82"
+    "date": "2025-07-12 15:22:15",
+    "temperature": "85.82",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T15:12:15",
-    "temperature": "85.71"
+    "date": "2025-07-12 15:12:15",
+    "temperature": "85.71",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T15:02:15",
-    "temperature": "85.82"
+    "date": "2025-07-12 15:02:15",
+    "temperature": "85.82",
+    "humidity": "58",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T14:52:15",
-    "temperature": "86.18"
+    "date": "2025-07-12 14:52:15",
+    "temperature": "86.18",
+    "humidity": "59",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T14:42:15",
-    "temperature": "86.27"
+    "date": "2025-07-12 14:42:15",
+    "temperature": "86.27",
+    "humidity": "60",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T14:32:15",
-    "temperature": "86.97"
+    "date": "2025-07-12 14:32:15",
+    "temperature": "86.97",
+    "humidity": "55",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T14:22:15",
-    "temperature": "86.04"
+    "date": "2025-07-12 14:22:15",
+    "temperature": "86.04",
+    "humidity": "56",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T14:12:15",
-    "temperature": "85.6"
+    "date": "2025-07-12 14:12:15",
+    "temperature": "85.6",
+    "humidity": "61",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T14:02:15",
-    "temperature": "84.06"
+    "date": "2025-07-12 14:02:15",
+    "temperature": "84.06",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T13:52:15",
-    "temperature": "84.4"
+    "date": "2025-07-12 13:52:15",
+    "temperature": "84.4",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T13:42:15",
-    "temperature": "85.03"
+    "date": "2025-07-12 13:42:15",
+    "temperature": "85.03",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T13:32:15",
-    "temperature": "85.19"
+    "date": "2025-07-12 13:32:15",
+    "temperature": "85.19",
+    "humidity": "63",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T13:22:15",
-    "temperature": "84.38"
+    "date": "2025-07-12 13:22:15",
+    "temperature": "84.38",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T13:12:15",
-    "temperature": "84.13"
+    "date": "2025-07-12 13:12:15",
+    "temperature": "84.13",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T13:02:15",
-    "temperature": "84.88"
+    "date": "2025-07-12 13:02:15",
+    "temperature": "84.88",
+    "humidity": "62",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T12:52:15",
-    "temperature": "84.33"
+    "date": "2025-07-12 12:52:15",
+    "temperature": "84.33",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T12:42:15",
-    "temperature": "83.25"
+    "date": "2025-07-12 12:42:15",
+    "temperature": "83.25",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T12:32:15",
-    "temperature": "82.53"
+    "date": "2025-07-12 12:32:15",
+    "temperature": "82.53",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T12:22:15",
-    "temperature": "81.73"
+    "date": "2025-07-12 12:22:15",
+    "temperature": "81.73",
+    "humidity": "65",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T12:12:15",
-    "temperature": "81.57"
+    "date": "2025-07-12 12:12:15",
+    "temperature": "81.57",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T12:02:15",
-    "temperature": "81.1"
+    "date": "2025-07-12 12:02:15",
+    "temperature": "81.1",
+    "humidity": "66",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T11:52:15",
-    "temperature": "80.74"
+    "date": "2025-07-12 11:52:15",
+    "temperature": "80.74",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T11:42:15",
-    "temperature": "80.1"
+    "date": "2025-07-12 11:42:15",
+    "temperature": "80.1",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T11:32:15",
-    "temperature": "80.22"
+    "date": "2025-07-12 11:32:15",
+    "temperature": "80.22",
+    "humidity": "68",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T11:22:15",
-    "temperature": "79.93"
+    "date": "2025-07-12 11:22:15",
+    "temperature": "79.93",
+    "humidity": "68",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T11:12:15",
-    "temperature": "80.44"
+    "date": "2025-07-12 11:12:15",
+    "temperature": "80.44",
+    "humidity": "68",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T11:02:15",
-    "temperature": "80.6"
+    "date": "2025-07-12 11:02:15",
+    "temperature": "80.6",
+    "humidity": "68",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T10:52:15",
-    "temperature": "79.93"
+    "date": "2025-07-12 10:52:15",
+    "temperature": "79.93",
+    "humidity": "68",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T10:42:15",
-    "temperature": "79.29"
+    "date": "2025-07-12 10:42:15",
+    "temperature": "79.29",
+    "humidity": "69",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T10:32:15",
-    "temperature": "78.69"
+    "date": "2025-07-12 10:32:15",
+    "temperature": "78.69",
+    "humidity": "72",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T10:22:15",
-    "temperature": "77.58"
+    "date": "2025-07-12 10:22:15",
+    "temperature": "77.58",
+    "humidity": "72",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T10:12:15",
-    "temperature": "76.37"
+    "date": "2025-07-12 10:12:15",
+    "temperature": "76.37",
+    "humidity": "75",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T10:02:15",
-    "temperature": "76.24"
+    "date": "2025-07-12 10:02:15",
+    "temperature": "76.24",
+    "humidity": "75",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T09:52:15",
-    "temperature": "75.79"
+    "date": "2025-07-12 9:52:15",
+    "temperature": "75.79",
+    "humidity": "77",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T09:42:15",
-    "temperature": "74.82"
+    "date": "2025-07-12 9:42:15",
+    "temperature": "74.82",
+    "humidity": "79",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T09:32:15",
-    "temperature": "73.9"
+    "date": "2025-07-12 9:32:15",
+    "temperature": "73.9",
+    "humidity": "80",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T09:22:15",
-    "temperature": "73.58"
+    "date": "2025-07-12 9:22:15",
+    "temperature": "73.58",
+    "humidity": "80",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T09:12:15",
-    "temperature": "72.82"
+    "date": "2025-07-12 9:12:15",
+    "temperature": "72.82",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T09:02:15",
-    "temperature": "72.72"
+    "date": "2025-07-12 9:02:15",
+    "temperature": "72.72",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T08:52:15",
-    "temperature": "72.52"
+    "date": "2025-07-12 8:52:15",
+    "temperature": "72.52",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T08:42:15",
-    "temperature": "71.91"
+    "date": "2025-07-12 8:42:15",
+    "temperature": "71.91",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T08:32:15",
-    "temperature": "71.78"
+    "date": "2025-07-12 8:32:15",
+    "temperature": "71.78",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T08:22:15",
-    "temperature": "71.55"
+    "date": "2025-07-12 8:22:15",
+    "temperature": "71.55",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T08:12:15",
-    "temperature": "71.33"
+    "date": "2025-07-12 8:12:15",
+    "temperature": "71.33",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T08:02:15",
-    "temperature": "71.29"
+    "date": "2025-07-12 8:02:15",
+    "temperature": "71.29",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T07:52:15",
-    "temperature": "71.17"
+    "date": "2025-07-12 7:52:15",
+    "temperature": "71.17",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T07:42:15",
-    "temperature": "71.08"
+    "date": "2025-07-12 7:42:15",
+    "temperature": "71.08",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T07:32:15",
-    "temperature": "70.93"
+    "date": "2025-07-12 7:32:15",
+    "temperature": "70.93",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T07:22:15",
-    "temperature": "70.77"
+    "date": "2025-07-12 7:22:15",
+    "temperature": "70.77",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T07:12:15",
-    "temperature": "70.48"
+    "date": "2025-07-12 7:12:15",
+    "temperature": "70.48",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T07:02:15",
-    "temperature": "70.27"
+    "date": "2025-07-12 7:02:15",
+    "temperature": "70.27",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T06:52:15",
-    "temperature": "70.05"
+    "date": "2025-07-12 6:52:15",
+    "temperature": "70.05",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T06:42:15",
-    "temperature": "70.03"
+    "date": "2025-07-12 6:42:15",
+    "temperature": "70.03",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T06:32:15",
-    "temperature": "69.98"
+    "date": "2025-07-12 6:32:15",
+    "temperature": "69.98",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T06:22:15",
-    "temperature": "69.82"
+    "date": "2025-07-12 6:22:15",
+    "temperature": "69.82",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T06:12:15",
-    "temperature": "69.6"
+    "date": "2025-07-12 6:12:15",
+    "temperature": "69.6",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T06:02:15",
-    "temperature": "69.51"
+    "date": "2025-07-12 6:02:15",
+    "temperature": "69.51",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T05:52:15",
-    "temperature": "69.28"
+    "date": "2025-07-12 5:52:15",
+    "temperature": "69.28",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T05:42:15",
-    "temperature": "69.21"
+    "date": "2025-07-12 5:42:15",
+    "temperature": "69.21",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T05:32:15",
-    "temperature": "69.12"
+    "date": "2025-07-12 5:32:15",
+    "temperature": "69.12",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T05:22:15",
-    "temperature": "69.13"
+    "date": "2025-07-12 5:22:15",
+    "temperature": "69.13",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T05:12:15",
-    "temperature": "69.1"
+    "date": "2025-07-12 5:12:15",
+    "temperature": "69.1",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T05:02:15",
-    "temperature": "69.06"
+    "date": "2025-07-12 5:02:15",
+    "temperature": "69.06",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T04:52:15",
-    "temperature": "68.99"
+    "date": "2025-07-12 4:52:15",
+    "temperature": "68.99",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T04:42:15",
-    "temperature": "68.9"
+    "date": "2025-07-12 4:42:15",
+    "temperature": "68.9",
+    "humidity": "87",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T04:32:15",
-    "temperature": "68.7"
+    "date": "2025-07-12 4:32:15",
+    "temperature": "68.7",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T04:22:15",
-    "temperature": "68.58"
+    "date": "2025-07-12 4:22:15",
+    "temperature": "68.58",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T04:12:15",
-    "temperature": "68.52"
+    "date": "2025-07-12 4:12:15",
+    "temperature": "68.52",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T04:02:15",
-    "temperature": "68.43"
+    "date": "2025-07-12 4:02:15",
+    "temperature": "68.43",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T03:52:15",
-    "temperature": "68.41"
+    "date": "2025-07-12 3:52:15",
+    "temperature": "68.41",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T03:42:15",
-    "temperature": "68.34"
+    "date": "2025-07-12 3:42:15",
+    "temperature": "68.34",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T03:32:15",
-    "temperature": "68.32"
+    "date": "2025-07-12 3:32:15",
+    "temperature": "68.32",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T03:22:15",
-    "temperature": "68.29"
+    "date": "2025-07-12 3:22:15",
+    "temperature": "68.29",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T03:12:15",
-    "temperature": "68.29"
+    "date": "2025-07-12 3:12:15",
+    "temperature": "68.29",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T03:02:15",
-    "temperature": "68.22"
+    "date": "2025-07-12 3:02:15",
+    "temperature": "68.22",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T02:52:15",
-    "temperature": "68.2"
+    "date": "2025-07-12 2:52:15",
+    "temperature": "68.2",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T02:42:15",
-    "temperature": "68.16"
+    "date": "2025-07-12 2:42:15",
+    "temperature": "68.16",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T02:32:15",
-    "temperature": "68.22"
+    "date": "2025-07-12 2:32:15",
+    "temperature": "68.22",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T02:22:15",
-    "temperature": "68.27"
+    "date": "2025-07-12 2:22:15",
+    "temperature": "68.27",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T02:12:15",
-    "temperature": "68.38"
+    "date": "2025-07-12 2:12:15",
+    "temperature": "68.38",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T02:02:15",
-    "temperature": "68.49"
+    "date": "2025-07-12 2:02:15",
+    "temperature": "68.49",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T01:52:15",
-    "temperature": "68.47"
+    "date": "2025-07-12 1:52:15",
+    "temperature": "68.47",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T01:42:15",
-    "temperature": "68.49"
+    "date": "2025-07-12 1:42:15",
+    "temperature": "68.49",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T01:32:15",
-    "temperature": "68.5"
+    "date": "2025-07-12 1:32:15",
+    "temperature": "68.5",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T01:22:15",
-    "temperature": "68.32"
+    "date": "2025-07-12 1:22:15",
+    "temperature": "68.32",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T01:12:15",
-    "temperature": "68.25"
+    "date": "2025-07-12 1:12:15",
+    "temperature": "68.25",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T01:02:15",
-    "temperature": "68.16"
+    "date": "2025-07-12 1:02:15",
+    "temperature": "68.16",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T00:52:15",
-    "temperature": "68.13"
+    "date": "2025-07-12 0:52:15",
+    "temperature": "68.13",
+    "humidity": "86",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T00:42:15",
-    "temperature": "67.93"
+    "date": "2025-07-12 0:42:15",
+    "temperature": "67.93",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T00:32:15",
-    "temperature": "67.84"
+    "date": "2025-07-12 0:32:15",
+    "temperature": "67.84",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T00:22:15",
-    "temperature": "67.77"
+    "date": "2025-07-12 0:22:15",
+    "temperature": "67.77",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T00:12:15",
-    "temperature": "67.73"
+    "date": "2025-07-12 0:12:15",
+    "temperature": "67.73",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-12T00:02:15",
-    "temperature": "67.82"
+    "date": "2025-07-12 0:02:15",
+    "temperature": "67.82",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T23:52:15",
-    "temperature": "67.87"
+    "date": "2025-07-11 23:52:15",
+    "temperature": "67.87",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T23:42:15",
-    "temperature": "67.91"
+    "date": "2025-07-11 23:42:15",
+    "temperature": "67.91",
+    "humidity": "85",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T23:32:15",
-    "temperature": "68"
+    "date": "2025-07-11 23:32:15",
+    "temperature": "68",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T23:22:15",
-    "temperature": "68.05"
+    "date": "2025-07-11 23:22:15",
+    "temperature": "68.05",
+    "humidity": "84",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T23:12:15",
-    "temperature": "68.16"
+    "date": "2025-07-11 23:12:15",
+    "temperature": "68.16",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T23:02:15",
-    "temperature": "68.25"
+    "date": "2025-07-11 23:02:15",
+    "temperature": "68.25",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T22:52:15",
-    "temperature": "68.32"
+    "date": "2025-07-11 22:52:15",
+    "temperature": "68.32",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T22:42:15",
-    "temperature": "68.47"
+    "date": "2025-07-11 22:42:15",
+    "temperature": "68.47",
+    "humidity": "83",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T22:32:15",
-    "temperature": "68.59"
+    "date": "2025-07-11 22:32:15",
+    "temperature": "68.59",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T22:22:15",
-    "temperature": "68.72"
+    "date": "2025-07-11 22:22:15",
+    "temperature": "68.72",
+    "humidity": "82",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T22:12:15",
-    "temperature": "69.08"
+    "date": "2025-07-11 22:12:15",
+    "temperature": "69.08",
+    "humidity": "81",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T22:02:15",
-    "temperature": "69.17"
+    "date": "2025-07-11 22:02:15",
+    "temperature": "69.17",
+    "humidity": "81",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T21:52:15",
-    "temperature": "69.39"
+    "date": "2025-07-11 21:52:15",
+    "temperature": "69.39",
+    "humidity": "81",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T21:42:15",
-    "temperature": "69.64"
+    "date": "2025-07-11 21:42:15",
+    "temperature": "69.64",
+    "humidity": "81",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T21:32:15",
-    "temperature": "69.98"
+    "date": "2025-07-11 21:32:15",
+    "temperature": "69.98",
+    "humidity": "80",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T21:22:15",
-    "temperature": "70.12"
+    "date": "2025-07-11 21:22:15",
+    "temperature": "70.12",
+    "humidity": "79",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T21:12:15",
-    "temperature": "70.59"
+    "date": "2025-07-11 21:12:15",
+    "temperature": "70.59",
+    "humidity": "78",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T21:02:15",
-    "temperature": "70.9"
+    "date": "2025-07-11 21:02:15",
+    "temperature": "70.9",
+    "humidity": "77",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T20:52:15",
-    "temperature": "71.24"
+    "date": "2025-07-11 20:52:15",
+    "temperature": "71.24",
+    "humidity": "77",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T20:42:15",
-    "temperature": "71.83"
+    "date": "2025-07-11 20:42:15",
+    "temperature": "71.83",
+    "humidity": "76",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T20:32:15",
-    "temperature": "72.28"
+    "date": "2025-07-11 20:32:15",
+    "temperature": "72.28",
+    "humidity": "75",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T20:22:15",
-    "temperature": "72.77"
+    "date": "2025-07-11 20:22:15",
+    "temperature": "72.77",
+    "humidity": "74",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T20:12:15",
-    "temperature": "73.24"
+    "date": "2025-07-11 20:12:15",
+    "temperature": "73.24",
+    "humidity": "73",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T20:02:15",
-    "temperature": "73.58"
+    "date": "2025-07-11 20:02:15",
+    "temperature": "73.58",
+    "humidity": "73",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T19:52:15",
-    "temperature": "73.76"
+    "date": "2025-07-11 19:52:15",
+    "temperature": "73.76",
+    "humidity": "72",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T19:42:15",
-    "temperature": "73.99"
+    "date": "2025-07-11 19:42:15",
+    "temperature": "73.99",
+    "humidity": "72",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T19:32:15",
-    "temperature": "74.08"
+    "date": "2025-07-11 19:32:15",
+    "temperature": "74.08",
+    "humidity": "71",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T19:22:15",
-    "temperature": "74.66"
+    "date": "2025-07-11 19:22:15",
+    "temperature": "74.66",
+    "humidity": "71",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T19:12:15",
-    "temperature": "74.93"
+    "date": "2025-07-11 19:12:15",
+    "temperature": "74.93",
+    "humidity": "71",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T19:02:15",
-    "temperature": "75.29"
+    "date": "2025-07-11 19:02:15",
+    "temperature": "75.29",
+    "humidity": "70",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T18:52:15",
-    "temperature": "75.63"
+    "date": "2025-07-11 18:52:15",
+    "temperature": "75.63",
+    "humidity": "70",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T18:42:15",
-    "temperature": "76.17"
+    "date": "2025-07-11 18:42:15",
+    "temperature": "76.17",
+    "humidity": "69",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T18:32:15",
-    "temperature": "76.82"
+    "date": "2025-07-11 18:32:15",
+    "temperature": "76.82",
+    "humidity": "68",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T18:22:15",
-    "temperature": "77.77"
+    "date": "2025-07-11 18:22:15",
+    "temperature": "77.77",
+    "humidity": "67",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T18:12:15",
-    "temperature": "79.45"
+    "date": "2025-07-11 18:12:15",
+    "temperature": "79.45",
+    "humidity": "64",
+    "pressure": null
   },
   {
-    "date": "2025-07-11T18:02:13",
-    "temperature": "82.31"
+    "date": "2025-07-11 18:02:13",
+    "temperature": "82.31",
+    "humidity": "60",
+    "pressure": null
   }
 ]
