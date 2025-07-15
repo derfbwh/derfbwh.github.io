@@ -34,15 +34,15 @@
 </head>
 <body class="p-4 sm:p-6 lg:p-8">
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-4xl mx-auto">
         <!-- Header -->
         <header class="mb-8">
             <h1 class="text-3xl font-bold text-white">7-Day Weather Dashboard</h1>
             <p class="text-gray-400 mt-1">Visualizing data from your EVE Weather station.</p>
         </header>
 
-        <!-- Dashboard Grid - Updated to a 2-column layout on medium screens and up -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Dashboard Grid - Changed to a single column layout -->
+        <div class="grid grid-cols-1 gap-8">
 
             <!-- Temperature Card -->
             <div class="card">
@@ -128,16 +128,12 @@
                     // Group all data readings by day
                     const dailyData = {};
                     rawData.forEach(entry => {
-                        // FIX: The date format "YYYY-MM-DD HH:MM:SS" is not consistently parsed.
-                        // Replacing the space with a 'T' converts it to the standard ISO 8601
-                        // format "YYYY-MM-DDTHH:MM:SS" which is universally understood.
                         const parsableDateString = entry.date.replace(' ', 'T');
                         const date = startOfDay(new Date(parsableDateString));
                         
-                        // Check if the date is valid before proceeding
                         if (isNaN(date)) {
                             console.warn(`Skipping invalid date format: ${entry.date}`);
-                            return; // Skip this entry
+                            return;
                         }
 
                         const dateString = date.toISOString().split('T')[0];
@@ -155,7 +151,6 @@
                     const dailyMetrics = {};
                     for (const dateString in dailyData) {
                         const day = dailyData[dateString];
-                        const tempSum = day.temps.reduce((a, b) => a + b, 0);
                         const humiditySum = day.humidities.reduce((a, b) => a + b, 0);
                         
                         dailyMetrics[dateString] = {
