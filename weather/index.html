@@ -30,11 +30,39 @@
             height: 300px;
             width: 100%;
         }
+        /* Styles for the horizontal scroll container */
+        .scroll-container {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            scrollbar-width: thin;
+            scrollbar-color: #4b5563 #1f2937;
+        }
+        .scroll-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .scroll-container::-webkit-scrollbar-track {
+            background: #1f2937;
+            border-radius: 10px;
+        }
+        .scroll-container::-webkit-scrollbar-thumb {
+            background-color: #4b5563;
+            border-radius: 10px;
+        }
+        .hour-card {
+            flex: 0 0 auto; /* Prevent shrinking */
+            width: 100px;
+            text-align: center;
+            padding: 1rem;
+            background-color: #374151;
+            border-radius: 0.5rem;
+            margin-right: 0.75rem;
+        }
     </style>
 </head>
 <body class="p-4 sm:p-6 lg:p-8">
 
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <header class="mb-8">
             <h1 class="text-3xl font-bold text-white">7-Day Weather Dashboard</h1>
@@ -78,6 +106,28 @@
                     <canvas id="humidityChart"></canvas>
                 </div>
                  <p id="loading-message-humidity" class="text-center text-gray-400 mt-4">Loading data...</p>
+            </div>
+            
+            <!-- 24 Hour Data Section -->
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-4">24 Hour Data</h2>
+                <!-- This grid is now 1 column on mobile, and 2 columns on medium screens and up -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- 24 Hour Scrolling List -->
+                    <div class="card">
+                        <h3 class="text-lg font-semibold text-white mb-4">Hourly Breakdown</h3>
+                        <div id="hourly-data-container" class="scroll-container">
+                            <!-- Hourly data will be injected here by JavaScript -->
+                        </div>
+                    </div>
+                    <!-- 24 Hour Trend Chart -->
+                    <div class="card">
+                        <h3 class="text-lg font-semibold text-white mb-4">Hourly Trend</h3>
+                        <div class="chart-container">
+                            <canvas id="hourlyTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -130,32 +180,21 @@
                         document.getElementById('current-temp').textContent = parseFloat(latestEntry.temperature).toFixed(1);
                         document.getElementById('current-humidity').textContent = parseFloat(latestEntry.humidity).toFixed(0);
 
-                        // Set the "Last updated" timestamp
                         const lastUpdatedDate = new Date(latestEntry.date.replace(' ', 'T'));
                         const formattedLastUpdated = lastUpdatedDate.toLocaleString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true
+                            year: 'numeric', month: 'long', day: 'numeric',
+                            hour: 'numeric', minute: '2-digit', hour12: true
                         });
                         document.getElementById('last-updated').textContent = `Last updated: ${formattedLastUpdated}`;
                     }
 
-                    // Group all data readings by day
+                    // --- 7-DAY CHART DATA PROCESSING ---
                     const dailyData = {};
                     rawData.forEach(entry => {
                         const parsableDateString = entry.date.replace(' ', 'T');
                         const date = startOfDay(new Date(parsableDateString));
-                        
-                        if (isNaN(date)) {
-                            console.warn(`Skipping invalid date format: ${entry.date}`);
-                            return;
-                        }
-
+                        if (isNaN(date)) return;
                         const dateString = date.toISOString().split('T')[0];
-                        
                         if (!dailyData[dateString]) {
                             dailyData[dateString] = { temps: [], humidities: [] };
                         }
@@ -165,12 +204,10 @@
                         }
                     });
 
-                    // Find the min/max temperature and average humidity for each day
                     const dailyMetrics = {};
                     for (const dateString in dailyData) {
                         const day = dailyData[dateString];
                         const humiditySum = day.humidities.reduce((a, b) => a + b, 0);
-                        
                         dailyMetrics[dateString] = {
                             high: Math.max(...day.temps),
                             low: Math.min(...day.temps),
@@ -178,7 +215,6 @@
                         };
                     }
 
-                    // Prepare the data arrays for the charts
                     const chartLabels = [];
                     const highTempData = [];
                     const lowTempData = [];
@@ -188,19 +224,18 @@
                     for (let i = 6; i >= 0; i--) {
                         const date = subDays(today, i);
                         const dateString = date.toISOString().split('T')[0];
-                        
                         chartLabels.push(formatToShortDay(date));
-                        
                         if (dailyMetrics[dateString]) {
                             highTempData.push(dailyMetrics[dateString].high.toFixed(1));
                             lowTempData.push(dailyMetrics[dateString].low.toFixed(1));
                             avgHumidityData.push(dailyMetrics[dateString].avgHumidity ? dailyMetrics[dateString].avgHumidity.toFixed(0) : null);
                         } else {
-                            highTempData.push(null);
-                            lowTempData.push(null);
-                            avgHumidityData.push(null);
+                            highTempData.push(null); lowTempData.push(null); avgHumidityData.push(null);
                         }
                     }
+                    
+                    // --- 24-HOUR DATA PROCESSING ---
+                    processAndRenderHourlyData(rawData);
 
                     // --- RENDER CHARTS ---
                     renderTemperatureChart(chartLabels, highTempData, lowTempData);
@@ -214,6 +249,69 @@
                     document.getElementById('loading-message-temp').textContent = errorMessage;
                     document.getElementById('loading-message-humidity').textContent = errorMessage;
                 }
+            }
+            
+            function processAndRenderHourlyData(rawData) {
+                const now = new Date();
+                const twentyFourHoursAgo = now.getTime() - (24 * 60 * 60 * 1000);
+                
+                const recentData = rawData.filter(entry => new Date(entry.date.replace(' ', 'T')).getTime() >= twentyFourHoursAgo);
+
+                const hourlyData = {};
+                recentData.forEach(entry => {
+                    const date = new Date(entry.date.replace(' ', 'T'));
+                    const hourKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}`;
+                    if (!hourlyData[hourKey]) {
+                        hourlyData[hourKey] = { temps: [], humidities: [], date: date };
+                    }
+                    hourlyData[hourKey].temps.push(parseFloat(entry.temperature));
+                    hourlyData[hourKey].humidities.push(parseFloat(entry.humidity));
+                });
+
+                const hourlyAverages = Object.values(hourlyData).map(hour => {
+                    const tempSum = hour.temps.reduce((a, b) => a + b, 0);
+                    const humiditySum = hour.humidities.reduce((a, b) => a + b, 0);
+                    return {
+                        date: hour.date,
+                        avgTemp: tempSum / hour.temps.length,
+                        avgHumidity: humiditySum / hour.humidities.length
+                    };
+                }).sort((a, b) => b.date - a.date); 
+
+                const container = document.getElementById('hourly-data-container');
+                container.innerHTML = '';
+                
+                for (let i = 0; i < hourlyAverages.length; i++) {
+                    const currentHour = hourlyAverages[i];
+                    const previousHour = hourlyAverages[i + 1];
+
+                    let tempTrend = '►';
+                    let humidityTrend = '►';
+                    if (previousHour) {
+                        if (currentHour.avgTemp > previousHour.avgTemp) tempTrend = '▲';
+                        if (currentHour.avgTemp < previousHour.avgTemp) tempTrend = '▼';
+                        if (currentHour.avgHumidity > previousHour.avgHumidity) humidityTrend = '▲';
+                        if (currentHour.avgHumidity < previousHour.avgHumidity) humidityTrend = '▼';
+                    }
+
+                    const hourCard = document.createElement('div');
+                    hourCard.className = 'hour-card';
+                    const time = currentHour.date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+
+                    hourCard.innerHTML = `
+                        <p class="text-sm font-semibold text-gray-300">${time}</p>
+                        <p class="text-2xl font-bold text-red-400 my-2">${currentHour.avgTemp.toFixed(0)}° ${tempTrend}</p>
+                        <p class="text-lg text-green-400">${currentHour.avgHumidity.toFixed(0)}% ${humidityTrend}</p>
+                    `;
+                    container.appendChild(hourCard);
+                }
+
+                // Prepare data for the 24-hour trend chart
+                const trendChartData = hourlyAverages.slice().reverse(); // Create a reversed copy for chronological order
+                const trendLabels = trendChartData.map(d => d.date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }));
+                const trendTempData = trendChartData.map(d => d.avgTemp.toFixed(1));
+                const trendHumidityData = trendChartData.map(d => d.avgHumidity.toFixed(0));
+                render24HourTrendChart(trendLabels, trendTempData, trendHumidityData);
             }
 
             function renderTemperatureChart(labels, highs, lows) {
@@ -295,6 +393,65 @@
                             pointHoverRadius: 7,
                             pointRadius: 5,
                         }]
+                    },
+                    options: chartOptions
+                });
+            }
+            
+            function render24HourTrendChart(labels, tempData, humidityData) {
+                const chartCanvas = document.getElementById('hourlyTrendChart');
+                const existingChart = Chart.getChart(chartCanvas);
+                if (existingChart) { existingChart.destroy(); }
+
+                const chartOptions = {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, labels: { color: '#9ca3af' } },
+                        tooltip: {
+                            mode: 'index', intersect: false, backgroundColor: '#374151',
+                            titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 },
+                            padding: 10, cornerRadius: 4,
+                        }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9ca3af' } },
+                        y_temp: { 
+                            type: 'linear', position: 'left',
+                            grid: { color: 'rgba(248, 113, 113, 0.2)' },
+                            ticks: { color: '#f87171' },
+                            title: { display: true, text: 'Temperature (°F)', color: '#f87171' }
+                        },
+                        y_humidity: {
+                            type: 'linear', position: 'right',
+                            grid: { drawOnChartArea: false }, // Only show the temp grid
+                            ticks: { color: '#4ade80' },
+                            title: { display: true, text: 'Humidity (%)', color: '#4ade80' }
+                        }
+                    },
+                };
+
+                new Chart(chartCanvas.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { 
+                                label: 'Temperature', 
+                                data: tempData, 
+                                borderColor: '#f87171', 
+                                yAxisID: 'y_temp',
+                                tension: 0.4,
+                                pointRadius: 2,
+                            },
+                            { 
+                                label: 'Humidity', 
+                                data: humidityData, 
+                                borderColor: '#4ade80', 
+                                yAxisID: 'y_humidity',
+                                tension: 0.4,
+                                pointRadius: 2,
+                            }
+                        ]
                     },
                     options: chartOptions
                 });
