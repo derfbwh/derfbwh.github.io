@@ -161,6 +161,20 @@
             function formatToShortDay(date) {
                 return date.toLocaleDateString('en-US', { weekday: 'short' });
             }
+
+            const applyMedianFilter = (data, windowSize = 5) => {
+              if (data.length < windowSize) return data;
+              const filtered = [];
+              const halfWindow = Math.floor(windowSize / 2);
+              for (let i = 0; i < data.length; i++) {
+                const start = Math.max(0, i - halfWindow);
+                const end = Math.min(data.length, i + halfWindow + 1);
+                const window = data.slice(start, end).sort((a, b) => a - b);
+                const median = window[Math.floor(window.length / 2)];
+                filtered.push(median);
+              }
+              return filtered;
+            };
             
             const calculateHeatIndex = (T, RH) => {
               if (T < 80 || RH < 40) return null;
@@ -230,9 +244,13 @@
                     for (const dateString in dailyData) {
                         const day = dailyData[dateString];
                         const humiditySum = day.humidities.reduce((a, b) => a + b, 0);
+                        
+                        // Apply median filter to the day's temperatures before finding high/low
+                        const filteredTemps = applyMedianFilter(day.temps);
+
                         dailyMetrics[dateString] = {
-                            high: Math.max(...day.temps),
-                            low: Math.min(...day.temps),
+                            high: Math.max(...filteredTemps),
+                            low: Math.min(...filteredTemps),
                             avgHumidity: day.humidities.length > 0 ? (humiditySum / day.humidities.length) : null
                         };
                     }
@@ -321,9 +339,14 @@
                 }
 
                 // Prepare data for the 24-hour trend chart
-                const trendChartData = hourlyAverages.slice().reverse(); // Create a reversed copy for chronological order
+                const trendChartData = hourlyAverages.slice().reverse();
                 const trendLabels = trendChartData.map(d => d.date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }));
-                const trendTempData = trendChartData.map(d => d.avgTemp.toFixed(1));
+                
+                // Get the raw temperature data for the trend line and then smooth it
+                const rawTrendTemps = trendChartData.map(d => d.avgTemp);
+                const smoothedTrendTemps = applyMedianFilter(rawTrendTemps);
+                const trendTempData = smoothedTrendTemps.map(t => t.toFixed(1));
+
                 const trendHumidityData = trendChartData.map(d => d.avgHumidity.toFixed(0));
                 render24HourTrendChart(trendLabels, trendTempData, trendHumidityData);
             }
