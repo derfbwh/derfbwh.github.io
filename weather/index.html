@@ -58,6 +58,14 @@
             border-radius: 0.5rem;
             margin-right: 0.75rem;
         }
+        /* Styles for the toggle switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #4ade80;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #4ade80;
+        }
     </style>
 </head>
 <body class="p-4 sm:p-6 lg:p-8">
@@ -68,6 +76,16 @@
             <h1 class="text-3xl font-bold text-white">7-Day Weather Dashboard</h1>
             <p class="text-gray-400 mt-1">Visualizing data from your EVE Weather station.</p>
         </header>
+
+        <!-- Controls Section -->
+        <div class="mb-6 flex justify-end items-center">
+            <label for="smoothing-toggle" class="text-sm font-medium text-gray-300 mr-3">Smooth Temperature Spikes</label>
+            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                <input type="checkbox" name="smoothing-toggle" id="smoothing-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                <label for="smoothing-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"></label>
+            </div>
+        </div>
+
 
         <!-- Dashboard Grid -->
         <div class="grid grid-cols-1 gap-8">
@@ -145,6 +163,10 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             
+            // --- GLOBAL STATE ---
+            let rawData = [];
+            let isSmoothingEnabled = true;
+
             // --- HELPER FUNCTIONS ---
             function startOfDay(date) {
                 const newDate = new Date(date);
@@ -183,112 +205,108 @@
               return null;
             };
 
-            // This async function fetches and processes the data
-            async function loadAndProcessData() {
+            // --- EVENT LISTENERS ---
+            document.getElementById('smoothing-toggle').addEventListener('change', (event) => {
+                isSmoothingEnabled = event.target.checked;
+                // Re-process and render all data with the new setting
+                processAndRenderAll();
+            });
+
+            // --- INITIAL DATA FETCH ---
+            async function fetchData() {
                 try {
                     const jsonURL = new URL('weather_data.json', window.location.href);
                     const response = await fetch(jsonURL);
-
                     if (!response.ok) {
-                        if (response.status === 404) {
-                             throw new Error(`File not found. Is your GitHub repository set to "Public"?`);
-                        }
-                        throw new Error(`Network response was not ok: ${response.statusText}`);
+                        throw new Error(`Network response was not ok: ${response.status}`);
                     }
-                    const rawData = await response.json();
-                    
-                    // --- DATA PROCESSING ---
-
-                    if (rawData && rawData.length > 0) {
-                        const latestEntry = rawData[0];
-                        const temp = parseFloat(latestEntry.temperature);
-                        const humidity = parseFloat(latestEntry.humidity);
-                        
-                        document.getElementById('current-temp').textContent = temp.toFixed(1);
-                        document.getElementById('current-humidity').textContent = humidity.toFixed(0);
-
-                        // Calculate and display "Feels Like" temperature
-                        const feelsLikeTemp = calculateHeatIndex(temp, humidity);
-                        const feelsLikeEl = document.getElementById('feels-like-temp');
-                        if (feelsLikeTemp) {
-                            feelsLikeEl.textContent = `(${feelsLikeTemp.toFixed(1)}°)`;
-                        } else {
-                            feelsLikeEl.textContent = '';
-                        }
-
-                        const lastUpdatedDate = new Date(latestEntry.date.replace(' ', 'T'));
-                        const formattedLastUpdated = lastUpdatedDate.toLocaleString('en-US', {
-                            year: 'numeric', month: 'long', day: 'numeric',
-                            hour: 'numeric', minute: '2-digit', hour12: true
-                        });
-                        document.getElementById('last-updated').textContent = `Last updated: ${formattedLastUpdated}`;
-                    }
-
-                    // --- 7-DAY CHART DATA PROCESSING ---
-                    const dailyData = {};
-                    rawData.forEach(entry => {
-                        const parsableDateString = entry.date.replace(' ', 'T');
-                        const date = startOfDay(new Date(parsableDateString));
-                        if (isNaN(date)) return;
-                        const dateString = date.toISOString().split('T')[0];
-                        if (!dailyData[dateString]) {
-                            dailyData[dateString] = { temps: [], humidities: [] };
-                        }
-                        dailyData[dateString].temps.push(parseFloat(entry.temperature));
-                        if(entry.humidity) {
-                            dailyData[dateString].humidities.push(parseFloat(entry.humidity));
-                        }
-                    });
-
-                    const dailyMetrics = {};
-                    for (const dateString in dailyData) {
-                        const day = dailyData[dateString];
-                        const humiditySum = day.humidities.reduce((a, b) => a + b, 0);
-                        
-                        // Apply median filter to the day's temperatures before finding high/low
-                        const filteredTemps = applyMedianFilter(day.temps);
-
-                        dailyMetrics[dateString] = {
-                            high: Math.max(...filteredTemps),
-                            low: Math.min(...filteredTemps),
-                            avgHumidity: day.humidities.length > 0 ? (humiditySum / day.humidities.length) : null
-                        };
-                    }
-
-                    const chartLabels = [];
-                    const highTempData = [];
-                    const lowTempData = [];
-                    const avgHumidityData = [];
-                    const today = rawData.length > 0 ? startOfDay(new Date(rawData[0].date.replace(' ', 'T'))) : startOfDay(new Date());
-
-                    for (let i = 6; i >= 0; i--) {
-                        const date = subDays(today, i);
-                        const dateString = date.toISOString().split('T')[0];
-                        chartLabels.push(formatToShortDay(date));
-                        if (dailyMetrics[dateString]) {
-                            highTempData.push(dailyMetrics[dateString].high.toFixed(1));
-                            lowTempData.push(dailyMetrics[dateString].low.toFixed(1));
-                            avgHumidityData.push(dailyMetrics[dateString].avgHumidity ? dailyMetrics[dateString].avgHumidity.toFixed(0) : null);
-                        } else {
-                            highTempData.push(null); lowTempData.push(null); avgHumidityData.push(null);
-                        }
-                    }
-                    
-                    // --- 24-HOUR DATA PROCESSING ---
-                    processAndRenderHourlyData(rawData);
-
-                    // --- RENDER CHARTS ---
-                    renderTemperatureChart(chartLabels, highTempData, lowTempData);
-                    renderHumidityChart(chartLabels, avgHumidityData);
-                    document.getElementById('loading-message-temp').style.display = 'none';
-                    document.getElementById('loading-message-humidity').style.display = 'none';
-
+                    rawData = await response.json();
+                    processAndRenderAll(); // Initial processing and rendering
                 } catch (error) {
                     const errorMessage = `Error: ${error.message}`;
                     console.error('Failed to load or process weather data:', error);
                     document.getElementById('loading-message-temp').textContent = errorMessage;
                     document.getElementById('loading-message-humidity').textContent = errorMessage;
                 }
+            }
+            
+            // --- MAIN PROCESSING AND RENDERING FUNCTION ---
+            function processAndRenderAll() {
+                if (rawData.length === 0) return;
+
+                // --- TOP-LEVEL DATA ---
+                const latestEntry = rawData[0];
+                const temp = parseFloat(latestEntry.temperature);
+                const humidity = parseFloat(latestEntry.humidity);
+                
+                document.getElementById('current-temp').textContent = temp.toFixed(1);
+                document.getElementById('current-humidity').textContent = humidity.toFixed(0);
+
+                const feelsLikeTemp = calculateHeatIndex(temp, humidity);
+                const feelsLikeEl = document.getElementById('feels-like-temp');
+                if (feelsLikeTemp) {
+                    feelsLikeEl.textContent = `(${feelsLikeTemp.toFixed(1)}°)`;
+                } else {
+                    feelsLikeEl.textContent = '';
+                }
+
+                const lastUpdatedDate = new Date(latestEntry.date.replace(' ', 'T'));
+                document.getElementById('last-updated').textContent = `Last updated: ${lastUpdatedDate.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}`;
+
+                // --- 7-DAY CHART DATA ---
+                const dailyData = {};
+                rawData.forEach(entry => {
+                    const date = startOfDay(new Date(entry.date.replace(' ', 'T')));
+                    if (isNaN(date)) return;
+                    const dateString = date.toISOString().split('T')[0];
+                    if (!dailyData[dateString]) {
+                        dailyData[dateString] = { temps: [], humidities: [] };
+                    }
+                    dailyData[dateString].temps.push(parseFloat(entry.temperature));
+                    if(entry.humidity) dailyData[dateString].humidities.push(parseFloat(entry.humidity));
+                });
+
+                const dailyMetrics = {};
+                for (const dateString in dailyData) {
+                    const day = dailyData[dateString];
+                    const humiditySum = day.humidities.reduce((a, b) => a + b, 0);
+                    
+                    const tempsToProcess = isSmoothingEnabled ? applyMedianFilter(day.temps) : day.temps;
+
+                    dailyMetrics[dateString] = {
+                        high: Math.max(...tempsToProcess),
+                        low: Math.min(...tempsToProcess),
+                        avgHumidity: day.humidities.length > 0 ? (humiditySum / day.humidities.length) : null
+                    };
+                }
+
+                const chartLabels = [];
+                const highTempData = [];
+                const lowTempData = [];
+                const avgHumidityData = [];
+                const today = startOfDay(new Date(rawData[0].date.replace(' ', 'T')));
+
+                for (let i = 6; i >= 0; i--) {
+                    const date = subDays(today, i);
+                    const dateString = date.toISOString().split('T')[0];
+                    chartLabels.push(formatToShortDay(date));
+                    if (dailyMetrics[dateString]) {
+                        highTempData.push(dailyMetrics[dateString].high.toFixed(1));
+                        lowTempData.push(dailyMetrics[dateString].low.toFixed(1));
+                        avgHumidityData.push(dailyMetrics[dateString].avgHumidity ? dailyMetrics[dateString].avgHumidity.toFixed(0) : null);
+                    } else {
+                        highTempData.push(null); lowTempData.push(null); avgHumidityData.push(null);
+                    }
+                }
+                
+                // --- 24-HOUR DATA ---
+                processAndRenderHourlyData(rawData);
+
+                // --- RENDER CHARTS ---
+                renderTemperatureChart(chartLabels, highTempData, lowTempData);
+                renderHumidityChart(chartLabels, avgHumidityData);
+                document.getElementById('loading-message-temp').style.display = 'none';
+                document.getElementById('loading-message-humidity').style.display = 'none';
             }
             
             function processAndRenderHourlyData(rawData) {
@@ -342,10 +360,9 @@
                 const trendChartData = hourlyAverages.slice().reverse();
                 const trendLabels = trendChartData.map(d => d.date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }));
                 
-                // Get the raw temperature data for the trend line and then smooth it
                 const rawTrendTemps = trendChartData.map(d => d.avgTemp);
-                const smoothedTrendTemps = applyMedianFilter(rawTrendTemps);
-                const trendTempData = smoothedTrendTemps.map(t => t.toFixed(1));
+                const tempsToChart = isSmoothingEnabled ? applyMedianFilter(rawTrendTemps) : rawTrendTemps;
+                const trendTempData = tempsToChart.map(t => t.toFixed(1));
 
                 const trendHumidityData = trendChartData.map(d => d.avgHumidity.toFixed(0));
                 render24HourTrendChart(trendLabels, trendTempData, trendHumidityData);
@@ -360,14 +377,7 @@
                     responsive: true, maintainAspectRatio: false,
                     plugins: {
                         legend: { display: true, labels: { color: '#9ca3af' } },
-                        tooltip: {
-                            mode: 'index', intersect: false, backgroundColor: '#374151',
-                            titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 },
-                            padding: 10, cornerRadius: 4,
-                            callbacks: {
-                                label: (context) => `${context.dataset.label || ''}: ${context.parsed.y !== null ? context.parsed.y + ' °F' : ''}`
-                            }
-                        }
+                        tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 10, cornerRadius: 4, callbacks: { label: (context) => `${context.dataset.label || ''}: ${context.parsed.y !== null ? context.parsed.y + ' °F' : ''}` } }
                     },
                     scales: {
                         x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9ca3af' } },
@@ -398,14 +408,7 @@
                     responsive: true, maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
-                        tooltip: {
-                            mode: 'index', intersect: false, backgroundColor: '#374151',
-                            titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 },
-                            padding: 10, cornerRadius: 4,
-                            callbacks: {
-                                label: (context) => `${context.dataset.label || ''}: ${context.parsed.y !== null ? context.parsed.y + '%' : ''}`
-                            }
-                        }
+                        tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 10, cornerRadius: 4, callbacks: { label: (context) => `${context.dataset.label || ''}: ${context.parsed.y !== null ? context.parsed.y + '%' : ''}` } }
                     },
                     scales: {
                         x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9ca3af' } },
@@ -418,18 +421,7 @@
                     type: 'line',
                     data: {
                         labels: labels,
-                        datasets: [{
-                            label: 'Avg Humidity',
-                            data: avgHumidity,
-                            borderColor: '#4ade80', // Green for humidity
-                            backgroundColor: 'rgba(74, 222, 128, 0.2)',
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: '#4ade80',
-                            pointBorderColor: '#fff',
-                            pointHoverRadius: 7,
-                            pointRadius: 5,
-                        }]
+                        datasets: [{ label: 'Avg Humidity', data: avgHumidity, borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.2)', fill: true, tension: 0.4, pointBackgroundColor: '#4ade80', pointBorderColor: '#fff', pointHoverRadius: 7, pointRadius: 5 }]
                     },
                     options: chartOptions
                 });
@@ -444,26 +436,12 @@
                     responsive: true, maintainAspectRatio: false,
                     plugins: {
                         legend: { display: true, labels: { color: '#9ca3af' } },
-                        tooltip: {
-                            mode: 'index', intersect: false, backgroundColor: '#374151',
-                            titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 },
-                            padding: 10, cornerRadius: 4,
-                        }
+                        tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 10, cornerRadius: 4 }
                     },
                     scales: {
                         x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9ca3af' } },
-                        y_temp: { 
-                            type: 'linear', position: 'left',
-                            grid: { color: 'rgba(248, 113, 113, 0.2)' },
-                            ticks: { color: '#f87171' },
-                            title: { display: true, text: 'Temperature (°F)', color: '#f87171' }
-                        },
-                        y_humidity: {
-                            type: 'linear', position: 'right',
-                            grid: { drawOnChartArea: false }, // Only show the temp grid
-                            ticks: { color: '#4ade80' },
-                            title: { display: true, text: 'Humidity (%)', color: '#4ade80' }
-                        }
+                        y_temp: { type: 'linear', position: 'left', grid: { color: 'rgba(248, 113, 113, 0.2)' }, ticks: { color: '#f87171' }, title: { display: true, text: 'Temperature (°F)', color: '#f87171' } },
+                        y_humidity: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#4ade80' }, title: { display: true, text: 'Humidity (%)', color: '#4ade80' } }
                     },
                 };
 
@@ -472,22 +450,8 @@
                     data: {
                         labels: labels,
                         datasets: [
-                            { 
-                                label: 'Temperature', 
-                                data: tempData, 
-                                borderColor: '#f87171', 
-                                yAxisID: 'y_temp',
-                                tension: 0.4,
-                                pointRadius: 2,
-                            },
-                            { 
-                                label: 'Humidity', 
-                                data: humidityData, 
-                                borderColor: '#4ade80', 
-                                yAxisID: 'y_humidity',
-                                tension: 0.4,
-                                pointRadius: 2,
-                            }
+                            { label: 'Temperature', data: tempData, borderColor: '#f87171', yAxisID: 'y_temp', tension: 0.4, pointRadius: 2 },
+                            { label: 'Humidity', data: humidityData, borderColor: '#4ade80', yAxisID: 'y_humidity', tension: 0.4, pointRadius: 2 }
                         ]
                     },
                     options: chartOptions
@@ -495,7 +459,7 @@
             }
 
             // Initial load
-            loadAndProcessData();
+            fetchData();
         });
     </script>
     
