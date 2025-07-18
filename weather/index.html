@@ -80,7 +80,10 @@
                         <p id="temperature-card-subtitle" class="text-gray-400">Last 7 Days (High & Low)</p>
                     </div>
                     <div class="text-right">
-                         <p class="text-3xl font-bold text-white" id="current-temp">-</p>
+                         <div class="flex items-baseline justify-end">
+                            <p class="text-3xl font-bold text-white" id="current-temp">-</p>
+                            <p class="text-lg text-orange-400 ml-2" id="feels-like-temp"></p>
+                         </div>
                          <p class="text-gray-400">°F</p>
                     </div>
                 </div>
@@ -142,7 +145,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             
-            // --- VANILLA JAVASCRIPT DATE HELPERS ---
+            // --- HELPER FUNCTIONS ---
             function startOfDay(date) {
                 const newDate = new Date(date);
                 newDate.setHours(0, 0, 0, 0);
@@ -158,6 +161,13 @@
             function formatToShortDay(date) {
                 return date.toLocaleDateString('en-US', { weekday: 'short' });
             }
+            
+            const calculateHeatIndex = (T, RH) => {
+              if (T < 80 || RH < 40) return null;
+              let HI = -42.379 + 2.04901523 * T + 10.14333127 * RH - 0.22475541 * T * RH - 6.83783e-3 * T * T - 5.481717e-2 * RH * RH + 1.22874e-3 * T * T * RH + 8.5282e-4 * T * RH * RH - 1.99e-6 * T * T * RH * RH;
+              if (HI > T) return HI;
+              return null;
+            };
 
             // This async function fetches and processes the data
             async function loadAndProcessData() {
@@ -177,8 +187,20 @@
 
                     if (rawData && rawData.length > 0) {
                         const latestEntry = rawData[0];
-                        document.getElementById('current-temp').textContent = parseFloat(latestEntry.temperature).toFixed(1);
-                        document.getElementById('current-humidity').textContent = parseFloat(latestEntry.humidity).toFixed(0);
+                        const temp = parseFloat(latestEntry.temperature);
+                        const humidity = parseFloat(latestEntry.humidity);
+                        
+                        document.getElementById('current-temp').textContent = temp.toFixed(1);
+                        document.getElementById('current-humidity').textContent = humidity.toFixed(0);
+
+                        // Calculate and display "Feels Like" temperature
+                        const feelsLikeTemp = calculateHeatIndex(temp, humidity);
+                        const feelsLikeEl = document.getElementById('feels-like-temp');
+                        if (feelsLikeTemp) {
+                            feelsLikeEl.textContent = `(${feelsLikeTemp.toFixed(1)}°)`;
+                        } else {
+                            feelsLikeEl.textContent = '';
+                        }
 
                         const lastUpdatedDate = new Date(latestEntry.date.replace(' ', 'T'));
                         const formattedLastUpdated = lastUpdatedDate.toLocaleString('en-US', {
@@ -285,13 +307,17 @@
                     const currentHour = hourlyAverages[i];
                     const previousHour = hourlyAverages[i + 1];
 
+                    // FIX: Improved trend logic with a tolerance
                     let tempTrend = '►';
                     let humidityTrend = '►';
                     if (previousHour) {
-                        if (currentHour.avgTemp > previousHour.avgTemp) tempTrend = '▲';
-                        if (currentHour.avgTemp < previousHour.avgTemp) tempTrend = '▼';
-                        if (currentHour.avgHumidity > previousHour.avgHumidity) humidityTrend = '▲';
-                        if (currentHour.avgHumidity < previousHour.avgHumidity) humidityTrend = '▼';
+                        const tempDiff = currentHour.avgTemp - previousHour.avgTemp;
+                        if (tempDiff > 0.2) tempTrend = '▲';
+                        else if (tempDiff < -0.2) tempTrend = '▼';
+
+                        const humidityDiff = currentHour.avgHumidity - previousHour.avgHumidity;
+                        if (humidityDiff > 0.5) humidityTrend = '▲';
+                        else if (humidityDiff < -0.5) humidityTrend = '▼';
                     }
 
                     const hourCard = document.createElement('div');
