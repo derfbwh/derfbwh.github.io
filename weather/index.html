@@ -134,7 +134,7 @@
                 <h2 class="text-2xl font-bold text-white mb-4">24 Hour Data</h2>
                 <!-- This grid is now 1 column on mobile, and 2 columns on medium screens and up -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Left column for scrolling list and quote -->
+                    <!-- Left column for scrolling list and quote (on desktop) -->
                     <div class="flex flex-col gap-8">
                         <!-- 24 Hour Scrolling List -->
                         <div class="card">
@@ -143,10 +143,10 @@
                                 <!-- Hourly data will be injected here by JavaScript -->
                             </div>
                         </div>
-                        <!-- Ridiculous Quote Card -->
-                        <div class="card">
+                        <!-- Ridiculous Quote Card (Desktop Only) -->
+                        <div class="card hidden md:block">
                             <h3 class="text-lg font-semibold text-white mb-2">Quote of the Moment</h3>
-                            <p id="quote-text" class="text-gray-400 italic">"The wind is like my mother-in-law. It never stops."</p>
+                            <p id="quote-text-desktop" class="text-gray-400 italic">"The wind is like my mother-in-law. It never stops."</p>
                         </div>
                     </div>
                     <!-- 24 Hour Trend Chart -->
@@ -156,6 +156,11 @@
                             <canvas id="hourlyTrendChart"></canvas>
                         </div>
                     </div>
+                </div>
+                <!-- Ridiculous Quote Card (Mobile Only) -->
+                <div class="card mt-8 block md:hidden">
+                    <h3 class="text-lg font-semibold text-white mb-2">Quote of the Moment</h3>
+                    <p id="quote-text-mobile" class="text-gray-400 italic">"The wind is like my mother-in-law. It never stops."</p>
                 </div>
             </div>
 
@@ -238,7 +243,10 @@
             async function fetchData() {
                 try {
                     // Display a random quote on initial load
-                    document.getElementById('quote-text').textContent = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
+                    const randomQuote = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
+                    document.getElementById('quote-text-desktop').textContent = randomQuote;
+                    document.getElementById('quote-text-mobile').textContent = randomQuote;
+
 
                     const jsonURL = new URL('weather_data.json', window.location.href);
                     const response = await fetch(jsonURL);
@@ -490,3 +498,4 @@
     
 </body>
 </html>
+
