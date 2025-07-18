@@ -305,29 +305,17 @@
                 
                 for (let i = 0; i < hourlyAverages.length; i++) {
                     const currentHour = hourlyAverages[i];
-                    const previousHour = hourlyAverages[i + 1];
-
-                    // FIX: Improved trend logic with a tolerance
-                    let tempTrend = '►';
-                    let humidityTrend = '►';
-                    if (previousHour) {
-                        const tempDiff = currentHour.avgTemp - previousHour.avgTemp;
-                        if (tempDiff > 0.2) tempTrend = '▲';
-                        else if (tempDiff < -0.2) tempTrend = '▼';
-
-                        const humidityDiff = currentHour.avgHumidity - previousHour.avgHumidity;
-                        if (humidityDiff > 0.5) humidityTrend = '▲';
-                        else if (humidityDiff < -0.5) humidityTrend = '▼';
-                    }
-
                     const hourCard = document.createElement('div');
                     hourCard.className = 'hour-card';
+                    
                     const time = currentHour.date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+                    const dateStr = currentHour.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
 
                     hourCard.innerHTML = `
                         <p class="text-sm font-semibold text-gray-300">${time}</p>
-                        <p class="text-2xl font-bold text-red-400 my-2">${currentHour.avgTemp.toFixed(0)}° ${tempTrend}</p>
-                        <p class="text-lg text-green-400">${currentHour.avgHumidity.toFixed(0)}% ${humidityTrend}</p>
+                        <p class="text-xs text-gray-400 mb-2">${dateStr}</p>
+                        <p class="text-2xl font-bold text-red-400">${currentHour.avgTemp.toFixed(0)}°</p>
+                        <p class="text-lg text-green-400 mt-1">${currentHour.avgHumidity.toFixed(0)}%</p>
                     `;
                     container.appendChild(hourCard);
                 }
