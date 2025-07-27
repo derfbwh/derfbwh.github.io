@@ -106,6 +106,39 @@
 
         <!-- Dashboard Grid -->
         <div class="grid grid-cols-1 gap-8">
+            
+            <!-- Current Conditions Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Current Temperature Card -->
+                <div class="card">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="text-xl font-semibold text-white">Current Temperature</h2>
+                            <p class="text-gray-400">Live reading from sensor</p>
+                        </div>
+                        <div class="text-right">
+                             <div class="flex items-baseline justify-end">
+                                <p class="text-4xl font-bold text-white" id="current-temp">-</p>
+                                <p class="text-lg text-orange-400 ml-2" id="feels-like-temp"></p>
+                             </div>
+                             <p class="text-gray-400">°F</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Current Humidity Card -->
+                <div class="card">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="text-xl font-semibold text-white">Current Humidity</h2>
+                            <p class="text-gray-400">Live reading from sensor</p>
+                        </div>
+                        <div class="text-right">
+                             <p class="text-4xl font-bold text-white" id="current-humidity">-</p>
+                             <p class="text-gray-400">%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- History Card with Tabs -->
             <div class="card">
@@ -203,6 +236,13 @@
               }
               return filtered;
             };
+            
+            const calculateHeatIndex = (T, RH) => {
+              if (T < 80 || RH < 40) return null;
+              let HI = -42.379 + 2.04901523 * T + 10.14333127 * RH - 0.22475541 * T * RH - 6.83783e-3 * T * T - 5.481717e-2 * RH * RH + 1.22874e-3 * T * T * RH + 8.5282e-4 * T * RH * RH - 1.99e-6 * T * T * RH * RH;
+              if (HI > T) return HI;
+              return null;
+            };
 
             // --- EVENT LISTENERS ---
             document.getElementById('smoothing-toggle').addEventListener('change', (event) => {
@@ -252,6 +292,20 @@
                 if (rawData.length === 0) return;
 
                 const latestEntry = rawData[0];
+                const temp = parseFloat(latestEntry.temperature);
+                const humidity = parseFloat(latestEntry.humidity);
+                
+                document.getElementById('current-temp').textContent = temp.toFixed(1);
+                document.getElementById('current-humidity').textContent = humidity.toFixed(0);
+
+                const feelsLikeTemp = calculateHeatIndex(temp, humidity);
+                const feelsLikeEl = document.getElementById('feels-like-temp');
+                if (feelsLikeTemp) {
+                    feelsLikeEl.textContent = `(${feelsLikeTemp.toFixed(1)}°)`;
+                } else {
+                    feelsLikeEl.textContent = '';
+                }
+
                 const lastUpdatedDate = new Date(latestEntry.date.replace(' ', 'T'));
                 document.getElementById('last-updated').textContent = `Last updated: ${lastUpdatedDate.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}`;
 
