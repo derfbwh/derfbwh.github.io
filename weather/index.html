@@ -152,11 +152,15 @@
                 </div>
                 <!-- This grid is now always a single column -->
                 <div class="grid grid-cols-1 gap-8">
-                    <div class="chart-container">
-                        <canvas id="historyTemperatureChart"></canvas>
+                    <div class="overflow-x-auto md:overflow-visible">
+                        <div id="history-temp-container" class="chart-container">
+                            <canvas id="historyTemperatureChart"></canvas>
+                        </div>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="historyHumidityChart"></canvas>
+                    <div class="overflow-x-auto md:overflow-visible">
+                        <div id="history-humidity-container" class="chart-container">
+                            <canvas id="historyHumidityChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -400,17 +404,24 @@
                         highs.push(null); lows.push(null); humidity.push(null);
                     }
                 }
-                renderHistoryTemperatureChart(labels, highs, lows);
-                renderHistoryHumidityChart(labels, humidity);
+                
+                const isMobile = window.innerWidth < 768;
+                const isScrollable = isMobile && historyDays === 30;
+
+                document.getElementById('history-temp-container').style.width = isScrollable ? '200%' : '100%';
+                document.getElementById('history-humidity-container').style.width = isScrollable ? '200%' : '100%';
+
+                renderHistoryTemperatureChart(labels, highs, lows, isScrollable);
+                renderHistoryHumidityChart(labels, humidity, isScrollable);
             }
 
-            function renderHistoryTemperatureChart(labels, highs, lows) {
+            function renderHistoryTemperatureChart(labels, highs, lows, isScrollable) {
                 const chartId = 'historyTemperatureChart';
                 if (chartInstances[chartId]) chartInstances[chartId].destroy();
                 const chartOptions = {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y.toFixed(1)}°F` } } },
-                    scales: { x: { ticks: { color: '#9ca3af' } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Temperature (°F)', color: '#9ca3af' } } },
+                    scales: { x: { ticks: { color: '#9ca3af', autoSkip: !isScrollable, maxRotation: 0 } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Temperature (°F)', color: '#9ca3af' } } },
                     spanGaps: true
                 };
                 chartInstances[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
@@ -423,13 +434,13 @@
                 });
             }
 
-            function renderHistoryHumidityChart(labels, avgHumidity) {
+            function renderHistoryHumidityChart(labels, avgHumidity, isScrollable) {
                 const chartId = 'historyHumidityChart';
                 if (chartInstances[chartId]) chartInstances[chartId].destroy();
                 const chartOptions = {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `Avg Humidity: ${c.parsed.y}%` } } },
-                    scales: { x: { ticks: { color: '#9ca3af' } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Avg. Humidity (%)', color: '#9ca3af' } } },
+                    scales: { x: { ticks: { color: '#9ca3af', autoSkip: !isScrollable, maxRotation: 0 } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Avg. Humidity (%)', color: '#9ca3af' } } },
                     spanGaps: true
                 };
                 chartInstances[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
@@ -463,6 +474,19 @@
 
             // Initial load
             fetchData();
+
+            // Global click listener to hide tooltips on mobile
+            document.addEventListener('click', (evt) => {
+                const isCanvas = evt.target.tagName === 'CANVAS';
+                if (!isCanvas) {
+                    Object.values(chartInstances).forEach(chart => {
+                        if (chart && chart.tooltip && chart.tooltip.getActiveElements().length > 0) {
+                            chart.tooltip.setActiveElements([], { x: 0, y: 0 });
+                            chart.update();
+                        }
+                    });
+                }
+            });
         });
     </script>
     
