@@ -203,7 +203,7 @@
             </div>
             
             <!-- Contextual Cards Section (Moved to the bottom) -->
-            <div>
+            <div class="bg-gray-900 rounded-lg p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-bold text-white">API Weather Forecast</h2>
                     <button id="forecast-toggle-button" class="text-3xl font-bold text-gray-400 hover:text-white leading-none">&minus;</button>
@@ -477,7 +477,7 @@
                 const sunContainer = document.getElementById('sun-times-container');
                 sunContainer.innerHTML = `
                     <div class="text-center">
-                        <p class="text-2xl">🔆️</p>
+                        <p class="text-2xl">🔆</p>
                         <p class="font-semibold">${sunrise.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'})}</p>
                         <p class="text-xs text-gray-400">Sunrise</p>
                     </div>
