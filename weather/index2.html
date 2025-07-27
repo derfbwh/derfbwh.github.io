@@ -98,6 +98,24 @@
         .gray_bg {
         	background-color:#091010;
         }
+        /* Styles for the modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+        .modal-content {
+            width: 90%;
+            max-width: 800px;
+            height: 60%;
+        }
     </style>
 </head>
 <body class="p-4 sm:p-6 lg:p-8">
@@ -118,9 +136,10 @@
             </div>
         </div>
 
+
         <!-- Dashboard Grid -->
         <div class="grid grid-cols-1 gap-8">
-
+            
             <!-- Current Conditions Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Current Temperature Card -->
@@ -255,6 +274,19 @@
 
     </div>
 
+    <!-- Modal for Detailed Day View -->
+    <div id="detail-modal" class="modal-overlay hidden">
+        <div class="modal-content card">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="modal-title" class="text-2xl font-bold text-white">Detailed View</h2>
+                <button id="modal-close-button" class="text-3xl font-bold text-gray-400 hover:text-white leading-none">&times;</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="detailChart"></canvas>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             
@@ -321,6 +353,15 @@
                 document.getElementById('forecast-toggle-button').textContent = isForecastExpanded ? '−' : '+';
             });
 
+            const modal = document.getElementById('detail-modal');
+            const modalCloseButton = document.getElementById('modal-close-button');
+            modalCloseButton.addEventListener('click', () => modal.classList.add('hidden'));
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+
             // --- INITIAL DATA FETCH ---
             async function fetchData() {
                 try {
@@ -377,7 +418,6 @@
                 const lastUpdatedDate = new Date(latestEntry.date.replace(' ', 'T'));
                 document.getElementById('last-updated').textContent = `Last updated: ${lastUpdatedDate.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}`;
 
-                // --- DAILY DATA AGGREGATION ---
                 const dailyData = {};
                 rawData.forEach(entry => {
                     const date = startOfDay(new Date(entry.date.replace(' ', 'T')));
@@ -480,7 +520,7 @@
                 const sunContainer = document.getElementById('sun-times-container');
                 sunContainer.innerHTML = `
                     <div class="text-center">
-                        <p class="text-2xl">🔆</p>
+                        <p class="text-2xl">☀️</p>
                         <p class="font-semibold">${sunrise.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'})}</p>
                         <p class="text-xs text-gray-400">Sunrise</p>
                     </div>
@@ -520,7 +560,6 @@
                     forecastContainer.appendChild(forecastDayEl);
                 }
                 
-                // Process and render current official conditions
                 const current = forecastData.current;
                 const conditionsContainer = document.getElementById('official-conditions-container');
                 conditionsContainer.innerHTML = `
@@ -564,7 +603,8 @@
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y}°F` } } },
                     scales: { x: { ticks: { color: '#9ca3af', autoSkip: !isScrollable, maxRotation: 0 } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Temperature (°F)', color: '#9ca3af' } } },
-                    spanGaps: true
+                    spanGaps: true,
+                    onClick: (evt, elements) => handleChartClick(evt, elements, labels)
                 };
                 chartInstances[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
                     type: 'line',
@@ -583,7 +623,8 @@
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `Avg Humidity: ${c.parsed.y}%` } } },
                     scales: { x: { ticks: { color: '#9ca3af', autoSkip: !isScrollable, maxRotation: 0 } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Avg. Humidity (%)', color: '#9ca3af' } } },
-                    spanGaps: true
+                    spanGaps: true,
+                    onClick: (evt, elements) => handleChartClick(evt, elements, labels)
                 };
                 chartInstances[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
                     type: 'line',
@@ -609,6 +650,60 @@
                     data: { labels, datasets: [
                         { label: 'Temperature', data: tempData, borderColor: '#f87171', yAxisID: 'y_temp', tension: 0.4, pointRadius: 2 },
                         { label: 'Humidity', data: humidityData, borderColor: '#4ade80', yAxisID: 'y_humidity', tension: 0.4, pointRadius: 2 }
+                    ]},
+                    options: chartOptions
+                });
+            }
+
+            function handleChartClick(evt, elements, labels) {
+                if (elements.length > 0) {
+                    const dataIndex = elements[0].index;
+                    const clickedDateLabel = labels[dataIndex];
+                    showDailyDetailModal(clickedDateLabel);
+                }
+            }
+
+            function showDailyDetailModal(dateLabel) {
+                const today = new Date();
+                const targetDate = new Date(`${dateLabel}/${today.getFullYear()}`);
+                
+                const dayData = rawData.filter(entry => {
+                    const entryDate = new Date(entry.date.replace(' ', 'T'));
+                    return entryDate.getDate() === targetDate.getDate() &&
+                           entryDate.getMonth() === targetDate.getMonth() &&
+                           entryDate.getFullYear() === targetDate.getFullYear();
+                }).reverse(); // reverse to get chronological order
+
+                if (dayData.length === 0) return;
+
+                const detailLabels = dayData.map(d => new Date(d.date.replace(' ', 'T')).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }));
+                const detailTemps = dayData.map(d => parseFloat(d.temperature));
+                const detailHumidity = dayData.map(d => parseFloat(d.humidity));
+                
+                const tempsToChart = isSmoothingEnabled ? applyMedianFilter(detailTemps) : detailTemps;
+
+                document.getElementById('modal-title').textContent = `Detailed View for ${dateLabel}`;
+                renderDetailChart(detailLabels, tempsToChart, detailHumidity);
+                document.getElementById('detail-modal').classList.remove('hidden');
+            }
+
+            function renderDetailChart(labels, tempData, humidityData) {
+                const chartId = 'detailChart';
+                if (chartInstances[chartId]) chartInstances[chartId].destroy();
+                const chartOptions = {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false } },
+                    scales: {
+                        x: { ticks: { color: '#9ca3af', autoSkip: true, maxTicksLimit: 12 } },
+                        y_temp: { type: 'linear', position: 'left', ticks: { color: '#f87171' }, title: { display: true, text: 'Temp (°F)', color: '#f87171' } },
+                        y_humidity: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#4ade80' }, title: { display: true, text: 'Humidity (%)', color: '#4ade80' } }
+                    },
+                };
+                chartInstances[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
+                    type: 'line',
+                    data: { labels, datasets: [
+                        { label: 'Temperature', data: tempData, borderColor: '#f87171', yAxisID: 'y_temp', tension: 0.1, pointRadius: 1 },
+                        { label: 'Humidity', data: humidityData, borderColor: '#4ade80', yAxisID: 'y_humidity', tension: 0.1, pointRadius: 1 }
                     ]},
                     options: chartOptions
                 });
