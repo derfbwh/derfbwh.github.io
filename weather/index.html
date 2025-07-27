@@ -15,7 +15,7 @@
     <style>
         /* Custom styles */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: #111827; /* Dark background */
             color: #e5e7eb; /* Light text */
         }
@@ -163,6 +163,14 @@
                     <p id="quote-text-mobile" class="text-gray-400 italic">"The wind is like my mother-in-law. It never stops."</p>
                 </div>
             </div>
+            
+            <!-- 30 Day History Section -->
+            <div class="card">
+                <h2 class="text-2xl font-bold text-white mb-4">30-Day History</h2>
+                <div class="chart-container">
+                    <canvas id="historyChart"></canvas>
+                </div>
+            </div>
 
         </div>
         
@@ -178,21 +186,22 @@
             
             // --- GLOBAL STATE ---
             let rawData = [];
+            let quotes = [];
             let isSmoothingEnabled = true;
 
             // --- RIDICULOUS QUOTES ---
-            const quotes = [
-                "Weather forecast for tonight: dark.",
-                "The sun is a deadly laser.",
-                "I like my weather like I like my coffee: hot and existing.",
-                "Humidity is just the air giving you a wet hug.",
-                "Why did the cloud break up with the fog? He was too down to earth.",
-                "It's so hot, the squirrels are fanning their nuts.",
-                "The wind is just the sky showing off its dance moves.",
-                "Rain is just confetti from the sky.",
-                "It's not the heat, it's the stupidity.",
-                "I tried to catch some fog, but I mist."
-            ];
+            const quotesContent = `
+Weather forecast for tonight: dark.
+The sun is a deadly laser.
+I like my weather like I like my coffee: hot and existing.
+Humidity is just the air giving you a wet hug.
+Why did the cloud break up with the fog? He was too down to earth.
+It's so hot, the squirrels are fanning their nuts.
+The wind is just the sky showing off its dance moves.
+Rain is just confetti from the sky.
+It's not the heat, it's the stupidity.
+I tried to catch some fog, but I mist.
+`;
 
             // --- HELPER FUNCTIONS ---
             function startOfDay(date) {
@@ -243,6 +252,7 @@
             async function fetchData() {
                 try {
                     // Display a random quote on initial load
+                    quotes = quotesContent.split('\n').filter(q => q.trim() !== '');
                     const randomQuote = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
                     document.getElementById('quote-text-desktop').textContent = randomQuote;
                     document.getElementById('quote-text-mobile').textContent = randomQuote;
@@ -335,6 +345,9 @@
                 // --- 24-HOUR DATA ---
                 processAndRenderHourlyData(rawData);
 
+                // --- 30-DAY HISTORY DATA ---
+                processAndRenderHistory(dailyMetrics, today);
+
                 // --- RENDER CHARTS ---
                 renderTemperatureChart(chartLabels, highTempData, lowTempData);
                 renderHumidityChart(chartLabels, avgHumidityData);
@@ -399,6 +412,30 @@
 
                 const trendHumidityData = trendChartData.map(d => d.avgHumidity.toFixed(0));
                 render24HourTrendChart(trendLabels, trendTempData, trendHumidityData);
+            }
+
+            function processAndRenderHistory(dailyMetrics, today) {
+                const historyLabels = [];
+                const historyHighs = [];
+                const historyLows = [];
+                const historyHumidity = [];
+
+                for (let i = 29; i >= 0; i--) {
+                    const date = subDays(today, i);
+                    const dateString = date.toISOString().split('T')[0];
+                    historyLabels.push(date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }));
+
+                    if (dailyMetrics[dateString]) {
+                        historyHighs.push(dailyMetrics[dateString].high.toFixed(1));
+                        historyLows.push(dailyMetrics[dateString].low.toFixed(1));
+                        historyHumidity.push(dailyMetrics[dateString].avgHumidity ? dailyMetrics[dateString].avgHumidity.toFixed(0) : null);
+                    } else {
+                        historyHighs.push(null);
+                        historyLows.push(null);
+                        historyHumidity.push(null);
+                    }
+                }
+                renderHistoryChart(historyLabels, historyHighs, historyLows, historyHumidity);
             }
 
             function renderTemperatureChart(labels, highs, lows) {
@@ -491,6 +528,38 @@
                 });
             }
 
+            function renderHistoryChart(labels, highs, lows, humidity) {
+                const chartCanvas = document.getElementById('historyChart');
+                const existingChart = Chart.getChart(chartCanvas);
+                if (existingChart) { existingChart.destroy(); }
+
+                const chartOptions = {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, labels: { color: '#9ca3af' } },
+                        tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 10, cornerRadius: 4 }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9ca3af', maxRotation: 0, autoSkip: true, maxTicksLimit: 15 } },
+                        y_temp: { type: 'linear', position: 'left', grid: { color: 'rgba(248, 113, 113, 0.2)' }, ticks: { color: '#f87171' }, title: { display: true, text: 'Temperature (°F)', color: '#f87171' } },
+                        y_humidity: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#4ade80' }, title: { display: true, text: 'Humidity (%)', color: '#4ade80' } }
+                    },
+                };
+
+                new Chart(chartCanvas.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'High Temp', data: highs, borderColor: '#f87171', yAxisID: 'y_temp', tension: 0.4, pointRadius: 2, fill: false },
+                            { label: 'Low Temp', data: lows, borderColor: '#60a5fa', yAxisID: 'y_temp', tension: 0.4, pointRadius: 2, fill: false },
+                            { label: 'Avg Humidity', data: humidity, borderColor: '#4ade80', yAxisID: 'y_humidity', tension: 0.4, pointRadius: 2, borderDash: [5, 5], fill: false }
+                        ]
+                    },
+                    options: chartOptions
+                });
+            }
+
             // Initial load
             fetchData();
         });
@@ -498,4 +567,3 @@
     
 </body>
 </html>
-
