@@ -311,7 +311,8 @@
 
                     if (forecastResponse && forecastResponse.ok) {
                         const forecastData = await forecastResponse.json();
-                        processAndRenderOpenMeteoForecast(forecastData);
+                        // FIX: The function name was incorrect. Corrected to processAndRenderForecast.
+                        processAndRenderForecast(forecastData);
                     } else {
                         document.getElementById('forecast-container').innerHTML = `<p class="col-span-5 text-red-400">Could not load forecast.</p>`;
                         document.getElementById('sun-times-container').innerHTML = `<p class="text-red-400">Could not load sun times.</p>`;
@@ -336,7 +337,8 @@
 
                 const feelsLikeTemp = calculateHeatIndex(temp, humidity);
                 const feelsLikeEl = document.getElementById('feels-like-temp');
-                feelsLikeEl.textContent = feelsLikeTemp ? `(${feelsLikeTemp.toFixed(1)}°)` : '';
+                feelsLikeEl.textContent = feelsLikeTemp ? `(${feelsLikeTemp.toFixed(1)}°)`;
+                ''
 
                 const lastUpdatedDate = new Date(latestEntry.date.replace(' ', 'T'));
                 document.getElementById('last-updated').textContent = `Last updated: ${lastUpdatedDate.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}`;
@@ -438,7 +440,6 @@
             }
 
             function processAndRenderForecast(forecastData) {
-                // This function is now for Open-Meteo
                 const daily = forecastData.daily;
                 const sunrise = new Date(daily.sunrise[0]);
                 const sunset = new Date(daily.sunset[0]);
