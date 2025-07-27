@@ -146,7 +146,7 @@
                         <!-- Ridiculous Quote Card (Desktop Only) -->
                         <div class="card hidden md:block">
                             <h3 class="text-lg font-semibold text-white mb-2">Quote of the Moment</h3>
-                            <p id="quote-text-desktop" class="text-gray-400 italic">"The wind is like my mother-in-law. It never stops."</p>
+                            <p id="quote-text-desktop" class="text-gray-400 italic">Loading quote...</p>
                         </div>
                     </div>
                     <!-- 24 Hour Trend Chart -->
@@ -160,15 +160,19 @@
                 <!-- Ridiculous Quote Card (Mobile Only) -->
                 <div class="card mt-8 block md:hidden">
                     <h3 class="text-lg font-semibold text-white mb-2">Quote of the Moment</h3>
-                    <p id="quote-text-mobile" class="text-gray-400 italic">"The wind is like my mother-in-law. It never stops."</p>
+                    <p id="quote-text-mobile" class="text-gray-400 italic">Loading quote...</p>
                 </div>
             </div>
             
+                            <h2 class="text-2xl font-bold text-white mb-4">30 Day Data</h2>
             <!-- 30 Day History Section -->
             <div class="card">
                 <h2 class="text-2xl font-bold text-white mb-4">30-Day History</h2>
-                <div class="chart-container">
-                    <canvas id="historyChart"></canvas>
+                <!-- This wrapper makes the chart scrollable on mobile -->
+                <div class="overflow-x-auto md:overflow-visible">
+                    <div class="chart-container w-[200%] md:w-full">
+                        <canvas id="historyChart"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -189,20 +193,6 @@
             let quotes = [];
             let isSmoothingEnabled = true;
             let chartInstances = []; // Keep track of all chart instances to manage tooltips
-
-            // --- RIDICULOUS QUOTES ---
-            const quotesContent = `
-Weather forecast for tonight: dark.
-The sun is a deadly laser.
-I like my weather like I like my coffee: hot and existing.
-Humidity is just the air giving you a wet hug.
-Why did the cloud break up with the fog? He was too down to earth.
-It's so hot, the squirrels are fanning their nuts.
-The wind is just the sky showing off its dance moves.
-Rain is just confetti from the sky.
-It's not the heat, it's the stupidity.
-I tried to catch some fog, but I mist.
-`;
 
             // --- HELPER FUNCTIONS ---
             function startOfDay(date) {
@@ -252,23 +242,28 @@ I tried to catch some fog, but I mist.
             // --- INITIAL DATA FETCH ---
             async function fetchData() {
                 try {
-                    // Display a random quote on initial load
-                    quotes = quotesContent.split('\n').filter(q => q.trim() !== '');
+                    // Fetch both data files in parallel
+                    const [weatherResponse, quotesResponse] = await Promise.all([
+                        fetch(new URL('weather_data.json', window.location.href)),
+                        fetch(new URL('quotes.txt', window.location.href))
+                    ]);
+
+                    if (!weatherResponse.ok) throw new Error(`Could not load weather_data.json`);
+                    if (!quotesResponse.ok) throw new Error(`Could not load quotes.txt`);
+
+                    rawData = await weatherResponse.json();
+                    const quotesText = await quotesResponse.text();
+                    quotes = quotesText.split('\n').filter(q => q.trim() !== ''); // Split by newline and remove empty lines
+
+                    // Display a random quote
                     const randomQuote = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
                     document.getElementById('quote-text-desktop').textContent = randomQuote;
                     document.getElementById('quote-text-mobile').textContent = randomQuote;
 
-
-                    const jsonURL = new URL('weather_data.json', window.location.href);
-                    const response = await fetch(jsonURL);
-                    if (!response.ok) {
-                        throw new Error(`Network response was not ok: ${response.status}`);
-                    }
-                    rawData = await response.json();
                     processAndRenderAll(); // Initial processing and rendering
                 } catch (error) {
                     const errorMessage = `Error: ${error.message}`;
-                    console.error('Failed to load or process weather data:', error);
+                    console.error('Failed to load or process data:', error);
                     document.getElementById('loading-message-temp').textContent = errorMessage;
                     document.getElementById('loading-message-humidity').textContent = errorMessage;
                 }
@@ -539,6 +534,8 @@ I tried to catch some fog, but I mist.
                 const existingChart = Chart.getChart(chartCanvas);
                 if (existingChart) { existingChart.destroy(); }
 
+                const isMobile = window.innerWidth < 768;
+
                 const chartOptions = {
                     responsive: true, maintainAspectRatio: false,
                     plugins: {
@@ -546,7 +543,15 @@ I tried to catch some fog, but I mist.
                         tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 10, cornerRadius: 4 }
                     },
                     scales: {
-                        x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9ca3af', maxRotation: 0, autoSkip: true, maxTicksLimit: 15 } },
+                        x: { 
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
+                            ticks: { 
+                                color: '#9ca3af', 
+                                maxRotation: 0, 
+                                autoSkip: !isMobile,
+                                maxTicksLimit: isMobile ? undefined : 15 
+                            } 
+                        },
                         y_temp: { type: 'linear', position: 'left', grid: { color: 'rgba(248, 113, 113, 0.2)' }, ticks: { color: '#f87171' }, title: { display: true, text: 'Temperature (°F)', color: '#f87171' } },
                         y_humidity: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#4ade80' }, title: { display: true, text: 'Humidity (%)', color: '#4ade80' } }
                     },
