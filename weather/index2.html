@@ -229,11 +229,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             
-            // --- CONFIGURATION ---
-            // IMPORTANT: Get a free API key from openweathermap.org and paste it here.
-            const OPENWEATHER_API_KEY = 'YOUR_API_KEY_HERE'; 
-            const ZIP_CODE = '01835';
-
             // --- GLOBAL STATE ---
             let rawData = [];
             let quotes = [];
@@ -293,12 +288,14 @@
             // --- INITIAL DATA FETCH ---
             async function fetchData() {
                 try {
-                    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?zip=${ZIP_CODE},us&units=imperial&appid=${OPENWEATHER_API_KEY}`;
+                    const lat = 42.78;
+                    const lon = -71.08;
+                    const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&temperature_unit=fahrenheit&timezone=America/New_York`;
                     
                     const [weatherResponse, quotesResponse, forecastResponse] = await Promise.all([
                         fetch(new URL('weather_data.json', window.location.href)),
                         fetch(new URL('quotes.txt', window.location.href)),
-                        OPENWEATHER_API_KEY !== 'd7360fc880cb10e804d8cb17a121f859' ? fetch(forecastUrl) : Promise.resolve(null)
+                        fetch(forecastUrl)
                     ]);
 
                     if (!weatherResponse.ok) throw new Error(`Could not load weather_data.json`);
@@ -314,10 +311,10 @@
 
                     if (forecastResponse && forecastResponse.ok) {
                         const forecastData = await forecastResponse.json();
-                        processAndRenderForecast(forecastData);
+                        processAndRenderOpenMeteoForecast(forecastData);
                     } else {
-                        document.getElementById('forecast-container').innerHTML = `<p class="col-span-5 text-yellow-400">Please add a valid OpenWeather API key to view the forecast.</p>`;
-                        document.getElementById('sun-times-container').innerHTML = `<p class="text-yellow-400">API key needed.</p>`;
+                        document.getElementById('forecast-container').innerHTML = `<p class="col-span-5 text-red-400">Could not load forecast.</p>`;
+                        document.getElementById('sun-times-container').innerHTML = `<p class="text-red-400">Could not load sun times.</p>`;
                     }
 
                     processAndRenderAll();
@@ -441,8 +438,10 @@
             }
 
             function processAndRenderForecast(forecastData) {
-                const sunrise = new Date(forecastData.city.sunrise * 1000);
-                const sunset = new Date(forecastData.city.sunset * 1000);
+                // This function is now for Open-Meteo
+                const daily = forecastData.daily;
+                const sunrise = new Date(daily.sunrise[0]);
+                const sunset = new Date(daily.sunset[0]);
                 const sunContainer = document.getElementById('sun-times-container');
                 sunContainer.innerHTML = `
                     <div class="text-center">
@@ -457,33 +456,33 @@
                     </div>
                 `;
 
-                const dailyForecasts = {};
-                forecastData.list.forEach(item => {
-                    const date = new Date(item.dt * 1000);
-                    const day = date.toISOString().split('T')[0];
-                    if (!dailyForecasts[day]) {
-                        dailyForecasts[day] = { temps: [], icon: item.weather[0].icon };
-                    }
-                    dailyForecasts[day].temps.push(item.main.temp);
-                });
+                const weatherCodeMap = {
+                    0: '☀️', 1: '🌤️', 2: '⛅️', 3: '☁️', 45: '🌫️', 48: '🌫️',
+                    51: '🌦️', 53: '🌦️', 55: '🌦️', 56: '🌨️', 57: '🌨️',
+                    61: '🌧️', 63: '🌧️', 65: '🌧️', 66: '🌨️', 67: '🌨️',
+                    71: '❄️', 73: '❄️', 75: '❄️', 77: '❄️',
+                    80: '🌧️', 81: '🌧️', 82: '🌧️',
+                    85: '🌨️', 86: '🌨️',
+                    95: '⛈️', 96: '⛈️', 99: '⛈️'
+                };
 
                 const forecastContainer = document.getElementById('forecast-container');
                 forecastContainer.innerHTML = '';
-                Object.keys(dailyForecasts).slice(0, 5).forEach(day => {
-                    const dayData = dailyForecasts[day];
-                    const date = new Date(day + 'T12:00:00');
+                for (let i = 0; i < 5; i++) {
+                    const date = new Date(daily.time[i] + 'T12:00:00');
                     const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-                    const high = Math.max(...dayData.temps);
-                    const low = Math.min(...dayData.temps);
+                    const high = daily.temperature_2m_max[i];
+                    const low = daily.temperature_2m_min[i];
+                    const code = daily.weather_code[i];
                     
                     const forecastDayEl = document.createElement('div');
                     forecastDayEl.innerHTML = `
                         <p class="font-semibold text-sm">${dayName}</p>
-                        <img src="https://openweathermap.org/img/wn/${dayData.icon}.png" alt="weather icon" class="w-12 h-12 mx-auto">
+                        <p class="text-3xl my-1">${weatherCodeMap[code] || '❓'}</p>
                         <p class="font-semibold">${Math.round(high)}° / <span class="text-gray-400">${Math.round(low)}°</span></p>
                     `;
                     forecastContainer.appendChild(forecastDayEl);
-                });
+                }
             }
             
             function processAndRenderRecords(rawData) {
