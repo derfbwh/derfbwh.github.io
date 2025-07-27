@@ -188,6 +188,7 @@
             let rawData = [];
             let quotes = [];
             let isSmoothingEnabled = true;
+            let chartInstances = []; // Keep track of all chart instances to manage tooltips
 
             // --- RIDICULOUS QUOTES ---
             const quotesContent = `
@@ -276,6 +277,8 @@ I tried to catch some fog, but I mist.
             // --- MAIN PROCESSING AND RENDERING FUNCTION ---
             function processAndRenderAll() {
                 if (rawData.length === 0) return;
+                
+                chartInstances = []; // Clear chart instances before re-rendering
 
                 // --- TOP-LEVEL DATA ---
                 const latestEntry = rawData[0];
@@ -456,7 +459,7 @@ I tried to catch some fog, but I mist.
                     spanGaps: true
                 };
 
-                new Chart(chartCanvas.getContext('2d'), {
+                const newChart = new Chart(chartCanvas.getContext('2d'), {
                     type: 'line',
                     data: {
                         labels: labels,
@@ -467,6 +470,7 @@ I tried to catch some fog, but I mist.
                     },
                     options: chartOptions
                 });
+                chartInstances.push(newChart);
             }
 
             function renderHumidityChart(labels, avgHumidity) {
@@ -487,7 +491,7 @@ I tried to catch some fog, but I mist.
                     spanGaps: true
                 };
 
-                new Chart(chartCanvas.getContext('2d'), {
+                const newChart = new Chart(chartCanvas.getContext('2d'), {
                     type: 'line',
                     data: {
                         labels: labels,
@@ -495,6 +499,7 @@ I tried to catch some fog, but I mist.
                     },
                     options: chartOptions
                 });
+                chartInstances.push(newChart);
             }
             
             function render24HourTrendChart(labels, tempData, humidityData) {
@@ -515,7 +520,7 @@ I tried to catch some fog, but I mist.
                     },
                 };
 
-                new Chart(chartCanvas.getContext('2d'), {
+                const newChart = new Chart(chartCanvas.getContext('2d'), {
                     type: 'line',
                     data: {
                         labels: labels,
@@ -526,6 +531,7 @@ I tried to catch some fog, but I mist.
                     },
                     options: chartOptions
                 });
+                chartInstances.push(newChart);
             }
 
             function renderHistoryChart(labels, highs, lows, humidity) {
@@ -546,7 +552,7 @@ I tried to catch some fog, but I mist.
                     },
                 };
 
-                new Chart(chartCanvas.getContext('2d'), {
+                const newChart = new Chart(chartCanvas.getContext('2d'), {
                     type: 'line',
                     data: {
                         labels: labels,
@@ -558,10 +564,24 @@ I tried to catch some fog, but I mist.
                     },
                     options: chartOptions
                 });
+                chartInstances.push(newChart);
             }
 
             // Initial load
             fetchData();
+            
+            // Global click listener to hide tooltips on mobile
+            document.addEventListener('click', (evt) => {
+                const isCanvas = evt.target.tagName === 'CANVAS';
+                if (!isCanvas) {
+                    chartInstances.forEach(chart => {
+                        if (chart.tooltip && chart.tooltip.getActiveElements().length > 0) {
+                            chart.tooltip.setActiveElements([], { x: 0, y: 0 });
+                            chart.update();
+                        }
+                    });
+                }
+            });
         });
     </script>
     
