@@ -138,35 +138,6 @@
                 </div>
             </div>
 
-            <!-- New Contextual Cards Section -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- 5-Day Forecast Card -->
-                <div class="card md:col-span-2">
-                    <h2 class="text-xl font-semibold text-white mb-4">5-Day Forecast</h2>
-                    <div id="forecast-container" class="grid grid-cols-5 gap-4 text-center">
-                        <!-- Forecast data will be injected here -->
-                        <p class="col-span-5 text-gray-400">Loading forecast...</p>
-                    </div>
-                </div>
-                <!-- Sunrise/Sunset & Records Card -->
-                <div class="flex flex-col gap-8">
-                    <div class="card">
-                        <h2 class="text-xl font-semibold text-white mb-4">Sun Times</h2>
-                        <div id="sun-times-container" class="flex justify-around">
-                            <!-- Sunrise/Sunset data will be injected here -->
-                            <p class="text-gray-400">Loading...</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h2 class="text-xl font-semibold text-white mb-4">All-Time Records</h2>
-                        <div id="records-container" class="space-y-2 text-sm">
-                             <!-- Records data will be injected here -->
-                             <p class="text-gray-400">Loading records...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- History Card with Tabs -->
             <div class="card">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
@@ -215,6 +186,32 @@
                 <div class="card mt-8 block md:hidden">
                     <h3 class="text-lg font-semibold text-white mb-2">Quote of the Moment</h3>
                     <p id="quote-text-mobile" class="text-gray-400 italic">Loading quote...</p>
+                </div>
+            </div>
+            
+            <!-- Contextual Cards Section (Moved to the bottom) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- 5-Day Forecast Card -->
+                <div class="card md:col-span-2">
+                    <h2 class="text-xl font-semibold text-white mb-4">5-Day Forecast</h2>
+                    <div id="forecast-container" class="grid grid-cols-5 gap-4 text-center">
+                        <p class="col-span-5 text-gray-400">Loading forecast...</p>
+                    </div>
+                </div>
+                <!-- Sunrise/Sunset & Records Card -->
+                <div class="flex flex-col gap-8">
+                    <div class="card">
+                        <h2 class="text-xl font-semibold text-white mb-4">Sun Times</h2>
+                        <div id="sun-times-container" class="flex justify-around">
+                            <p class="text-gray-400">Loading...</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h2 class="text-xl font-semibold text-white mb-4">All-Time Records</h2>
+                        <div id="records-container" class="space-y-2 text-sm">
+                             <p class="text-gray-400">Loading records...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -290,7 +287,7 @@
                 try {
                     const lat = 42.78;
                     const lon = -71.08;
-                    const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&temperature_unit=fahrenheit&timezone=America/New_York`;
+                    const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/New_York`;
                     
                     const [weatherResponse, quotesResponse, forecastResponse] = await Promise.all([
                         fetch(new URL('weather_data.json', window.location.href)),
@@ -336,7 +333,6 @@
 
                 const feelsLikeTemp = calculateHeatIndex(temp, humidity);
                 const feelsLikeEl = document.getElementById('feels-like-temp');
-                // FIX: Corrected the ternary operator syntax
                 feelsLikeEl.textContent = feelsLikeTemp ? `(${feelsLikeTemp.toFixed(1)}°)` : '';
 
                 const lastUpdatedDate = new Date(latestEntry.date.replace(' ', 'T'));
@@ -445,25 +441,26 @@
                 const sunContainer = document.getElementById('sun-times-container');
                 sunContainer.innerHTML = `
                     <div class="text-center">
-                        <svg class="w-10 h-10 mx-auto text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <p class="text-2xl">☀️</p>
                         <p class="font-semibold">${sunrise.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'})}</p>
                         <p class="text-xs text-gray-400">Sunrise</p>
                     </div>
                     <div class="text-center">
-                        <svg class="w-10 h-10 mx-auto text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <p class="text-2xl">🌙</p>
                         <p class="font-semibold">${sunset.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'})}</p>
                         <p class="text-xs text-gray-400">Sunset</p>
                     </div>
                 `;
 
                 const weatherCodeMap = {
-                    0: '☀️', 1: '🌤️', 2: '⛅️', 3: '☁️', 45: '🌫️', 48: '🌫️',
-                    51: '🌦️', 53: '🌦️', 55: '🌦️', 56: '🌨️', 57: '🌨️',
-                    61: '🌧️', 63: '🌧️', 65: '🌧️', 66: '🌨️', 67: '🌨️',
-                    71: '❄️', 73: '❄️', 75: '❄️', 77: '❄️',
-                    80: '🌧️', 81: '🌧️', 82: '🌧️',
-                    85: '🌨️', 86: '🌨️',
-                    95: '⛈️', 96: '⛈️', 99: '⛈️'
+                    0: {icon: '☀️', desc: 'Clear sky'}, 1: {icon: '🌤️', desc: 'Mainly clear'}, 2: {icon: '⛅️', desc: 'Partly cloudy'}, 3: {icon: '☁️', desc: 'Overcast'},
+                    45: {icon: '🌫️', desc: 'Fog'}, 48: {icon: '🌫️', desc: 'Rime fog'},
+                    51: {icon: '🌦️', desc: 'Light drizzle'}, 53: {icon: '🌦️', desc: 'Drizzle'}, 55: {icon: '🌦️', desc: 'Dense drizzle'},
+                    61: {icon: '🌧️', desc: 'Slight rain'}, 63: {icon: '🌧️', desc: 'Rain'}, 65: {icon: '🌧️', desc: 'Heavy rain'},
+                    71: {icon: '❄️', desc: 'Slight snow'}, 73: {icon: '❄️', desc: 'Snow'}, 75: {icon: '❄️', desc: 'Heavy snow'}, 77: {icon: '❄️', desc: 'Snow grains'},
+                    80: {icon: '🌧️', desc: 'Slight showers'}, 81: {icon: '🌧️', desc: 'Showers'}, 82: {icon: '🌧️', desc: 'Violent showers'},
+                    85: {icon: '🌨️', desc: 'Slight snow showers'}, 86: {icon: '🌨️', desc: 'Heavy snow showers'},
+                    95: {icon: '⛈️', desc: 'Thunderstorm'}, 96: {icon: '⛈️', desc: 'Thunderstorm'}, 99: {icon: '⛈️', desc: 'Thunderstorm'}
                 };
 
                 const forecastContainer = document.getElementById('forecast-container');
@@ -478,11 +475,29 @@
                     const forecastDayEl = document.createElement('div');
                     forecastDayEl.innerHTML = `
                         <p class="font-semibold text-sm">${dayName}</p>
-                        <p class="text-3xl my-1">${weatherCodeMap[code] || '❓'}</p>
+                        <p class="text-3xl my-1">${weatherCodeMap[code]?.icon || '❓'}</p>
                         <p class="font-semibold">${Math.round(high)}° / <span class="text-gray-400">${Math.round(low)}°</span></p>
                     `;
                     forecastContainer.appendChild(forecastDayEl);
                 }
+                
+                // Process and render current official conditions
+                const current = forecastData.current;
+                const conditionsContainer = document.getElementById('official-conditions-container');
+                conditionsContainer.innerHTML = `
+                    <div class="text-center">
+                        <p class="text-gray-400 text-sm">Condition</p>
+                        <p class="text-lg font-semibold">${weatherCodeMap[current.weather_code]?.desc || 'N/A'}</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-gray-400 text-sm">Temp (Feels Like)</p>
+                        <p class="text-lg font-semibold">${Math.round(current.temperature_2m)}° (${Math.round(current.apparent_temperature)}°)</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-gray-400 text-sm">Wind</p>
+                        <p class="text-lg font-semibold">${Math.round(current.wind_speed_10m)} mph</p>
+                    </div>
+                `;
             }
             
             function processAndRenderRecords(rawData) {
