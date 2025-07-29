@@ -1,5 +1,11 @@
 [
   {
+    "date": "2025-07-29 13:30:00",
+    "temperature": "96.3",
+    "humidity": "41.85",
+    "pressure": null
+  },
+  {
     "date": "2025-07-29 12:30:00",
     "temperature": "93",
     "humidity": "50.3",
