@@ -82,40 +82,6 @@
             background-color: #4f46e5;
             color: #ffffff;
         }
-        /* Styles for collapsible section */
-        .collapsible-content {
-            transition: all 0.5s ease-in-out;
-            overflow: hidden;
-            max-height: 1000px; /* A large value to allow content to show */
-        }
-        .collapsible-content.collapsed {
-            max-height: 0;
-            padding-top: 0;
-            padding-bottom: 0;
-            margin-top: 0;
-            opacity: 0;
-        }
-        .gray_bg {
-        	background-color:#091010;
-        }
-        /* Styles for the modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.75);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 50;
-        }
-        .modal-content {
-            width: 90%;
-            max-width: 800px;
-            height: 60%;
-        }
     </style>
 </head>
 <body class="p-4 sm:p-6 lg:p-8">
@@ -125,7 +91,6 @@
         <header class="mb-8">
             <h1 class="text-3xl font-bold text-white">Backyard Weather</h1>
             <p class="text-gray-400 mt-1">Visualizing data from your Eve Weather station.</p>
-            <p id="last-updated" class="text-gray-500 text-sm mt-2">Last updated: ...</p>
         </header>
 
         <!-- Controls Section -->
@@ -137,9 +102,10 @@
             </div>
         </div>
 
+
         <!-- Dashboard Grid -->
         <div class="grid grid-cols-1 gap-8">
-
+            
             <!-- Current Conditions Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Current Temperature Card -->
@@ -183,6 +149,7 @@
                         <button class="tab-button" data-days="30">30 Days</button>
                     </div>
                 </div>
+                <!-- This grid is now always a single column -->
                 <div class="grid grid-cols-1 gap-8">
                     <div class="overflow-x-auto md:overflow-visible">
                         <div id="history-temp-container" class="chart-container">
@@ -201,6 +168,7 @@
             <div>
                 <h2 class="text-2xl font-bold text-white mb-4">24 Hour Data</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Left column for scrolling list and quote (on desktop) -->
                     <div class="flex flex-col gap-8">
                         <div class="card">
                             <h3 class="text-lg font-semibold text-white mb-4">Hourly Breakdown</h3>
@@ -211,6 +179,7 @@
                             <p id="quote-text-desktop" class="text-gray-400 italic">Loading quote...</p>
                         </div>
                     </div>
+                    <!-- 24 Hour Trend Chart -->
                     <div class="card">
                         <h3 class="text-lg font-semibold text-white mb-4">Hourly Trend</h3>
                         <div class="chart-container">
@@ -218,79 +187,20 @@
                         </div>
                     </div>
                 </div>
+                <!-- Ridiculous Quote Card (Mobile Only) -->
                 <div class="card mt-8 block md:hidden">
                     <h3 class="text-lg font-semibold text-white mb-2">Quote of the Moment</h3>
                     <p id="quote-text-mobile" class="text-gray-400 italic">Loading quote...</p>
                 </div>
             </div>
-            
-            <!-- Contextual Cards Section (Moved to the bottom) -->
-            <div class="gray_bg rounded-lg p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-bold text-white">API Weather Forecast</h2>
-                    <button id="forecast-toggle-button" class="text-3xl font-bold text-gray-400 hover:text-white leading-none">&minus;</button>
-                </div>
-                <div id="forecast-content" class="collapsible-content grid grid-cols-1 gap-8">
-                    <!-- Live Radar Card (Moved Here) -->
-                    <div class="card" style="background-color:#232323;">
-                        <h2 class="text-xl font-semibold text-white mb-4">Live Radar</h2>
-                        <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
-                            <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&lat=42.78&lon=-71.08&zoom=8&overlay=radar" width="100%" height="100%" frameborder="0" style="border:0;height:400px;"></iframe>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <!-- Left column for forecast and current conditions -->
-                        <div class="md:col-span-2 flex flex-col gap-8">
-                            <!-- 5-Day Forecast Card -->
-                            <div class="card" style="background-color:#232323;">
-                                <h2 class="text-xl font-semibold text-white mb-4">5-Day Forecast</h2>
-                                <div id="forecast-container" class="grid grid-cols-5 gap-4 text-center">
-                                    <p class="col-span-5 text-gray-400">Loading forecast...</p>
-                                </div>
-                            </div>
-                            <!-- Official Current Conditions Card -->
-                            <div class="card" style="background-color:#232323;">
-                                <h2 class="text-xl font-semibold text-white mb-4">Official Conditions</h2>
-                                <div id="official-conditions-container" class="flex justify-around items-center text-center">
-                                    <p class="text-gray-400">Loading conditions...</p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Right column for Sun Times & Records -->
-                        <div class="flex flex-col gap-8">
-                            <div class="card" style="background-color:#232323;">
-                                <h2 class="text-xl font-semibold text-white mb-4">Sun Times</h2>
-                                <div id="sun-times-container" class="flex justify-around">
-                                    <p class="text-gray-400">Loading...</p>
-                                </div>
-                            </div>
-                            <div class="card" style="background-color:#232323;">
-                                <h2 class="text-xl font-semibold text-white mb-4">All-Time Records</h2>
-                                <div id="records-container" class="space-y-2 text-sm">
-                                     <p class="text-gray-400">Loading records...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
         </div>
         
-    </div>
-    
-    <!-- Modal for Detailed Day View -->
-    <div id="detail-modal" class="modal-overlay hidden">
-        <div class="modal-content card">
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="modal-title" class="text-2xl font-bold text-white">Detailed View</h2>
-                <button id="modal-close-button" class="text-3xl font-bold text-gray-400 hover:text-white leading-none">&times;</button>
-            </div>
-            <div class="chart-container">
-                <canvas id="detailChart"></canvas>
-            </div>
-        </div>
+        <!-- Footer for Last Updated Timestamp -->
+        <footer class="text-center text-gray-500 text-sm mt-12">
+            <p id="last-updated">Last updated: ...</p>
+        </footer>
+
     </div>
 
     <script>
@@ -301,7 +211,6 @@
             let quotes = [];
             let isSmoothingEnabled = true;
             let historyDays = 7;
-            let isForecastExpanded = true;
             let chartInstances = {};
 
             // --- HELPER FUNCTIONS ---
@@ -347,38 +256,21 @@
             document.getElementById('history-tabs').addEventListener('click', (event) => {
                 if (event.target.tagName === 'BUTTON') {
                     historyDays = parseInt(event.target.dataset.days, 10);
-                    document.querySelectorAll('#history-tabs .tab-button').forEach(btn => btn.classList.remove('active'));
+                    // Update active tab style
+                    document.querySelectorAll('#history-tabs .tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
                     event.target.classList.add('active');
                     processAndRenderAll();
-                }
-            });
-            
-            document.getElementById('forecast-toggle-button').addEventListener('click', () => {
-                isForecastExpanded = !isForecastExpanded;
-                document.getElementById('forecast-content').classList.toggle('collapsed');
-                document.getElementById('forecast-toggle-button').textContent = isForecastExpanded ? '−' : '+';
-            });
-
-            const modal = document.getElementById('detail-modal');
-            const modalCloseButton = document.getElementById('modal-close-button');
-            modalCloseButton.addEventListener('click', () => modal.classList.add('hidden'));
-            modal.addEventListener('click', (event) => {
-                if (event.target === modal) {
-                    modal.classList.add('hidden');
                 }
             });
 
             // --- INITIAL DATA FETCH ---
             async function fetchData() {
                 try {
-                    const lat = 42.78;
-                    const lon = -71.08;
-                    const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/New_York`;
-                    
-                    const [weatherResponse, quotesResponse, forecastResponse] = await Promise.all([
+                    const [weatherResponse, quotesResponse] = await Promise.all([
                         fetch(new URL('weather_data.json', window.location.href)),
-                        fetch(new URL('quotes.txt', window.location.href)),
-                        fetch(forecastUrl)
+                        fetch(new URL('quotes.txt', window.location.href))
                     ]);
 
                     if (!weatherResponse.ok) throw new Error(`Could not load weather_data.json`);
@@ -391,14 +283,6 @@
                     const randomQuote = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
                     document.getElementById('quote-text-desktop').textContent = randomQuote;
                     document.getElementById('quote-text-mobile').textContent = randomQuote;
-
-                    if (forecastResponse && forecastResponse.ok) {
-                        const forecastData = await forecastResponse.json();
-                        processAndRenderForecast(forecastData);
-                    } else {
-                        document.getElementById('forecast-container').innerHTML = `<p class="col-span-5 text-red-400">Could not load forecast.</p>`;
-                        document.getElementById('sun-times-container').innerHTML = `<p class="text-red-400">Could not load sun times.</p>`;
-                    }
 
                     processAndRenderAll();
                 } catch (error) {
@@ -419,17 +303,24 @@
 
                 const feelsLikeTemp = calculateHeatIndex(temp, humidity);
                 const feelsLikeEl = document.getElementById('feels-like-temp');
-                feelsLikeEl.textContent = feelsLikeTemp ? `(${feelsLikeTemp.toFixed(1)}°)` : '';
+                if (feelsLikeTemp) {
+                    feelsLikeEl.textContent = `(${feelsLikeTemp.toFixed(1)}°)`;
+                } else {
+                    feelsLikeEl.textContent = '';
+                }
 
                 const lastUpdatedDate = new Date(latestEntry.date.replace(' ', 'T'));
                 document.getElementById('last-updated').textContent = `Last updated: ${lastUpdatedDate.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}`;
 
+                // --- DAILY DATA AGGREGATION ---
                 const dailyData = {};
                 rawData.forEach(entry => {
                     const date = startOfDay(new Date(entry.date.replace(' ', 'T')));
                     if (isNaN(date)) return;
                     const dateString = date.toISOString().split('T')[0];
-                    if (!dailyData[dateString]) dailyData[dateString] = { temps: [], humidities: [] };
+                    if (!dailyData[dateString]) {
+                        dailyData[dateString] = { temps: [], humidities: [] };
+                    }
                     dailyData[dateString].temps.push(parseFloat(entry.temperature));
                     if(entry.humidity) dailyData[dateString].humidities.push(parseFloat(entry.humidity));
                 });
@@ -446,9 +337,11 @@
                     };
                 }
                 
+                // --- RENDER HISTORY CHARTS ---
                 processAndRenderHistory(dailyMetrics, startOfDay(new Date(rawData[0].date.replace(' ', 'T'))));
+
+                // --- RENDER 24-HOUR DATA ---
                 processAndRenderHourlyData(rawData);
-                processAndRenderRecords(rawData);
             }
             
             function processAndRenderHourlyData(rawData) {
@@ -460,7 +353,9 @@
                 recentData.forEach(entry => {
                     const date = new Date(entry.date.replace(' ', 'T'));
                     const hourKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}`;
-                    if (!hourlyData[hourKey]) hourlyData[hourKey] = { temps: [], humidities: [], date: date };
+                    if (!hourlyData[hourKey]) {
+                        hourlyData[hourKey] = { temps: [], humidities: [], date: date };
+                    }
                     hourlyData[hourKey].temps.push(parseFloat(entry.temperature));
                     hourlyData[hourKey].humidities.push(parseFloat(entry.humidity));
                 });
@@ -519,104 +414,20 @@
                 renderHistoryHumidityChart(labels, humidity, isScrollable);
             }
 
-            function processAndRenderForecast(forecastData) {
-                const daily = forecastData.daily;
-                const sunrise = new Date(daily.sunrise[0]);
-                const sunset = new Date(daily.sunset[0]);
-                const sunContainer = document.getElementById('sun-times-container');
-                sunContainer.innerHTML = `
-                    <div class="text-center">
-                        <p class="text-2xl">☀️</p>
-                        <p class="font-semibold">${sunrise.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'})}</p>
-                        <p class="text-xs text-gray-400">Sunrise</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-2xl">🌙</p>
-                        <p class="font-semibold">${sunset.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'})}</p>
-                        <p class="text-xs text-gray-400">Sunset</p>
-                    </div>
-                `;
-
-                const weatherCodeMap = {
-                    0: {icon: '☀️', desc: 'Clear sky'}, 1: {icon: '🌤️', desc: 'Mainly clear'}, 2: {icon: '⛅️', desc: 'Partly cloudy'}, 3: {icon: '☁️', desc: 'Overcast'},
-                    45: {icon: '🌫️', desc: 'Fog'}, 48: {icon: '🌫️', desc: 'Rime fog'},
-                    51: {icon: '🌦️', desc: 'Light drizzle'}, 53: {icon: '🌦️', desc: 'Drizzle'}, 55: {icon: '🌦️', desc: 'Dense drizzle'},
-                    61: {icon: '🌧️', desc: 'Slight rain'}, 63: {icon: '🌧️', desc: 'Rain'}, 65: {icon: '🌧️', desc: 'Heavy rain'},
-                    71: {icon: '❄️', desc: 'Slight snow'}, 73: {icon: '❄️', desc: 'Snow'}, 75: {icon: '❄️', desc: 'Heavy snow'}, 77: {icon: '❄️', desc: 'Snow grains'},
-                    80: {icon: '🌧️', desc: 'Slight showers'}, 81: {icon: '🌧️', desc: 'Showers'}, 82: {icon: '🌧️', desc: 'Violent showers'},
-                    85: {icon: '🌨️', desc: 'Slight snow showers'}, 86: {icon: '🌨️', desc: 'Heavy snow showers'},
-                    95: {icon: '⛈️', desc: 'Thunderstorm'}, 96: {icon: '⛈️', desc: 'Thunderstorm'}, 99: {icon: '⛈️', desc: 'Thunderstorm'}
-                };
-
-                const forecastContainer = document.getElementById('forecast-container');
-                forecastContainer.innerHTML = '';
-                for (let i = 0; i < 5; i++) {
-                    const date = new Date(daily.time[i] + 'T12:00:00');
-                    const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-                    const high = daily.temperature_2m_max[i];
-                    const low = daily.temperature_2m_min[i];
-                    const code = daily.weather_code[i];
-                    
-                    const forecastDayEl = document.createElement('div');
-                    forecastDayEl.innerHTML = `
-                        <p class="font-semibold text-sm">${dayName}</p>
-                        <p class="text-3xl my-1">${weatherCodeMap[code]?.icon || '❓'}</p>
-                        <p class="font-semibold">${Math.round(high)}° / <span class="text-gray-400">${Math.round(low)}°</span></p>
-                    `;
-                    forecastContainer.appendChild(forecastDayEl);
-                }
-                
-                const current = forecastData.current;
-                const conditionsContainer = document.getElementById('official-conditions-container');
-                conditionsContainer.innerHTML = `
-                    <div class="text-center">
-                        <p class="text-gray-400 text-sm">Condition</p>
-                        <p class="text-lg font-semibold">${weatherCodeMap[current.weather_code]?.desc || 'N/A'}</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-gray-400 text-sm">Temp (Feels Like)</p>
-                        <p class="text-lg font-semibold">${Math.round(current.temperature_2m)}° (${Math.round(current.apparent_temperature)}°)</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-gray-400 text-sm">Wind</p>
-                        <p class="text-lg font-semibold">${Math.round(current.wind_speed_10m)} mph</p>
-                    </div>
-                `;
-            }
-            
-            function processAndRenderRecords(rawData) {
-                let recordHigh = -Infinity, recordLow = Infinity, highestHumidity = -Infinity;
-                rawData.forEach(entry => {
-                    const temp = parseFloat(entry.temperature);
-                    const humidity = parseFloat(entry.humidity);
-                    if (temp > recordHigh) recordHigh = temp;
-                    if (temp < recordLow) recordLow = temp;
-                    if (humidity > highestHumidity) highestHumidity = humidity;
-                });
-                
-                const container = document.getElementById('records-container');
-                container.innerHTML = `
-                    <div class="flex justify-between"><span>Record High:</span> <span class="font-semibold text-red-400">${recordHigh.toFixed(1)}°F</span></div>
-                    <div class="flex justify-between"><span>Record Low:</span> <span class="font-semibold text-blue-400">${recordLow.toFixed(1)}°F</span></div>
-                    <div class="flex justify-between"><span>Highest Humidity:</span> <span class="font-semibold text-green-400">${highestHumidity.toFixed(0)}%</span></div>
-                `;
-            }
-
             function renderHistoryTemperatureChart(labels, highs, lows, isScrollable) {
                 const chartId = 'historyTemperatureChart';
                 if (chartInstances[chartId]) chartInstances[chartId].destroy();
                 const chartOptions = {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y}°F` } } },
+                    plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y.toFixed(1)}°F` } } },
                     scales: { x: { ticks: { color: '#9ca3af', autoSkip: !isScrollable, maxRotation: 0 } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Temperature (°F)', color: '#9ca3af' } } },
-                    spanGaps: true,
-                    onClick: (evt, elements) => handleChartClick(evt, elements, labels)
+                    spanGaps: true
                 };
                 chartInstances[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
                     type: 'line',
                     data: { labels, datasets: [
-                        { label: 'High', data: highs, borderColor: '#f87171', tension: 0.4, pointRadius: 2 },
-                        { label: 'Low', data: lows, borderColor: '#60a5fa', backgroundColor: 'rgba(96, 165, 250, 0.2)', fill: '+1', tension: 0.4, pointRadius: 2 }
+                        { label: 'High', data: highs, borderColor: '#f87171', tension: 0.4 },
+                        { label: 'Low', data: lows, borderColor: '#60a5fa', backgroundColor: 'rgba(96, 165, 250, 0.2)', fill: '+1', tension: 0.4 }
                     ]},
                     options: chartOptions
                 });
@@ -629,12 +440,11 @@
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `Avg Humidity: ${c.parsed.y}%` } } },
                     scales: { x: { ticks: { color: '#9ca3af', autoSkip: !isScrollable, maxRotation: 0 } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Avg. Humidity (%)', color: '#9ca3af' } } },
-                    spanGaps: true,
-                    onClick: (evt, elements) => handleChartClick(evt, elements, labels)
+                    spanGaps: true
                 };
                 chartInstances[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
                     type: 'line',
-                    data: { labels, datasets: [{ data: avgHumidity, borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.2)', fill: true, tension: 0.4, pointRadius: 2 }] },
+                    data: { labels, datasets: [{ data: avgHumidity, borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.2)', fill: true, tension: 0.4 }] },
                     options: chartOptions
                 });
             }
@@ -661,62 +471,21 @@
                 });
             }
 
-            function handleChartClick(evt, elements, labels) {
-                if (elements.length > 0) {
-                    const dataIndex = elements[0].index;
-                    const clickedDateLabel = labels[dataIndex];
-                    showDailyDetailModal(clickedDateLabel);
-                }
-            }
-
-            function showDailyDetailModal(dateLabel) {
-                const today = new Date();
-                const targetDate = new Date(`${dateLabel}/${today.getFullYear()}`);
-                
-                const dayData = rawData.filter(entry => {
-                    const entryDate = new Date(entry.date.replace(' ', 'T'));
-                    return entryDate.getDate() === targetDate.getDate() &&
-                           entryDate.getMonth() === targetDate.getMonth() &&
-                           entryDate.getFullYear() === targetDate.getFullYear();
-                }).reverse(); // reverse to get chronological order
-
-                if (dayData.length === 0) return;
-
-                const detailLabels = dayData.map(d => new Date(d.date.replace(' ', 'T')).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }));
-                const detailTemps = dayData.map(d => parseFloat(d.temperature));
-                const detailHumidity = dayData.map(d => parseFloat(d.humidity));
-                
-                const tempsToChart = isSmoothingEnabled ? applyMedianFilter(detailTemps) : detailTemps;
-
-                document.getElementById('modal-title').textContent = `Detailed View for ${dateLabel}`;
-                renderDetailChart(detailLabels, tempsToChart, detailHumidity);
-                document.getElementById('detail-modal').classList.remove('hidden');
-            }
-
-            function renderDetailChart(labels, tempData, humidityData) {
-                const chartId = 'detailChart';
-                if (chartInstances[chartId]) chartInstances[chartId].destroy();
-                const chartOptions = {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false } },
-                    scales: {
-                        x: { ticks: { color: '#9ca3af', autoSkip: true, maxTicksLimit: 12 } },
-                        y_temp: { type: 'linear', position: 'left', ticks: { color: '#f87171' }, title: { display: true, text: 'Temp (°F)', color: '#f87171' } },
-                        y_humidity: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#4ade80' }, title: { display: true, text: 'Humidity (%)', color: '#4ade80' } }
-                    },
-                };
-                chartInstances[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
-                    type: 'line',
-                    data: { labels, datasets: [
-                        { label: 'Temperature', data: tempData, borderColor: '#f87171', yAxisID: 'y_temp', tension: 0.1, pointRadius: 1 },
-                        { label: 'Humidity', data: humidityData, borderColor: '#4ade80', yAxisID: 'y_humidity', tension: 0.1, pointRadius: 1 }
-                    ]},
-                    options: chartOptions
-                });
-            }
-
             // Initial load
             fetchData();
+
+            // Global click listener to hide tooltips on mobile
+            document.addEventListener('click', (evt) => {
+                const isCanvas = evt.target.tagName === 'CANVAS';
+                if (!isCanvas) {
+                    Object.values(chartInstances).forEach(chart => {
+                        if (chart && chart.tooltip && chart.tooltip.getActiveElements().length > 0) {
+                            chart.tooltip.setActiveElements([], { x: 0, y: 0 });
+                            chart.update();
+                        }
+                    });
+                }
+            });
         });
     </script>
     
