@@ -448,7 +448,9 @@
                     dailyMetrics[dateString] = {
                         high: Math.max(...tempsToProcess),
                         low: Math.min(...tempsToProcess),
-                        avgHumidity: day.humidities.length > 0 ? (humiditySum / day.humidities.length) : null
+                        avgHumidity: day.humidities.length > 0 ? (humiditySum / day.humidities.length) : null,
+                        highHumidity: Math.max(...day.humidities),
+                        lowHumidity: Math.min(...day.humidities)
                     };
                 }
                 
@@ -502,7 +504,7 @@
             }
 
             function processAndRenderHistory(dailyMetrics, today) {
-                const labels = [], highs = [], lows = [], humidity = [];
+                const labels = [], highs = [], lows = [], humidity = [], highHumidity = [], lowHumidity = [];
                 for (let i = historyDays - 1; i >= 0; i--) {
                     const date = subDays(today, i);
                     const dateString = date.toISOString().split('T')[0];
@@ -511,8 +513,10 @@
                         highs.push(dailyMetrics[dateString].high.toFixed(1));
                         lows.push(dailyMetrics[dateString].low.toFixed(1));
                         humidity.push(dailyMetrics[dateString].avgHumidity ? dailyMetrics[dateString].avgHumidity.toFixed(0) : null);
+                        highHumidity.push(dailyMetrics[dateString].highHumidity ? dailyMetrics[dateString].highHumidity.toFixed(0) : null);
+                        lowHumidity.push(dailyMetrics[dateString].lowHumidity ? dailyMetrics[dateString].lowHumidity.toFixed(0) : null);
                     } else {
-                        highs.push(null); lows.push(null); humidity.push(null);
+                        highs.push(null); lows.push(null); humidity.push(null); highHumidity.push(null); lowHumidity.push(null);
                     }
                 }
                 
@@ -523,7 +527,7 @@
                 document.getElementById('history-humidity-container').style.width = isScrollable ? '200%' : '100%';
 
                 renderHistoryTemperatureChart(labels, highs, lows, isScrollable);
-                renderHistoryHumidityChart(labels, humidity, isScrollable);
+                renderHistoryHumidityChart(labels, humidity, highHumidity, lowHumidity, isScrollable);
             }
 
             function processAndRenderForecast(forecastData) {
@@ -586,7 +590,7 @@
                     </div>
                     <div class="text-center">
                         <p class="text-gray-400 text-sm">Wind</p>
-                        <p class="text-lg font-semibold">${Math.round(current.wind_speed_10m)} mph ${current.wind_direction_10m}°</p>
+                        <p class="text-lg font-semibold">${Math.round(current.wind_speed_10m)} mph ${current.wind_direction_10m}° (${Math.round(current.wind_gusts_10m)} mph gusts)</p>
                     </div>
                 `;
             }
@@ -683,19 +687,23 @@
                 });
             }
 
-            function renderHistoryHumidityChart(labels, avgHumidity, isScrollable) {
+            function renderHistoryHumidityChart(labels, avgHumidity, highHumidity, lowHumidity, isScrollable) {
                 const chartId = 'historyHumidityChart';
                 if (chartInstances[chartId]) chartInstances[chartId].destroy();
                 const chartOptions = {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `Avg Humidity: ${c.parsed.y}%` } } },
-                    scales: { x: { ticks: { color: '#9ca3af', autoSkip: !isScrollable, maxRotation: 0 } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Avg. Humidity (%)', color: '#9ca3af' } } },
+                    plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y}%` } } },
+                    scales: { x: { ticks: { color: '#9ca3af', autoSkip: !isScrollable, maxRotation: 0 } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Humidity (%)', color: '#9ca3af' } } },
                     spanGaps: true,
                     onClick: (evt, elements) => handleChartClick(evt, elements, labels)
                 };
                 chartInstances[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
                     type: 'line',
-                    data: { labels, datasets: [{ data: avgHumidity, borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.2)', fill: true, tension: 0.4, pointRadius: 2 }] },
+                    data: { labels, datasets: [
+                        { label: 'High', data: highHumidity, borderColor: 'rgba(74, 222, 128, 0.5)', pointRadius: 0, fill: false },
+                        { label: 'Low', data: lowHumidity, borderColor: 'rgba(74, 222, 128, 0.5)', backgroundColor: 'rgba(74, 222, 128, 0.1)', pointRadius: 0, fill: '-1' },
+                        { label: 'Average', data: avgHumidity, borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.2)', fill: false, tension: 0.4, pointRadius: 2 }
+                    ] },
                     options: chartOptions
                 });
             }
