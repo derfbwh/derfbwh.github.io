@@ -300,6 +300,8 @@
             // --- GLOBAL STATE ---
             let rawData = [];
             let quotes = [];
+            let forecastData = null; // Store forecast data globally
+            let airQualityData = null; // Store AQI data globally
             let isSmoothingEnabled = true;
             let historyDays = 7;
             let isForecastExpanded = true;
@@ -396,12 +398,10 @@
                     document.getElementById('quote-text-mobile').textContent = randomQuote;
 
                     if (forecastResponse && forecastResponse.ok) {
-                        const forecastData = await forecastResponse.json();
-                        processAndRenderForecast(forecastData);
+                        forecastData = await forecastResponse.json();
                     }
                     if (airQualityResponse && airQualityResponse.ok) {
-                        const airQualityData = await airQualityResponse.json();
-                        processAndRenderAQI(airQualityData);
+                        airQualityData = await airQualityResponse.json();
                     }
 
                     processAndRenderAll();
@@ -458,6 +458,8 @@
                 processAndRenderHourlyData(rawData);
                 processAndRenderRecords(rawData);
                 processAndRenderYesterdayComparison(rawData, temp);
+                if (forecastData) processAndRenderForecast(forecastData);
+                if (airQualityData) processAndRenderAQI(airQualityData);
             }
             
             function processAndRenderHourlyData(rawData) {
@@ -700,8 +702,8 @@
                 chartInstances[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
                     type: 'line',
                     data: { labels, datasets: [
-                        { label: 'High', data: highHumidity, borderColor: 'rgba(74, 222, 128, 0.5)', pointRadius: 0, fill: false },
-                        { label: 'Low', data: lowHumidity, borderColor: 'rgba(74, 222, 128, 0.5)', backgroundColor: 'rgba(74, 222, 128, 0.05)', pointRadius: 0, fill: '-1' },
+                        { label: 'High', data: highHumidity, borderColor: 'rgba(74, 222, 128, 0.2)', pointRadius: 0, fill: false },
+                        { label: 'Low', data: lowHumidity, borderColor: 'rgba(74, 222, 128, 0.2)', backgroundColor: 'rgba(74, 222, 128, 0.05)', pointRadius: 0, fill: '-1' },
                         { label: 'Average', data: avgHumidity, borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.2)', fill: false, tension: 0.4, pointRadius: 2 }
                     ] },
                     options: chartOptions
