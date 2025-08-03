@@ -585,6 +585,7 @@
                         <p class="text-lg font-semibold">${Math.round(current.wind_speed_10m)} mph ${current.wind_direction_10m}° (${Math.round(current.wind_gusts_10m)} mph gusts)</p>
                     </div>
                 `;
+                document.getElementById('current-condition-icon').textContent = weatherCodeMap[current.weather_code]?.icon || '';
             }
             
             function processAndRenderRecords(rawData) {
@@ -605,37 +606,11 @@
                 `;
             }
 
-             function processAndRenderAQI(aqiData) {
-                const current = aqiData.current;
-                const getAqiInfo = (aqi) => {
-                    if (aqi <= 50) return { label: 'Good', color: 'text-green-400' };
-                    if (aqi <= 100) return { label: 'Moderate', color: 'text-yellow-400' };
-                    if (aqi <= 150) return { label: 'Unhealthy for Some', color: 'text-orange-400' };
-                    if (aqi <= 200) return { label: 'Unhealthy', color: 'text-red-500' };
-                    if (aqi <= 300) return { label: 'Very Unhealthy', color: 'text-purple-500' };
-                    return { label: 'Hazardous', color: 'text-red-700' };
-                };
-                const aqiInfo = getAqiInfo(current.us_aqi);
-
-                const container = document.getElementById('aqi-container');
-                container.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <span>AQI: <span class="font-bold ${aqiInfo.color}">${current.us_aqi} (${aqiInfo.label})</span></span>
-                    </div>
-                    <div class="text-xs text-gray-400 grid grid-cols-3 gap-1 mt-2">
-                        <span>Tree: ${current.tree_pollen || 'N/A'}</span>
-                        <span>Grass: ${current.grass_pollen || 'N/A'}</span>
-                        <span>Weed: ${current.weed_pollen || 'N/A'}</span>
-                    </div>
-                `;
-            }
-            
             function processAndRenderYesterdayComparison(rawData, currentTemp) {
                 const now = new Date();
                 const yesterday = new Date(now.getTime() - (24 * 60 * 60 * 1000));
                 
                 let yesterdayTemp = null;
-                // Find the closest reading from yesterday
                 for (const entry of rawData) {
                     const entryDate = new Date(entry.date.replace(' ', 'T'));
                     if (entryDate < yesterday) {
