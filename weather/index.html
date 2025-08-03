@@ -157,6 +157,7 @@
                              <p class="text-gray-400">°F</p>
                         </div>
                     </div>
+                    <p id="yesterday-comparison" class="text-sm text-gray-400 mt-2"></p>
                 </div>
                 <!-- Current Humidity Card -->
                 <div class="card">
@@ -224,18 +225,17 @@
                 </div>
             </div>
             
-            <!-- Contextual Cards Section (Moved to the bottom) -->
+            <!-- Contextual Cards Section -->
             <div class="gray_bg rounded-lg p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-bold text-white">API Weather Forecast</h2>
                     <button id="forecast-toggle-button" class="text-3xl font-bold text-gray-400 hover:text-white leading-none">&minus;</button>
                 </div>
                 <div id="forecast-content" class="collapsible-content grid grid-cols-1 gap-8">
-                    <!-- Live Radar Card (Moved Here) -->
+                    <!-- Live Radar Card -->
                     <div class="card" style="background-color:#232323;">
                         <h2 class="text-xl font-semibold text-white mb-4">Radar Forecast</h2>
                         <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
-                            <!-- Changed overlay from 'radar' to 'rain' to show the forecast -->
                             <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&lat=42.78&lon=-71.08&zoom=8&overlay=rain" width="100%" height="100%" frameborder="0" style="border:0;height:400px;"></iframe>
                         </div>
                     </div>
@@ -246,31 +246,27 @@
                             <!-- 5-Day Forecast Card -->
                             <div class="card" style="background-color:#232323;">
                                 <h2 class="text-xl font-semibold text-white mb-4">5-Day Forecast</h2>
-                                <div id="forecast-container" class="grid grid-cols-5 gap-4 text-center">
-                                    <p class="col-span-5 text-gray-400">Loading forecast...</p>
-                                </div>
+                                <div id="forecast-container" class="grid grid-cols-5 gap-4 text-center"></div>
                             </div>
                             <!-- Official Current Conditions Card -->
                             <div class="card" style="background-color:#232323;">
                                 <h2 class="text-xl font-semibold text-white mb-4">Official Conditions</h2>
-                                <div id="official-conditions-container" class="flex justify-around items-center text-center">
-                                    <p class="text-gray-400">Loading conditions...</p>
-                                </div>
+                                <div id="official-conditions-container" class="flex justify-around items-center text-center"></div>
                             </div>
                         </div>
-                        <!-- Right column for Sun Times & Records -->
+                        <!-- Right column for Sun Times, Records, and AQI -->
                         <div class="flex flex-col gap-8">
                             <div class="card" style="background-color:#232323;">
                                 <h2 class="text-xl font-semibold text-white mb-4">Sun Times</h2>
-                                <div id="sun-times-container" class="flex justify-around">
-                                    <p class="text-gray-400">Loading...</p>
-                                </div>
+                                <div id="sun-times-container" class="flex justify-around"></div>
                             </div>
                             <div class="card" style="background-color:#232323;">
                                 <h2 class="text-xl font-semibold text-white mb-4">All-Time Records</h2>
-                                <div id="records-container" class="space-y-2 text-sm">
-                                     <p class="text-gray-400">Loading records...</p>
-                                </div>
+                                <div id="records-container" class="space-y-2 text-sm"></div>
+                            </div>
+                            <div class="card" style="background-color:#232323;">
+                                <h2 class="text-xl font-semibold text-white mb-4">Air Quality & Pollen</h2>
+                                <div id="aqi-container" class="space-y-2 text-sm"></div>
                             </div>
                         </div>
                     </div>
@@ -279,6 +275,10 @@
 
         </div>
         
+        <footer class="text-center text-gray-500 text-sm mt-12">
+            <p id="last-updated-footer">Last updated: ...</p>
+        </footer>
+
     </div>
     
     <!-- Modal for Detailed Day View -->
@@ -374,12 +374,14 @@
                 try {
                     const lat = 42.78;
                     const lon = -71.08;
-                    const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/New_York`;
+                    const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/New_York`;
+                    const airQualityUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,grass_pollen,tree_pollen,weed_pollen`;
                     
-                    const [weatherResponse, quotesResponse, forecastResponse] = await Promise.all([
+                    const [weatherResponse, quotesResponse, forecastResponse, airQualityResponse] = await Promise.all([
                         fetch(new URL('weather_data.json', window.location.href)),
                         fetch(new URL('quotes.txt', window.location.href)),
-                        fetch(forecastUrl)
+                        fetch(forecastUrl),
+                        fetch(airQualityUrl)
                     ]);
 
                     if (!weatherResponse.ok) throw new Error(`Could not load weather_data.json`);
@@ -396,9 +398,10 @@
                     if (forecastResponse && forecastResponse.ok) {
                         const forecastData = await forecastResponse.json();
                         processAndRenderForecast(forecastData);
-                    } else {
-                        document.getElementById('forecast-container').innerHTML = `<p class="col-span-5 text-red-400">Could not load forecast.</p>`;
-                        document.getElementById('sun-times-container').innerHTML = `<p class="text-red-400">Could not load sun times.</p>`;
+                    }
+                    if (airQualityResponse && airQualityResponse.ok) {
+                        const airQualityData = await airQualityResponse.json();
+                        processAndRenderAQI(airQualityData);
                     }
 
                     processAndRenderAll();
@@ -423,7 +426,9 @@
                 feelsLikeEl.textContent = feelsLikeTemp ? `(${feelsLikeTemp.toFixed(1)}°)` : '';
 
                 const lastUpdatedDate = new Date(latestEntry.date.replace(' ', 'T'));
-                document.getElementById('last-updated').textContent = `Last updated: ${lastUpdatedDate.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}`;
+                const lastUpdatedString = `Last updated: ${lastUpdatedDate.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}`;
+                document.getElementById('last-updated').textContent = lastUpdatedString;
+                document.getElementById('last-updated-footer').textContent = lastUpdatedString;
 
                 const dailyData = {};
                 rawData.forEach(entry => {
@@ -450,6 +455,7 @@
                 processAndRenderHistory(dailyMetrics, startOfDay(new Date(rawData[0].date.replace(' ', 'T'))));
                 processAndRenderHourlyData(rawData);
                 processAndRenderRecords(rawData);
+                processAndRenderYesterdayComparison(rawData, temp);
             }
             
             function processAndRenderHourlyData(rawData) {
@@ -580,7 +586,7 @@
                     </div>
                     <div class="text-center">
                         <p class="text-gray-400 text-sm">Wind</p>
-                        <p class="text-lg font-semibold">${Math.round(current.wind_speed_10m)} mph</p>
+                        <p class="text-lg font-semibold">${Math.round(current.wind_speed_10m)} mph ${current.wind_direction_10m}°</p>
                     </div>
                 `;
             }
@@ -601,6 +607,60 @@
                     <div class="flex justify-between"><span>Record Low:</span> <span class="font-semibold text-blue-400">${recordLow.toFixed(1)}°F</span></div>
                     <div class="flex justify-between"><span>Highest Humidity:</span> <span class="font-semibold text-green-400">${highestHumidity.toFixed(0)}%</span></div>
                 `;
+            }
+
+             function processAndRenderAQI(aqiData) {
+                const current = aqiData.current;
+                const getAqiInfo = (aqi) => {
+                    if (aqi <= 50) return { label: 'Good', color: 'text-green-400' };
+                    if (aqi <= 100) return { label: 'Moderate', color: 'text-yellow-400' };
+                    if (aqi <= 150) return { label: 'Unhealthy for Some', color: 'text-orange-400' };
+                    if (aqi <= 200) return { label: 'Unhealthy', color: 'text-red-500' };
+                    if (aqi <= 300) return { label: 'Very Unhealthy', color: 'text-purple-500' };
+                    return { label: 'Hazardous', color: 'text-red-700' };
+                };
+                const aqiInfo = getAqiInfo(current.us_aqi);
+
+                const container = document.getElementById('aqi-container');
+                container.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span>AQI: <span class="font-bold ${aqiInfo.color}">${current.us_aqi} (${aqiInfo.label})</span></span>
+                    </div>
+                    <div class="text-xs text-gray-400 grid grid-cols-3 gap-1 mt-2">
+                        <span>Tree: ${current.tree_pollen || 'N/A'}</span>
+                        <span>Grass: ${current.grass_pollen || 'N/A'}</span>
+                        <span>Weed: ${current.weed_pollen || 'N/A'}</span>
+                    </div>
+                `;
+            }
+            
+            function processAndRenderYesterdayComparison(rawData, currentTemp) {
+                const now = new Date();
+                const yesterday = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+                
+                let yesterdayTemp = null;
+                // Find the closest reading from yesterday
+                for (const entry of rawData) {
+                    const entryDate = new Date(entry.date.replace(' ', 'T'));
+                    if (entryDate < yesterday) {
+                        yesterdayTemp = parseFloat(entry.temperature);
+                        break;
+                    }
+                }
+                
+                const container = document.getElementById('yesterday-comparison');
+                if (yesterdayTemp !== null) {
+                    const diff = currentTemp - yesterdayTemp;
+                    const sign = diff > 0 ? '+' : '';
+                    const color = diff > 0 ? 'text-red-400' : 'text-blue-400';
+                    if (Math.abs(diff) < 0.1) {
+                         container.textContent = 'Same as yesterday';
+                    } else {
+                        container.innerHTML = `<span class="${color}">${sign}${diff.toFixed(1)}°</span> vs yesterday`;
+                    }
+                } else {
+                    container.textContent = '';
+                }
             }
 
             function renderHistoryTemperatureChart(labels, highs, lows, isScrollable) {
