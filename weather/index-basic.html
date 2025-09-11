@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for creating charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        /* Custom styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #111827; /* Dark background */
+            color: #e5e7eb; /* Light text */
+        }
+        .card {
+            background-color: #1f2937; /* Slightly lighter card background */
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        /* Styles for the horizontal scroll container */
+        .scroll-container {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            scrollbar-width: thin;
+            scrollbar-color: #4b5563 #1f2937;
+        }
+        .scroll-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .scroll-container::-webkit-scrollbar-track {
+            background: #1f2937;
+            border-radius: 10px;
+        }
+        .scroll-container::-webkit-scrollbar-thumb {
+            background-color: #4b5563;
+            border-radius: 10px;
+        }
+        .hour-card {
+            flex: 0 0 auto; /* Prevent shrinking */
+            width: 100px;
+            text-align: center;
+            padding: 1rem;
+            background-color: #374151;
+            border-radius: 0.5rem;
+            margin-right: 0.75rem;
+        }
+        /* Styles for the toggle switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #4ade80;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #4ade80;
+        }
+        /* Styles for the history tabs */
+        .tab-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background-color: #374151;
+            color: #9ca3af;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .tab-button:hover {
+            background-color: #4b5563;
+        }
+        .tab-button.active {
+            background-color: #4f46e5;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 lg:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-white">Backyard Weather</h1>
+            <p class="text-gray-400 mt-1">Visualizing data from your Eve Weather station.</p>
+        </header>
+
+        <!-- Controls Section -->
+        <div class="mb-6 flex justify-end items-center">
+            <label for="smoothing-toggle" class="text-sm font-medium text-gray-300 mr-3">Smooth Temperature Spikes</label>
+            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                <input type="checkbox" name="smoothing-toggle" id="smoothing-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                <label for="smoothing-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"></label>
+            </div>
+        </div>
+
+
+        <!-- Dashboard Grid -->
+        <div class="grid grid-cols-1 gap-8">
+            
+            <!-- Current Conditions Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Current Temperature Card -->
+                <div class="card">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="text-xl font-semibold text-white">Current Temperature</h2>
+                            <p class="text-gray-400">Live reading from sensor</p>
+                        </div>
+                        <div class="text-right">
+                             <div class="flex items-baseline justify-end">
+                                <p class="text-4xl font-bold text-white" id="current-temp">-</p>
+                                <p class="text-lg text-orange-400 ml-2" id="feels-like-temp"></p>
+                             </div>
+                             <p class="text-gray-400">°F</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Current Humidity Card -->
+                <div class="card">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="text-xl font-semibold text-white">Current Humidity</h2>
+                            <p class="text-gray-400">Live reading from sensor</p>
+                        </div>
+                        <div class="text-right">
+                             <p class="text-4xl font-bold text-white" id="current-humidity">-</p>
+                             <p class="text-gray-400">%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Card with Tabs -->
+            <div class="card">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                    <h2 class="text-2xl font-bold text-white mb-4 sm:mb-0">Historical Data</h2>
+                    <div class="flex space-x-2" id="history-tabs">
+                        <button class="tab-button active" data-days="7">7 Days</button>
+                        <button class="tab-button" data-days="15">15 Days</button>
+                        <button class="tab-button" data-days="30">30 Days</button>
+                    </div>
+                </div>
+                <!-- This grid is now always a single column -->
+                <div class="grid grid-cols-1 gap-8">
+                    <div class="overflow-x-auto md:overflow-visible">
+                        <div id="history-temp-container" class="chart-container">
+                            <canvas id="historyTemperatureChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto md:overflow-visible">
+                        <div id="history-humidity-container" class="chart-container">
+                            <canvas id="historyHumidityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 24 Hour Data Section -->
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-4">24 Hour Data</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Left column for scrolling list and quote (on desktop) -->
+                    <div class="flex flex-col gap-8">
+                        <div class="card">
+                            <h3 class="text-lg font-semibold text-white mb-4">Hourly Breakdown</h3>
+                            <div id="hourly-data-container" class="scroll-container"></div>
+                        </div>
+                        <div class="card hidden md:block">
+                            <h3 class="text-lg font-semibold text-white mb-2">Quote of the Moment</h3>
+                            <p id="quote-text-desktop" class="text-gray-400 italic">Loading quote...</p>
+                        </div>
+                    </div>
+                    <!-- 24 Hour Trend Chart -->
+                    <div class="card">
+                        <h3 class="text-lg font-semibold text-white mb-4">Hourly Trend</h3>
+                        <div class="chart-container">
+                            <canvas id="hourlyTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- Ridiculous Quote Card (Mobile Only) -->
+                <div class="card mt-8 block md:hidden">
+                    <h3 class="text-lg font-semibold text-white mb-2">Quote of the Moment</h3>
+                    <p id="quote-text-mobile" class="text-gray-400 italic">Loading quote...</p>
+                </div>
+            </div>
+
+        </div>
+        
+        <!-- Footer for Last Updated Timestamp -->
+        <footer class="text-center text-gray-500 text-sm mt-12">
+            <p id="last-updated">Last updated: ...</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            // --- GLOBAL STATE ---
+            let rawData = [];
+            let quotes = [];
+            let isSmoothingEnabled = true;
+            let historyDays = 7;
+            let chartInstances = {};
+
+            // --- HELPER FUNCTIONS ---
+            function startOfDay(date) {
+                const newDate = new Date(date);
+                newDate.setHours(0, 0, 0, 0);
+                return newDate;
+            }
+
+            function subDays(date, amount) {
+                const newDate = new Date(date);
+                newDate.setDate(newDate.getDate() - amount);
+                return newDate;
+            }
+
+            const applyMedianFilter = (data, windowSize = 5) => {
+              if (data.length < windowSize) return data;
+              const filtered = [];
+              const halfWindow = Math.floor(windowSize / 2);
+              for (let i = 0; i < data.length; i++) {
+                const start = Math.max(0, i - halfWindow);
+                const end = Math.min(data.length, i + halfWindow + 1);
+                const window = data.slice(start, end).sort((a, b) => a - b);
+                const median = window[Math.floor(window.length / 2)];
+                filtered.push(median);
+              }
+              return filtered;
+            };
+            
+            const calculateHeatIndex = (T, RH) => {
+              if (T < 80 || RH < 40) return null;
+              let HI = -42.379 + 2.04901523 * T + 10.14333127 * RH - 0.22475541 * T * RH - 6.83783e-3 * T * T - 5.481717e-2 * RH * RH + 1.22874e-3 * T * T * RH + 8.5282e-4 * T * RH * RH - 1.99e-6 * T * T * RH * RH;
+              if (HI > T) return HI;
+              return null;
+            };
+
+            // --- EVENT LISTENERS ---
+            document.getElementById('smoothing-toggle').addEventListener('change', (event) => {
+                isSmoothingEnabled = event.target.checked;
+                processAndRenderAll();
+            });
+
+            document.getElementById('history-tabs').addEventListener('click', (event) => {
+                if (event.target.tagName === 'BUTTON') {
+                    historyDays = parseInt(event.target.dataset.days, 10);
+                    // Update active tab style
+                    document.querySelectorAll('#history-tabs .tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    event.target.classList.add('active');
+                    processAndRenderAll();
+                }
+            });
+
+            // --- INITIAL DATA FETCH ---
+            async function fetchData() {
+                try {
+                    const [weatherResponse, quotesResponse] = await Promise.all([
+                        fetch(new URL('weather_data.json', window.location.href)),
+                        fetch(new URL('quotes.txt', window.location.href))
+                    ]);
+
+                    if (!weatherResponse.ok) throw new Error(`Could not load weather_data.json`);
+                    if (!quotesResponse.ok) throw new Error(`Could not load quotes.txt`);
+
+                    rawData = await weatherResponse.json();
+                    const quotesText = await quotesResponse.text();
+                    quotes = quotesText.split('\n').filter(q => q.trim() !== '');
+
+                    const randomQuote = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
+                    document.getElementById('quote-text-desktop').textContent = randomQuote;
+                    document.getElementById('quote-text-mobile').textContent = randomQuote;
+
+                    processAndRenderAll();
+                } catch (error) {
+                    console.error('Failed to load or process data:', error);
+                }
+            }
+            
+            // --- MAIN PROCESSING AND RENDERING FUNCTION ---
+            function processAndRenderAll() {
+                if (rawData.length === 0) return;
+
+                const latestEntry = rawData[0];
+                const temp = parseFloat(latestEntry.temperature);
+                const humidity = parseFloat(latestEntry.humidity);
+                
+                document.getElementById('current-temp').textContent = temp.toFixed(1);
+                document.getElementById('current-humidity').textContent = humidity.toFixed(0);
+
+                const feelsLikeTemp = calculateHeatIndex(temp, humidity);
+                const feelsLikeEl = document.getElementById('feels-like-temp');
+                if (feelsLikeTemp) {
+                    feelsLikeEl.textContent = `(${feelsLikeTemp.toFixed(1)}°)`;
+                } else {
+                    feelsLikeEl.textContent = '';
+                }
+
+                const lastUpdatedDate = new Date(latestEntry.date.replace(' ', 'T'));
+                document.getElementById('last-updated').textContent = `Last updated: ${lastUpdatedDate.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}`;
+
+                // --- DAILY DATA AGGREGATION ---
+                const dailyData = {};
+                rawData.forEach(entry => {
+                    const date = startOfDay(new Date(entry.date.replace(' ', 'T')));
+                    if (isNaN(date)) return;
+                    const dateString = date.toISOString().split('T')[0];
+                    if (!dailyData[dateString]) {
+                        dailyData[dateString] = { temps: [], humidities: [] };
+                    }
+                    dailyData[dateString].temps.push(parseFloat(entry.temperature));
+                    if(entry.humidity) dailyData[dateString].humidities.push(parseFloat(entry.humidity));
+                });
+
+                const dailyMetrics = {};
+                for (const dateString in dailyData) {
+                    const day = dailyData[dateString];
+                    const humiditySum = day.humidities.reduce((a, b) => a + b, 0);
+                    const tempsToProcess = isSmoothingEnabled ? applyMedianFilter(day.temps) : day.temps;
+                    dailyMetrics[dateString] = {
+                        high: Math.max(...tempsToProcess),
+                        low: Math.min(...tempsToProcess),
+                        avgHumidity: day.humidities.length > 0 ? (humiditySum / day.humidities.length) : null
+                    };
+                }
+                
+                // --- RENDER HISTORY CHARTS ---
+                processAndRenderHistory(dailyMetrics, startOfDay(new Date(rawData[0].date.replace(' ', 'T'))));
+
+                // --- RENDER 24-HOUR DATA ---
+                processAndRenderHourlyData(rawData);
+            }
+            
+            function processAndRenderHourlyData(rawData) {
+                const now = new Date();
+                const twentyFourHoursAgo = now.getTime() - (24 * 60 * 60 * 1000);
+                const recentData = rawData.filter(entry => new Date(entry.date.replace(' ', 'T')).getTime() >= twentyFourHoursAgo);
+
+                const hourlyData = {};
+                recentData.forEach(entry => {
+                    const date = new Date(entry.date.replace(' ', 'T'));
+                    const hourKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}`;
+                    if (!hourlyData[hourKey]) {
+                        hourlyData[hourKey] = { temps: [], humidities: [], date: date };
+                    }
+                    hourlyData[hourKey].temps.push(parseFloat(entry.temperature));
+                    hourlyData[hourKey].humidities.push(parseFloat(entry.humidity));
+                });
+
+                const hourlyAverages = Object.values(hourlyData).map(hour => ({
+                    date: hour.date,
+                    avgTemp: hour.temps.reduce((a, b) => a + b, 0) / hour.temps.length,
+                    avgHumidity: hour.humidities.reduce((a, b) => a + b, 0) / hour.humidities.length
+                })).sort((a, b) => b.date - a.date);
+
+                const container = document.getElementById('hourly-data-container');
+                container.innerHTML = '';
+                hourlyAverages.forEach(hour => {
+                    const hourCard = document.createElement('div');
+                    hourCard.className = 'hour-card';
+                    hourCard.innerHTML = `
+                        <p class="text-sm font-semibold text-gray-300">${hour.date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true })}</p>
+                        <p class="text-xs text-gray-400 mb-2">${hour.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}</p>
+                        <p class="text-2xl font-bold text-red-400">${hour.avgTemp.toFixed(0)}°</p>
+                        <p class="text-lg text-green-400 mt-1">${hour.avgHumidity.toFixed(0)}%</p>
+                    `;
+                    container.appendChild(hourCard);
+                });
+
+                const trendChartData = hourlyAverages.slice().reverse();
+                const trendLabels = trendChartData.map(d => d.date.toLocaleTimeString('en-US', { hour: 'numeric' }));
+                const rawTrendTemps = trendChartData.map(d => d.avgTemp);
+                const tempsToChart = isSmoothingEnabled ? applyMedianFilter(rawTrendTemps) : rawTrendTemps;
+                const trendTempData = tempsToChart.map(t => t.toFixed(1));
+                const trendHumidityData = trendChartData.map(d => d.avgHumidity.toFixed(0));
+                render24HourTrendChart(trendLabels, trendTempData, trendHumidityData);
+            }
+
+            function processAndRenderHistory(dailyMetrics, today) {
+                const labels = [], highs = [], lows = [], humidity = [];
+                for (let i = historyDays - 1; i >= 0; i--) {
+                    const date = subDays(today, i);
+                    const dateString = date.toISOString().split('T')[0];
+                    labels.push(date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }));
+                    if (dailyMetrics[dateString]) {
+                        highs.push(dailyMetrics[dateString].high.toFixed(1));
+                        lows.push(dailyMetrics[dateString].low.toFixed(1));
+                        humidity.push(dailyMetrics[dateString].avgHumidity ? dailyMetrics[dateString].avgHumidity.toFixed(0) : null);
+                    } else {
+                        highs.push(null); lows.push(null); humidity.push(null);
+                    }
+                }
+                
+                const isMobile = window.innerWidth < 768;
+                const isScrollable = isMobile && historyDays === 30;
+
+                document.getElementById('history-temp-container').style.width = isScrollable ? '200%' : '100%';
+                document.getElementById('history-humidity-container').style.width = isScrollable ? '200%' : '100%';
+
+                renderHistoryTemperatureChart(labels, highs, lows, isScrollable);
+                renderHistoryHumidityChart(labels, humidity, isScrollable);
+            }
+
+            function renderHistoryTemperatureChart(labels, highs, lows, isScrollable) {
+                const chartId = 'historyTemperatureChart';
+                if (chartInstances[chartId]) chartInstances[chartId].destroy();
+                const chartOptions = {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y.toFixed(1)}°F` } } },
+                    scales: { x: { ticks: { color: '#9ca3af', autoSkip: !isScrollable, maxRotation: 0 } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Temperature (°F)', color: '#9ca3af' } } },
+                    spanGaps: true
+                };
+                chartInstances[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
+                    type: 'line',
+                    data: { labels, datasets: [
+                        { label: 'High', data: highs, borderColor: '#f87171', tension: 0.4 },
+                        { label: 'Low', data: lows, borderColor: '#60a5fa', backgroundColor: 'rgba(96, 165, 250, 0.2)', fill: '+1', tension: 0.4 }
+                    ]},
+                    options: chartOptions
+                });
+            }
+
+            function renderHistoryHumidityChart(labels, avgHumidity, isScrollable) {
+                const chartId = 'historyHumidityChart';
+                if (chartInstances[chartId]) chartInstances[chartId].destroy();
+                const chartOptions = {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `Avg Humidity: ${c.parsed.y}%` } } },
+                    scales: { x: { ticks: { color: '#9ca3af', autoSkip: !isScrollable, maxRotation: 0 } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Avg. Humidity (%)', color: '#9ca3af' } } },
+                    spanGaps: true
+                };
+                chartInstances[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
+                    type: 'line',
+                    data: { labels, datasets: [{ data: avgHumidity, borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.2)', fill: true, tension: 0.4 }] },
+                    options: chartOptions
+                });
+            }
+            
+            function render24HourTrendChart(labels, tempData, humidityData) {
+                const chartId = 'hourlyTrendChart';
+                if (chartInstances[chartId]) chartInstances[chartId].destroy();
+                const chartOptions = {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false } },
+                    scales: {
+                        x: { ticks: { color: '#9ca3af' } },
+                        y_temp: { type: 'linear', position: 'left', ticks: { color: '#f87171' }, title: { display: true, text: 'Temp (°F)', color: '#f87171' } },
+                        y_humidity: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#4ade80' }, title: { display: true, text: 'Humidity (%)', color: '#4ade80' } }
+                    },
+                };
+                chartInstances[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
+                    type: 'line',
+                    data: { labels, datasets: [
+                        { label: 'Temperature', data: tempData, borderColor: '#f87171', yAxisID: 'y_temp', tension: 0.4, pointRadius: 2 },
+                        { label: 'Humidity', data: humidityData, borderColor: '#4ade80', yAxisID: 'y_humidity', tension: 0.4, pointRadius: 2 }
+                    ]},
+                    options: chartOptions
+                });
+            }
+
+            // Initial load
+            fetchData();
+
+            // Global click listener to hide tooltips on mobile
+            document.addEventListener('click', (evt) => {
+                const isCanvas = evt.target.tagName === 'CANVAS';
+                if (!isCanvas) {
+                    Object.values(chartInstances).forEach(chart => {
+                        if (chart && chart.tooltip && chart.tooltip.getActiveElements().length > 0) {
+                            chart.tooltip.setActiveElements([], { x: 0, y: 0 });
+                            chart.update();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    
+</body>
+</html>
