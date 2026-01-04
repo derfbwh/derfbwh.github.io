@@ -1,5 +1,11 @@
 [
   {
+    "date": "2026-01-03 21:30:00",
+    "temperature": "25.4",
+    "humidity": "66.37",
+    "pressure": null
+  },
+  {
     "date": "2026-01-03 20:30:00",
     "temperature": "25.9",
     "humidity": "65.37",
@@ -11991,12 +11997,6 @@
     "date": "2025-10-10 05:30:00",
     "temperature": "33.7",
     "humidity": "85.6",
-    "pressure": null
-  },
-  {
-    "date": "2025-10-10 04:30:00",
-    "temperature": "34.5",
-    "humidity": "84.15",
     "pressure": null
   }
 ]
