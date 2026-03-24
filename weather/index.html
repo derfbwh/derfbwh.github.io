@@ -292,10 +292,14 @@
 
             const calculateDewPoint = (T, RH) => {
               if (RH === 0 || RH === null) return null;
+              // Convert Fahrenheit to Celsius for calculation
+              const Tc = (T - 32) * (5 / 9);
               const a = 17.27;
               const b = 237.7;
-              const alpha = ((a * T) / (b + T)) + Math.log(RH / 100);
-              return (b * alpha) / (a - alpha);
+              const alpha = ((a * Tc) / (b + Tc)) + Math.log(RH / 100);
+              const Dc = (b * alpha) / (a - alpha);
+              // Convert back to Fahrenheit
+              return (Dc * (9 / 5)) + 32;
             };
 
             const getDewPointComfort = (dewPoint) => {
