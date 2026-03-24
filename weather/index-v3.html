@@ -485,12 +485,16 @@
                     historicalContext = `Yesterday's average temperature was ${yesterdayData.avgTemp.toFixed(1)}°F with a high of ${yesterdayData.high.toFixed(1)}°F.`;
                 }
 
+                // Inject temporal context (Time of Day, Date)
+                const timeContext = today.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
                 const prompt = `You are an expert home weather assistant analyzing personal backyard weather station data. 
+Current local time is ${timeContext}.
 Current conditions: Temp ${temp.toFixed(1)}°F, Humidity ${humidity.toFixed(0)}%, Feels Like ${feelsLike ? feelsLike.toFixed(1) : temp.toFixed(1)}°F.
 Historical context: ${historicalContext}
 
 Provide your response strictly as a JSON object with exactly these three keys:
-1. "main_insight": A verbose, conversational, and highly detailed paragraph (at least 3-4 sentences long) summarizing the current weather vibe. It MUST explicitly weave the exact temperature (${temp.toFixed(1)}°F) and humidity (${humidity.toFixed(0)}%) natively into its human-like summary.
+1. "main_insight": A verbose, conversational, and highly detailed paragraph (at least 3-4 sentences long) summarizing the current weather vibe. It MUST explicitly weave the exact temperature (${temp.toFixed(1)}°F) and humidity (${humidity.toFixed(0)}%) natively into its human-like summary. Note the time of day (${timeContext}) when greeting the user or summarizing.
 2. "anomaly_trend": ONE short sentence noting any interesting trend or anomaly (e.g. "Humidity is notably high for this temperature" or "It's warming up faster than yesterday").
 3. "recommendation": A practical, contextual recommendation for the user based on the conditions (e.g. "Great time to open windows", "Bring a heavy jacket", "Drink extra water today").
 
@@ -500,9 +504,18 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                 const modelId = 'gemma-3-27b-it';
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${API_KEY}`;
                 
-                document.getElementById('ai-insight-main').innerHTML = '<span class="animate-pulse">✨ Gemma is analyzing your weather...</span>';
-                document.getElementById('ai-anomaly-box').innerHTML = '<span class="animate-pulse">Scanning historical data...</span>';
-                document.getElementById('ai-recommendation-box').innerHTML = '<span class="animate-pulse">Processing context...</span>';
+                const mainInsightEl = document.getElementById('ai-insight-main');
+                const anomalyBoxEl = document.getElementById('ai-anomaly-box');
+                const recBoxEl = document.getElementById('ai-recommendation-box');
+
+                mainInsightEl.innerHTML = '✨ Gemma is analyzing your weather...';
+                mainInsightEl.classList.add('animate-pulse', 'opacity-80');
+                
+                anomalyBoxEl.innerHTML = 'Scanning historical data...';
+                anomalyBoxEl.classList.add('animate-pulse', 'opacity-80');
+                
+                recBoxEl.innerHTML = 'Processing context...';
+                recBoxEl.classList.add('animate-pulse', 'opacity-80');
 
                 try {
                     const response = await fetch(url, {
@@ -525,9 +538,9 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                         text = text.replace(/```json/g, '').replace(/```/g, '').trim();
                         const aiData = JSON.parse(text);
                         
-                        document.getElementById('ai-insight-main').textContent = aiData.main_insight || "Weather looks quiet right now.";
-                        document.getElementById('ai-anomaly-box').textContent = aiData.anomaly_trend || "No anomalies detected.";
-                        document.getElementById('ai-recommendation-box').textContent = aiData.recommendation || "Enjoy the weather out there!";
+                        mainInsightEl.textContent = aiData.main_insight || "Weather looks quiet right now.";
+                        anomalyBoxEl.textContent = aiData.anomaly_trend || "No anomalies detected.";
+                        recBoxEl.textContent = aiData.recommendation || "Enjoy the weather out there!";
                     }
                 } catch (error) {
                     console.error("Failed to fetch or parse AI insight:", error);
@@ -544,9 +557,13 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                         errorMessage = "API Key Error: Requests from local files are blocked by your API restrictions (CORS/Referrer). Try hosting on localhost or GitHub Pages.";
                     }
                     
-                    document.getElementById('ai-insight-main').textContent = errorMessage;
-                    document.getElementById('ai-anomaly-box').textContent = "Unavailable";
-                    document.getElementById('ai-recommendation-box').textContent = "Unavailable";
+                    mainInsightEl.textContent = errorMessage;
+                    anomalyBoxEl.textContent = "Unavailable";
+                    recBoxEl.textContent = "Unavailable";
+                } finally {
+                    mainInsightEl.classList.remove('animate-pulse', 'opacity-80');
+                    anomalyBoxEl.classList.remove('animate-pulse', 'opacity-80');
+                    recBoxEl.classList.remove('animate-pulse', 'opacity-80');
                 }
             }
             
