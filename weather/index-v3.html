@@ -603,6 +603,12 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                     console.error("Failed to fetch or parse AI insight:", error);
                     let errorMessage = "Couldn't load AI insights at this time.";
                     
+                    if (error instanceof SyntaxError) {
+                        errorMessage = "AI Format Error: The model returned a response that isn't valid JSON.";
+                    } else if (error.message) {
+                        errorMessage = `API Error: ${error.message}`;
+                    }
+                    
                     // If the user's API key restricts empty referrers OR CORS blocks the 403 response locally
                     if (error.message.includes("referer") || error.message.includes("blocked") || error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
                         errorMessage = "API Key Error: Requests from local files are blocked by your API restrictions (CORS/Referrer). Try hosting on localhost or GitHub Pages.";
