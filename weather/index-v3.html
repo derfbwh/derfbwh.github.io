@@ -152,11 +152,15 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    <div class="w-full h-[260px]">
-                        <canvas id="historyTemperatureChart"></canvas>
+                    <div class="w-full h-[260px] overflow-hidden">
+                        <div id="history-temp-container" class="h-full w-full">
+                            <canvas id="historyTemperatureChart"></canvas>
+                        </div>
                     </div>
-                    <div class="w-full h-[260px]">
-                        <canvas id="historyHumidityChart"></canvas>
+                    <div class="w-full h-[260px] overflow-hidden">
+                        <div id="history-humidity-container" class="h-full w-full">
+                            <canvas id="historyHumidityChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -200,6 +204,19 @@
 
         </div>
     </main>
+
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="modal-overlay hidden">
+        <div class="modal-content flex flex-col">
+            <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                <h3 id="modal-title" class="text-lg font-semibold tracking-wide">Detailed View</h3>
+                <button id="modal-close-button" class="text-gray-400 hover:text-white text-2xl font-light">&times;</button>
+            </div>
+            <div class="flex-grow w-full relative">
+                <canvas id="modalChart"></canvas>
+            </div>
+        </div>
+    </div>
 
     <footer class="w-full border-t border-white/10 py-8 px-4 sm:px-6 mt-4">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] text-gray-500 font-medium">
