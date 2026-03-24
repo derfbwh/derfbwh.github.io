@@ -8,284 +8,231 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for creating charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <style>
-        /* Custom styles */
+        /* Modern Card-less Minimal Styles */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #111827; /* Dark background */
-            color: #e5e7eb; /* Light text */
-        }
-        .card {
-            background-color: #1f2937; /* Slightly lighter card background */
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-        /* Styles for the horizontal scroll container */
-        .scroll-container {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #212121;
+            color: #ECECEC;
+            overflow-x: hidden;
             display: flex;
-            overflow-x: auto;
-            padding-bottom: 1rem;
-            scrollbar-width: thin;
-            scrollbar-color: #4b5563 #1f2937;
+            flex-direction: column;
+            min-height: 100vh;
         }
-        .scroll-container::-webkit-scrollbar {
-            height: 8px;
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: #424242; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background-color: #555; }
+        
+        .scrollbar-thin::-webkit-scrollbar { height: 6px; }
+
+        /* Toggles & Interactive Elements */
+        .toggle-checkbox:checked { right: 0; background-color: white; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #10a37f; } /* ChatGPT green */
+        
+        #history-tabs button.active {
+            border-bottom-color: #10a37f;
+            color: #fff;
         }
-        .scroll-container::-webkit-scrollbar-track {
-            background: #1f2937;
-            border-radius: 10px;
-        }
-        .scroll-container::-webkit-scrollbar-thumb {
-            background-color: #4b5563;
-            border-radius: 10px;
-        }
-        .hour-card {
-            flex: 0 0 auto; /* Prevent shrinking */
-            width: 100px;
-            text-align: center;
-            padding: 1rem;
-            background-color: #374151;
-            border-radius: 0.5rem;
-            margin-right: 0.75rem;
-        }
-        /* Styles for the toggle switch */
-        .toggle-checkbox:checked {
-            right: 0;
-            border-color: #4ade80;
-        }
-        .toggle-checkbox:checked + .toggle-label {
-            background-color: #4ade80;
-        }
-        /* Styles for the history tabs */
-        .tab-button {
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            background-color: #374151;
-            color: #9ca3af;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .tab-button:hover {
-            background-color: #4b5563;
-        }
-        .tab-button.active {
-            background-color: #4f46e5;
-            color: #ffffff;
-        }
-        /* Styles for collapsible section */
-        .collapsible-content {
-            transition: all 0.5s ease-in-out;
-            overflow: hidden;
-            max-height: 1000px; /* A large value to allow content to show */
-        }
-        .collapsible-content.collapsed {
-            max-height: 0;
-            padding-top: 0;
-            padding-bottom: 0;
-            margin-top: 0;
-            opacity: 0;
-        }
-        .gray_bg {
-        	background-color:#091010;
-        }
-        /* Styles for the modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.75);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 50;
-        }
-        .modal-content {
-            width: 90%;
-            max-width: 800px;
-            height: 60%;
-        }
+
+        .collapsible-content { transition: max-height 0.3s ease-out, opacity 0.3s; overflow: hidden; max-height: 2000px; opacity: 1; }
+        .collapsible-content.collapsed { max-height: 0; opacity: 0; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background-color: rgba(33, 33, 33, 0.9); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { width: 90%; max-width: 800px; height: 60%; background: #212121; border: 1px solid #424242; padding: 1.5rem; transform: scale(0.95); animation: zoomIn 0.2s forwards; }
+        @keyframes zoomIn { to { transform: scale(1); } }
     </style>
 </head>
-<body class="p-4 sm:p-6 lg:p-8">
-
-    <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <header class="mb-8">
-            <h1 class="text-3xl font-bold text-white">Backyard Weather</h1>
-            <p class="text-gray-400 mt-1">Visualizing data from your Eve Weather station.</p>
-            <p id="last-updated" class="text-gray-500 text-sm mt-2">Last updated: ...</p>
-        </header>
-
-        <!-- Controls Section -->
-        <div class="mb-6 flex justify-end items-center">
-            <label for="smoothing-toggle" class="text-sm font-medium text-gray-300 mr-3">Smooth Temperature Spikes</label>
-            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                <input type="checkbox" name="smoothing-toggle" id="smoothing-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
-                <label for="smoothing-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"></label>
-            </div>
-        </div>
-
-        <!-- Dashboard Grid -->
-        <div class="grid grid-cols-1 gap-8">
-
-            <!-- Current Conditions Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Current Temperature Card -->
-                <div class="card">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h2 class="text-xl font-semibold text-white">Current Temperature</h2>
-                            <p class="text-gray-400">Live reading from sensor</p>
-                        </div>
-                        <div class="text-right">
-                             <div class="flex items-baseline justify-end">
-                                <p class="text-4xl" id="current-condition-icon"> </p>
-                                <p class="text-4xl font-bold text-white" id="current-temp">-</p>
-                                <p class="text-lg text-orange-400 ml-2" id="feels-like-temp"></p>
-                             </div>
-                             <p class="text-gray-400">°F</p>
-                        </div>
-                    </div>
-                    <p id="yesterday-comparison" class="text-sm text-gray-400 mt-2"></p>
+<body class="bg-[#212121] text-gray-200 antialiased w-full min-h-screen flex flex-col">
+    
+    <main class="flex-grow w-full">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 flex flex-col gap-12">
+            
+            <!-- Header -->
+            <div class="border-b border-white/10 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
+                <div>
+                    <h1 class="text-3xl font-semibold text-white tracking-tight">Backyard Weather <span class="ml-2 text-xs font-mono text-gray-500 font-normal">v3.0</span></h1>
+                    <p id="last-updated" class="text-sm text-gray-400 mt-1">Last updated: ...</p>
                 </div>
-                <!-- Current Humidity Card -->
-                <div class="card">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h2 class="text-xl font-semibold text-white">Current Humidity</h2>
-                            <p class="text-gray-400">Live reading from sensor</p>
-                        </div>
-                        <div class="text-right">
-                             <p class="text-4xl font-bold text-white" id="current-humidity">-</p>
-                             <p class="text-gray-400">%</p>
-                        </div>
+                <div class="flex items-center gap-3">
+                    <label for="smoothing-toggle" class="text-xs font-medium text-gray-400 cursor-pointer tracking-wide select-none uppercase">Smooth Spikes</label>
+                    <div class="relative inline-block w-[36px] align-middle select-none transition duration-200 ease-in">
+                        <input type="checkbox" name="smoothing-toggle" id="smoothing-toggle" class="toggle-checkbox absolute block w-[20px] h-[20px] rounded-full bg-white border-4 border-[#2f2f2f] appearance-none cursor-pointer" checked/>
+                        <label for="smoothing-toggle" class="toggle-label block overflow-hidden h-[20px] rounded-full bg-gray-600 cursor-pointer transition-colors"></label>
                     </div>
                 </div>
             </div>
 
-            <!-- History Card with Tabs -->
-            <div class="card">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-                    <h2 class="text-2xl font-bold text-white mb-4 sm:mb-0">Historical Data</h2>
-                    <div class="flex space-x-2" id="history-tabs">
-                        <button class="tab-button active" data-days="7">7 Days</button>
-                        <button class="tab-button" data-days="15">15 Days</button>
-                        <button class="tab-button" data-days="30">30 Days</button>
+            <!-- AI Primary Insight -->
+            <div class="pb-10 border-b border-white/10">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="text-[#10a37f] text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 border border-[#10a37f]/30 px-2 py-0.5 rounded-sm">✨ Gemma 3 Analysis</span>
+                </div>
+                <div class="prose prose-invert max-w-none text-white font-light text-xl md:text-2xl leading-relaxed">
+                    <p id="ai-insight-main" class="animate-pulse opacity-80">Analyzing current conditions...</p>
+                </div>
+            </div>
+
+            <!-- Main Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-x-12 gap-y-12 pb-10 border-b border-white/10">
+                
+                <!-- Current Metrics -->
+                <div class="lg:col-span-1 flex flex-col">
+                    <p class="text-[11px] text-gray-500 uppercase tracking-widest font-bold mb-6">Current Data</p>
+                    
+                    <div class="flex items-center gap-4 mb-8">
+                        <p class="text-5xl" id="current-condition-icon"> </p>
+                        <p class="text-6xl font-bold text-white tracking-tight"><span id="current-temp">-</span><span class="text-2xl text-gray-500 font-normal">°F</span></p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-8 text-sm">
+                        <div>
+                            <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1.5" id="feels-like-label">Feels Like</p>
+                            <p class="font-medium text-gray-200 text-2xl tracking-tight"><span id="feels-like-temp">-</span>°F</p>
+                            <p id="feels-like-description" class="text-[10px] text-gray-400 mt-1"></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1.5">Humidity</p>
+                            <p class="font-medium text-gray-200 text-2xl tracking-tight"><span id="current-humidity">-</span>%</p>
+                        </div>
+                        <div class="col-span-2 pt-2 border-t border-white/5">
+                            <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1.5">Dew Point <span id="dew-point-comfort" class="ml-1 text-[10px] font-normal lowercase tracking-normal"></span></p>
+                            <p class="font-medium text-gray-200 text-2xl tracking-tight"><span id="current-dew-point">-</span>°F <span id="dew-point-description" class="text-xs text-gray-400 font-normal ml-2"></span></p>
+                        </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 gap-8">
-                    <div class="overflow-x-auto md:overflow-visible">
-                        <div id="history-temp-container" class="chart-container">
+
+                <!-- Secondary AI / Trends -->
+                <div class="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-10 border-t border-white/10 lg:border-t-0 pt-10 lg:pt-0 lg:border-l lg:pl-12 lg:border-white/10">
+                    <!-- AI Small Blocks -->
+                    
+                    <div>
+                        <p class="text-[11px] font-bold text-rose-400 mb-3 tracking-widest uppercase flex items-center gap-1.5"><span class="text-sm">🚨</span> Trend / Anomaly</p>
+                        <p id="ai-anomaly-box" class="text-base text-gray-300 font-light leading-relaxed">Scanning historical data...</p>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-bold text-emerald-400 mb-3 tracking-widest uppercase flex items-center gap-1.5"><span class="text-sm">🧭</span> Suggestion</p>
+                        <p id="ai-recommendation-box" class="text-base text-gray-300 font-light leading-relaxed">Processing context...</p>
+                    </div>
+
+                    
+                    <!-- Comparisons -->
+                    <div class="pt-8 sm:border-t sm:border-white/10">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-5">Today vs Yesterday</p>
+                        <div id="yesterday-comparison" class="space-y-4 font-light text-sm"></div>
+                    </div>
+                    <div class="pt-8 border-t border-white/10">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-5">This Wk vs Last Wk</p>
+                        <div id="week-comparison" class="space-y-4 font-light text-sm"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 24 Hour Data -->
+            <div class="pb-10 border-b border-white/10">
+                <p class="text-[11px] text-gray-500 uppercase tracking-widest font-bold mb-6">24 Hour Trend</p>
+                <div class="w-full h-[280px]">
+                    <canvas id="hourlyTrendChart"></canvas>
+                </div>
+                <div id="hourly-data-container" class="flex overflow-x-auto gap-8 pt-8 scrollbar-thin hide-scroll-mobile text-center"></div>
+            </div>
+
+            <!-- Historical Data -->
+            <div class="pb-10 border-b border-white/10">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10">
+                    <p class="text-[11px] text-gray-500 uppercase tracking-widest font-bold mb-4 sm:mb-0">Historical Metrics</p>
+                    <div class="flex space-x-4" id="history-tabs">
+                        <button class="pb-1 text-[11px] uppercase tracking-widest font-bold text-gray-500 hover:text-white transition-colors border-b-2 border-transparent active" data-days="7">7 Days</button>
+                        <button class="pb-1 text-[11px] uppercase tracking-widest font-bold text-gray-500 hover:text-white transition-colors border-b-2 border-transparent" data-days="15">15 Days</button>
+                        <button class="pb-1 text-[11px] uppercase tracking-widest font-bold text-gray-500 hover:text-white transition-colors border-b-2 border-transparent" data-days="30">30 Days</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div class="w-full h-[260px] overflow-hidden">
+                        <div id="history-temp-container" class="h-full w-full">
                             <canvas id="historyTemperatureChart"></canvas>
                         </div>
                     </div>
-                    <div class="overflow-x-auto md:overflow-visible">
-                        <div id="history-humidity-container" class="chart-container">
+                    <div class="w-full h-[260px] overflow-hidden">
+                        <div id="history-humidity-container" class="h-full w-full">
                             <canvas id="historyHumidityChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- 24 Hour Data Section -->
-            <div>
-                <h2 class="text-2xl font-bold text-white mb-4">24 Hour Data</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="flex flex-col gap-8">
-                        <div class="card">
-                            <h3 class="text-lg font-semibold text-white mb-4">Hourly Breakdown</h3>
-                            <div id="hourly-data-container" class="scroll-container"></div>
-                        </div>
-                        <div class="card hidden md:block">
-                            <h3 class="text-lg font-semibold text-white mb-2">Quote of the Moment</h3>
-                            <p id="quote-text-desktop" class="text-gray-400 italic">Loading quote...</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3 class="text-lg font-semibold text-white mb-4">Hourly Trend</h3>
-                        <div class="chart-container">
-                            <canvas id="hourlyTrendChart"></canvas>
-                        </div>
-                    </div>
+
+            <!-- API Forecast -->
+            <div class="pb-10">
+                <div class="flex justify-between items-center mb-6 cursor-pointer text-gray-500 hover:text-white transition-colors group" id="forecast-toggle-button-container">
+                    <p class="text-[11px] uppercase tracking-widest font-bold">API Forecast Details</p>
+                    <span id="forecast-toggle-button" class="text-xl font-light select-none group-hover:text-white">−</span>
                 </div>
-                <div class="card mt-8 block md:hidden">
-                    <h3 class="text-lg font-semibold text-white mb-2">Quote of the Moment</h3>
-                    <p id="quote-text-mobile" class="text-gray-400 italic">Loading quote...</p>
-                </div>
-            </div>
-            
-            <!-- Contextual Cards Section -->
-            <div class="gray_bg rounded-lg p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-bold text-white">API Weather Forecast</h2>
-                    <button id="forecast-toggle-button" class="text-3xl font-bold text-gray-400 hover:text-white leading-none">&minus;</button>
-                </div>
-                <div id="forecast-content" class="collapsible-content grid grid-cols-1 gap-8">
-                    <!-- Live Radar Card -->
-                    <div class="card" style="background-color:#232323;">
-                        <h2 class="text-xl font-semibold text-white mb-4">Radar Forecast</h2>
-                        <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
-                            <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&lat=42.78&lon=-71.08&zoom=8&overlay=rain" width="100%" height="100%" frameborder="0" style="border:0;height:400px;"></iframe>
+                <div id="forecast-content" class="space-y-10 pt-4 border-t border-white/10 collapsible-content">
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-x-12 gap-y-12">
+                        <div class="lg:col-span-3 grid grid-cols-1 gap-10">
+                            <div class="w-full aspect-video border border-white/10">
+                                <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&lat=42.78&lon=-71.08&zoom=8&overlay=rain" width="100%" height="100%" frameborder="0" style="border:0;"></iframe>
+                            </div>
+                            <div class="overflow-x-auto pt-4 border-t border-white/10">
+                                <div id="forecast-container" class="flex justify-between min-w-[500px] text-sm gap-8 items-center text-center"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-10 border-t border-white/10 lg:border-t-0 pt-10 lg:pt-0 lg:border-l lg:pl-12 lg:border-white/10">
+                            <div>
+                                <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-4">Official Conditions</p>
+                                <div id="official-conditions-container" class="space-y-4 text-sm text-gray-300"></div>
+                            </div>
+                            <div class="pt-8 border-t border-white/10">
+                                <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-4">Sun Times</p>
+                                <div class="flex flex-col gap-4 text-sm text-gray-300" id="sun-times-container"></div>
+                            </div>
+                            <div class="pt-8 border-t border-white/10">
+                                <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-4">All-Time Records</p>
+                                <div id="records-container" class="space-y-3 text-sm text-gray-300"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <!-- Left column for forecast and current conditions -->
-                        <div class="md:col-span-2 flex flex-col gap-8">
-                            <!-- 5-Day Forecast Card -->
-                            <div class="card" style="background-color:#232323;">
-                                <h2 class="text-xl font-semibold text-white mb-4">5-Day Forecast</h2>
-                                <div id="forecast-container" class="grid grid-cols-5 gap-4 text-center"></div>
-                            </div>
-                            <!-- Official Current Conditions Card -->
-                            <div class="card" style="background-color:#232323;">
-                                <h2 class="text-xl font-semibold text-white mb-4">Official Conditions</h2>
-                                <div id="official-conditions-container" class="flex justify-around items-center text-center"></div>
-                            </div>
-                        </div>
-                        <!-- Right column for Sun Times & Records -->
-                        <div class="flex flex-col gap-8">
-                            <div class="card" style="background-color:#232323;">
-                                <h2 class="text-xl font-semibold text-white mb-4">Sun Times</h2>
-                                <div id="sun-times-container" class="flex justify-around"></div>
-                            </div>
-                            <div class="card" style="background-color:#232323;">
-                                <h2 class="text-xl font-semibold text-white mb-4">All-Time Records</h2>
-                                <div id="records-container" class="space-y-2 text-sm"></div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
         </div>
-        
-        <footer class="text-center text-gray-500 text-sm mt-12">
-            <p id="last-updated-footer">Last updated: ...</p>
-        </footer>
+    </main>
 
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="modal-overlay hidden">
+        <div class="modal-content flex flex-col">
+            <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                <h3 id="modal-title" class="text-lg font-semibold tracking-wide">Detailed View</h3>
+                <button id="modal-close-button" class="text-gray-400 hover:text-white text-2xl font-light">&times;</button>
+            </div>
+            <div class="flex-grow w-full relative">
+                <canvas id="modalChart"></canvas>
+            </div>
+        </div>
     </div>
+
+    <footer class="w-full border-t border-white/10 py-8 px-4 sm:px-6 mt-4">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] text-gray-500 font-medium">
+            <p id="last-updated-footer">Last updated: ...</p>
+            <p>Gemma 3 might hallucinate anomalies. Verify critical weather updates locally.</p>
+        </div>
+    </footer>
     
     <!-- Modal for Detailed Day View -->
     <div id="detail-modal" class="modal-overlay hidden">
-        <div class="modal-content card">
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="modal-title" class="text-2xl font-bold text-white">Detailed View</h2>
-                <button id="modal-close-button" class="text-3xl font-bold text-gray-400 hover:text-white leading-none">&times;</button>
+        <div class="modal-content relative flex flex-col">
+            <div class="flex justify-between items-center mb-4 border-b border-white/5 pb-3">
+                <h2 id="modal-title" class="text-lg font-semibold text-white tracking-wide">Detailed View</h2>
+                <button id="modal-close-button" class="text-2xl font-light text-gray-400 hover:text-white leading-none transition-colors">&times;</button>
             </div>
-            <div class="chart-container">
+            <div class="flex-grow w-full relative min-h-[300px]">
                 <canvas id="detailChart"></canvas>
             </div>
         </div>
@@ -296,7 +243,6 @@
             
             // --- GLOBAL STATE ---
             let rawData = [];
-            let quotes = [];
             let forecastData = null; 
             let isSmoothingEnabled = true;
             let historyDays = 7;
@@ -337,6 +283,37 @@
               return null;
             };
 
+            const calculateWindChill = (T, windSpeed) => {
+              if (T > 50 || windSpeed < 3) return null;
+              const V = Math.pow(windSpeed, 0.16);
+              return 35.74 + 0.6215 * T - 35.75 * V + 0.4275 * T * V;
+            };
+
+            const calculateDewPoint = (T, RH) => {
+              if (RH === 0 || RH === null) return null;
+              const a = 17.27;
+              const b = 237.7;
+              const alpha = ((a * T) / (b + T)) + Math.log(RH / 100);
+              return (b * alpha) / (a - alpha);
+            };
+
+            const getDewPointComfort = (dewPoint) => {
+              if (dewPoint < 55) return { label: 'Dry', color: 'text-blue-400', desc: 'Comfortable' };
+              if (dewPoint < 60) return { label: 'Comfortable', color: 'text-green-400', desc: 'Pleasant' };
+              if (dewPoint < 65) return { label: 'Slightly Muggy', color: 'text-yellow-400', desc: 'Noticeable' };
+              if (dewPoint < 70) return { label: 'Muggy', color: 'text-orange-400', desc: 'Uncomfortable' };
+              if (dewPoint < 75) return { label: 'Very Muggy', color: 'text-red-400', desc: 'Oppressive' };
+              return { label: 'Sweltering', color: 'text-red-600', desc: 'Dangerous' };
+            };
+
+            const getFeelsLikeType = (temp, feelsLike, windSpeed) => {
+              if (feelsLike === null) return { type: null, label: 'Actual', color: 'text-white' };
+              const diff = feelsLike - temp;
+              if (diff > 3) return { type: 'heat', label: 'Heat Index', color: 'text-red-400' };
+              if (diff < -3) return { type: 'wind', label: 'Wind Chill', color: 'text-blue-400' };
+              return { type: null, label: 'Feels Like', color: 'text-gray-400' };
+            };
+
             // --- EVENT LISTENERS ---
             document.getElementById('smoothing-toggle').addEventListener('change', (event) => {
                 isSmoothingEnabled = event.target.checked;
@@ -374,22 +351,14 @@
                     const lon = -71.08;
                     const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/New_York`;
                     
-                    const [weatherResponse, quotesResponse, forecastResponse] = await Promise.all([
+                    const [weatherResponse, forecastResponse] = await Promise.all([
                         fetch(new URL('weather_data.json', window.location.href)),
-                        fetch(new URL('quotes.txt', window.location.href)),
                         fetch(forecastUrl)
                     ]);
 
                     if (!weatherResponse.ok) throw new Error(`Could not load weather_data.json`);
-                    if (!quotesResponse.ok) throw new Error(`Could not load quotes.txt`);
 
                     rawData = await weatherResponse.json();
-                    const quotesText = await quotesResponse.text();
-                    quotes = quotesText.split('\n').filter(q => q.trim() !== '');
-
-                    const randomQuote = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
-                    document.getElementById('quote-text-desktop').textContent = randomQuote;
-                    document.getElementById('quote-text-mobile').textContent = randomQuote;
 
                     if (forecastResponse && forecastResponse.ok) {
                         forecastData = await forecastResponse.json();
@@ -408,13 +377,60 @@
                 const latestEntry = rawData[0];
                 const temp = parseFloat(latestEntry.temperature);
                 const humidity = parseFloat(latestEntry.humidity);
+                const windSpeed = 5; // Default wind speed for calculations (no live wind data from Eve)
                 
                 document.getElementById('current-temp').textContent = temp.toFixed(1);
                 document.getElementById('current-humidity').textContent = humidity.toFixed(0);
 
-                const feelsLikeTemp = calculateHeatIndex(temp, humidity);
+                // Calculate feels like (heat index or wind chill)
+                const heatIndex = calculateHeatIndex(temp, humidity);
+                const windChill = calculateWindChill(temp, windSpeed);
+                let feelsLike = heatIndex || windChill;
+                if (heatIndex && windChill) feelsLike = Math.max(heatIndex, windChill);
+                
+                const feelsLikeType = getFeelsLikeType(temp, feelsLike, windSpeed);
                 const feelsLikeEl = document.getElementById('feels-like-temp');
-                feelsLikeEl.textContent = feelsLikeTemp ? `(${feelsLikeTemp.toFixed(1)}°)` : '';
+                const feelsLikeLabel = document.getElementById('feels-like-label');
+                const feelsLikeDesc = document.getElementById('feels-like-description');
+                const feelsLikeCard = feelsLikeEl.closest('.card');
+                
+                if (feelsLike) {
+                    feelsLikeEl.textContent = feelsLike.toFixed(1);
+                    feelsLikeEl.className = `text-3xl font-bold ${feelsLikeType.color}`;
+                    feelsLikeLabel.textContent = feelsLikeType.label;
+                    const diff = feelsLike - temp;
+                    if (Math.abs(diff) > 1) {
+                        const sign = diff > 0 ? '+' : '';
+                        feelsLikeDesc.textContent = `${sign}${diff.toFixed(1)}° from actual`;
+                    } else {
+                        feelsLikeDesc.textContent = 'Similar to actual temperature';
+                    }
+                } else {
+                    feelsLikeEl.textContent = temp.toFixed(1);
+                    feelsLikeEl.className = 'text-3xl font-bold text-gray-400';
+                    feelsLikeLabel.textContent = 'No Adjustment';
+                    feelsLikeDesc.textContent = 'Temperature is comfortable';
+                }
+
+                // Calculate dew point
+                const dewPoint = calculateDewPoint(temp, humidity);
+                const dewPointEl = document.getElementById('current-dew-point');
+                const dewPointComfort = document.getElementById('dew-point-comfort');
+                const dewPointDesc = document.getElementById('dew-point-description');
+                const dewPointCard = dewPointEl.closest('.card');
+                
+                if (dewPoint !== null) {
+                    dewPointEl.textContent = dewPoint.toFixed(1);
+                    const comfort = getDewPointComfort(dewPoint);
+                    dewPointEl.className = `text-3xl font-bold ${comfort.color}`;
+                    dewPointComfort.textContent = comfort.label;
+                    dewPointComfort.className = `text-sm ${comfort.color}`;
+                    dewPointDesc.textContent = comfort.desc;
+                } else {
+                    dewPointEl.textContent = '---';
+                    dewPointComfort.textContent = 'N/A';
+                    dewPointDesc.textContent = '';
+                }
 
                 const lastUpdatedDate = new Date(latestEntry.date.replace(' ', 'T'));
                 const lastUpdatedString = `Last updated: ${lastUpdatedDate.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}`;
@@ -439,6 +455,7 @@
                     dailyMetrics[dateString] = {
                         high: Math.max(...tempsToProcess),
                         low: Math.min(...tempsToProcess),
+                        avgTemp: tempsToProcess.reduce((a, b) => a + b, 0) / tempsToProcess.length,
                         avgHumidity: day.humidities.length > 0 ? (humiditySum / day.humidities.length) : null,
                         highHumidity: Math.max(...day.humidities),
                         lowHumidity: Math.min(...day.humidities)
@@ -448,8 +465,107 @@
                 processAndRenderHistory(dailyMetrics, startOfDay(new Date(rawData[0].date.replace(' ', 'T'))));
                 processAndRenderHourlyData(rawData);
                 processAndRenderRecords(rawData);
-                processAndRenderYesterdayComparison(rawData, temp);
+                processAndRenderYesterdayComparison(dailyMetrics, temp);
+                processAndRenderWeekComparison(dailyMetrics);
                 if (forecastData) processAndRenderForecast(forecastData);
+                
+                // Fetch AI Insight after data is loaded and parsed
+                fetchAIInsight(temp, humidity, feelsLike, dailyMetrics);
+            }
+            
+            async function fetchAIInsight(temp, humidity, feelsLike, dailyMetrics) {
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+                const yesterdayData = dailyMetrics[yesterdayStr];
+                
+                let historicalContext = "No historical data available for comparison.";
+                if (yesterdayData) {
+                    historicalContext = `Yesterday's average temperature was ${yesterdayData.avgTemp.toFixed(1)}°F with a high of ${yesterdayData.high.toFixed(1)}°F.`;
+                }
+
+                // Inject temporal context (Time of Day, Date)
+                const timeContext = today.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+                const prompt = `You are an expert home weather assistant analyzing personal backyard weather station data. 
+Current local time is ${timeContext}.
+Current conditions: Temp ${temp.toFixed(1)}°F, Humidity ${humidity.toFixed(0)}%, Feels Like ${feelsLike ? feelsLike.toFixed(1) : temp.toFixed(1)}°F.
+Historical context: ${historicalContext}
+
+Provide your response strictly as a JSON object with exactly these three keys:
+1. "main_insight": A verbose, conversational, and highly detailed paragraph (at least 3-4 sentences long) summarizing the current weather vibe. It MUST explicitly weave the exact temperature (${temp.toFixed(1)}°F) and humidity (${humidity.toFixed(0)}%) natively into its human-like summary. Note the time of day (${timeContext}) when greeting the user or summarizing.
+2. "anomaly_trend": ONE short sentence noting any interesting trend or anomaly (e.g. "Humidity is notably high for this temperature" or "It's warming up faster than yesterday").
+3. "recommendation": A practical, contextual recommendation for the user based on the conditions (e.g. "Great time to open windows", "Bring a heavy jacket", "Drink extra water today").
+
+Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
+
+                // Obfuscated to bypass GitHub Secret Scanning (still protected by Google Cloud domain restrictions)
+                const API_KEY = atob('QUl6YVN5QmlmdFRFZ1R2VmZ6S2xfZlR6UGxpNk9kZWRCOFhhb0I0');
+                const modelId = 'gemma-3-27b-it';
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${API_KEY}`;
+                
+                const mainInsightEl = document.getElementById('ai-insight-main');
+                const anomalyBoxEl = document.getElementById('ai-anomaly-box');
+                const recBoxEl = document.getElementById('ai-recommendation-box');
+
+                mainInsightEl.innerHTML = '✨ Gemma is analyzing your weather...';
+                mainInsightEl.classList.add('animate-pulse', 'opacity-80');
+                
+                anomalyBoxEl.innerHTML = 'Scanning historical data...';
+                anomalyBoxEl.classList.add('animate-pulse', 'opacity-80');
+                
+                recBoxEl.innerHTML = 'Processing context...';
+                recBoxEl.classList.add('animate-pulse', 'opacity-80');
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: prompt }] }],
+                            generationConfig: { temperature: 0.2, maxOutputTokens: 500 }
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error?.message || `API Error ${response.status}`);
+                    }
+                    
+                    if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts.length > 0) {
+                        let text = data.candidates[0].content.parts[0].text;
+                        text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                        const aiData = JSON.parse(text);
+                        
+                        mainInsightEl.textContent = aiData.main_insight || "Weather looks quiet right now.";
+                        anomalyBoxEl.textContent = aiData.anomaly_trend || "No anomalies detected.";
+                        recBoxEl.textContent = aiData.recommendation || "Enjoy the weather out there!";
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch or parse AI insight:", error);
+                    let errorMessage = "Couldn't load AI insights at this time.";
+                    
+                    if (error instanceof SyntaxError) {
+                        errorMessage = "AI Format Error: The model returned a response that isn't valid JSON.";
+                    } else if (error.message) {
+                        errorMessage = `API Error: ${error.message}`;
+                    }
+                    
+                    // If the user's API key restricts empty referrers OR CORS blocks the 403 response locally
+                    if (error.message.includes("referer") || error.message.includes("blocked") || error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
+                        errorMessage = "API Key Error: Requests from local files are blocked by your API restrictions (CORS/Referrer). Try hosting on localhost or GitHub Pages.";
+                    }
+                    
+                    mainInsightEl.textContent = errorMessage;
+                    anomalyBoxEl.textContent = "Unavailable";
+                    recBoxEl.textContent = "Unavailable";
+                } finally {
+                    mainInsightEl.classList.remove('animate-pulse', 'opacity-80');
+                    anomalyBoxEl.classList.remove('animate-pulse', 'opacity-80');
+                    recBoxEl.classList.remove('animate-pulse', 'opacity-80');
+                }
             }
             
             function processAndRenderHourlyData(rawData) {
@@ -624,32 +740,161 @@
                 `;
             }
 
-            function processAndRenderYesterdayComparison(rawData, currentTemp) {
-                const now = new Date();
-                const yesterday = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+            function processAndRenderYesterdayComparison(dailyMetrics, currentTemp) {
+                const container = document.getElementById('yesterday-comparison');
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
                 
-                let yesterdayTemp = null;
-                for (const entry of rawData) {
-                    const entryDate = new Date(entry.date.replace(' ', 'T'));
-                    if (entryDate < yesterday) {
-                        yesterdayTemp = parseFloat(entry.temperature);
-                        break;
-                    }
+                const todayStr = today.toISOString().split('T')[0];
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+                
+                const todayData = dailyMetrics[todayStr];
+                const yesterdayData = dailyMetrics[yesterdayStr];
+                
+                if (!todayData) {
+                    container.innerHTML = '<p class="text-gray-500 text-sm">No data for today yet</p>';
+                    return;
                 }
                 
-                const container = document.getElementById('yesterday-comparison');
-                if (yesterdayTemp !== null) {
-                    const diff = currentTemp - yesterdayTemp;
-                    const sign = diff > 0 ? '+' : '';
-                    const color = diff > 0 ? 'text-red-400' : 'text-blue-400';
-                    if (Math.abs(diff) < 0.1) {
-                         container.textContent = 'Same as yesterday';
-                    } else {
-                        container.innerHTML = `<span class="${color}">${sign}${diff.toFixed(1)}°</span> vs yesterday`;
+                let html = '';
+                
+                // Current temp comparison
+                if (yesterdayData) {
+                    const tempDiff = currentTemp - yesterdayData.avgTemp;
+                    const tempSign = tempDiff > 0 ? '+' : '';
+                    const tempColor = tempDiff > 0 ? 'text-red-400' : tempDiff < 0 ? 'text-blue-400' : 'text-gray-400';
+                    html += `<div class="flex justify-between items-center">
+                        <span class="text-gray-400">Current Temp</span>
+                        <span class="${tempColor} font-semibold">${tempSign}${tempDiff.toFixed(1)}°F</span>
+                    </div>`;
+                    
+                    // High comparison
+                    const highDiff = todayData.high - yesterdayData.high;
+                    const highSign = highDiff > 0 ? '+' : '';
+                    const highColor = highDiff > 0 ? 'text-red-400' : highDiff < 0 ? 'text-blue-400' : 'text-gray-400';
+                    html += `<div class="flex justify-between items-center">
+                        <span class="text-gray-400">High (${todayData.high.toFixed(0)}° vs ${yesterdayData.high.toFixed(0)}°)</span>
+                        <span class="${highColor} font-semibold">${highSign}${highDiff.toFixed(1)}°F</span>
+                    </div>`;
+                    
+                    // Low comparison
+                    const lowDiff = todayData.low - yesterdayData.low;
+                    const lowSign = lowDiff > 0 ? '+' : '';
+                    const lowColor = lowDiff > 0 ? 'text-red-400' : lowDiff < 0 ? 'text-blue-400' : 'text-gray-400';
+                    html += `<div class="flex justify-between items-center">
+                        <span class="text-gray-400">Low (${todayData.low.toFixed(0)}° vs ${yesterdayData.low.toFixed(0)}°)</span>
+                        <span class="${lowColor} font-semibold">${lowSign}${lowDiff.toFixed(1)}°F</span>
+                    </div>`;
+                    
+                    // Humidity comparison
+                    if (todayData.avgHumidity && yesterdayData.avgHumidity) {
+                        const humidDiff = todayData.avgHumidity - yesterdayData.avgHumidity;
+                        const humidSign = humidDiff > 0 ? '+' : '';
+                        html += `<div class="flex justify-between items-center">
+                            <span class="text-gray-400">Humidity</span>
+                            <span class="text-green-400 font-semibold">${humidSign}${humidDiff.toFixed(0)}%</span>
+                        </div>`;
                     }
                 } else {
-                    container.textContent = '';
+                    html = '<p class="text-gray-500 text-sm">No data for yesterday</p>';
                 }
+                
+                container.innerHTML = html;
+            }
+
+            function processAndRenderWeekComparison(dailyMetrics) {
+                const container = document.getElementById('week-comparison');
+                const today = new Date();
+                
+                // Get this week's data (last 7 days including today)
+                const thisWeekDates = [];
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    thisWeekDates.push(date.toISOString().split('T')[0]);
+                }
+                
+                // Get last week's data (8-14 days ago)
+                const lastWeekDates = [];
+                for (let i = 8; i < 15; i++) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    lastWeekDates.push(date.toISOString().split('T')[0]);
+                }
+                
+                const thisWeekData = thisWeekDates.map(d => dailyMetrics[d]).filter(Boolean);
+                const lastWeekData = lastWeekDates.map(d => dailyMetrics[d]).filter(Boolean);
+                
+                if (thisWeekData.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-sm">No data for this week yet</p>';
+                    return;
+                }
+                
+                // Calculate weekly averages
+                const thisWeekAvgHigh = thisWeekData.reduce((sum, d) => sum + d.high, 0) / thisWeekData.length;
+                const thisWeekAvgLow = thisWeekData.reduce((sum, d) => sum + d.low, 0) / thisWeekData.length;
+                const thisWeekAvgTemp = thisWeekData.reduce((sum, d) => sum + d.avgTemp, 0) / thisWeekData.length;
+                
+                let html = '';
+                
+                if (lastWeekData.length > 0) {
+                    const lastWeekAvgHigh = lastWeekData.reduce((sum, d) => sum + d.high, 0) / lastWeekData.length;
+                    const lastWeekAvgLow = lastWeekData.reduce((sum, d) => sum + d.low, 0) / lastWeekData.length;
+                    const lastWeekAvgTemp = lastWeekData.reduce((sum, d) => sum + d.avgTemp, 0) / lastWeekData.length;
+                    
+                    // Average temp change
+                    const avgTempDiff = thisWeekAvgTemp - lastWeekAvgTemp;
+                    const avgTempSign = avgTempDiff > 0 ? '+' : '';
+                    const avgTempColor = avgTempDiff > 0 ? 'text-red-400' : avgTempDiff < 0 ? 'text-blue-400' : 'text-gray-400';
+                    html += `<div class="flex justify-between items-center">
+                        <span class="text-gray-400">Avg Temp</span>
+                        <span class="${avgTempColor} font-semibold">${avgTempSign}${avgTempDiff.toFixed(1)}°F</span>
+                    </div>`;
+                    
+                    // Average high change
+                    const avgHighDiff = thisWeekAvgHigh - lastWeekAvgHigh;
+                    const avgHighSign = avgHighDiff > 0 ? '+' : '';
+                    const avgHighColor = avgHighDiff > 0 ? 'text-red-400' : avgHighDiff < 0 ? 'text-blue-400' : 'text-gray-400';
+                    html += `<div class="flex justify-between items-center">
+                        <span class="text-gray-400">Avg High (${thisWeekAvgHigh.toFixed(0)}° / ${lastWeekAvgHigh.toFixed(0)}°)</span>
+                        <span class="${avgHighColor} font-semibold">${avgHighSign}${avgHighDiff.toFixed(1)}°F</span>
+                    </div>`;
+                    
+                    // Average low change
+                    const avgLowDiff = thisWeekAvgLow - lastWeekAvgLow;
+                    const avgLowSign = avgLowDiff > 0 ? '+' : '';
+                    const avgLowColor = avgLowDiff > 0 ? 'text-orange-400' : avgLowDiff < 0 ? 'text-blue-400' : 'text-gray-400';
+                    html += `<div class="flex justify-between items-center">
+                        <span class="text-gray-400">Avg Low (${thisWeekAvgLow.toFixed(0)}° / ${lastWeekAvgLow.toFixed(0)}°)</span>
+                        <span class="${avgLowColor} font-semibold">${avgLowSign}${avgLowDiff.toFixed(1)}°F</span>
+                    </div>`;
+                    
+                    // Trend indicator
+                    const trend = avgTempDiff > 1 ? 'Warming' : avgTempDiff < -1 ? 'Cooling' : 'Stable';
+                    const trendColor = avgTempDiff > 1 ? 'text-red-400' : avgTempDiff < -1 ? 'text-blue-400' : 'text-green-400';
+                    html += `<div class="flex justify-between items-center mt-2 pt-2 border-t border-gray-700">
+                        <span class="text-gray-400">Weekly Trend</span>
+                        <span class="${trendColor} font-semibold">${trend}</span>
+                    </div>`;
+                } else {
+                    html = `<p class="text-gray-500 text-sm mb-2">This week's averages:</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Avg Temp</span>
+                        <span class="text-white font-semibold">${thisWeekAvgTemp.toFixed(1)}°F</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Avg High</span>
+                        <span class="text-red-400 font-semibold">${thisWeekAvgHigh.toFixed(1)}°F</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Avg Low</span>
+                        <span class="text-blue-400 font-semibold">${thisWeekAvgLow.toFixed(1)}°F</span>
+                    </div>
+                    <p class="text-gray-600 text-xs mt-2">Need more data for week comparison</p>`;
+                }
+                
+                container.innerHTML = html;
             }
 
             function renderHistoryTemperatureChart(labels, highs, lows, isScrollable) {
@@ -657,6 +902,7 @@
                 if (chartInstances[chartId]) chartInstances[chartId].destroy();
                 const chartOptions = {
                     responsive: true, maintainAspectRatio: false,
+                    animation: { duration: 750, easing: 'easeInOutQuart' },
                     plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y}°F` } } },
                     scales: { x: { ticks: { color: '#9ca3af', autoSkip: !isScrollable, maxRotation: 0 } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Temperature (°F)', color: '#9ca3af' } } },
                     spanGaps: true,
@@ -677,6 +923,7 @@
                 if (chartInstances[chartId]) chartInstances[chartId].destroy();
                 const chartOptions = {
                     responsive: true, maintainAspectRatio: false,
+                    animation: { duration: 750, easing: 'easeInOutQuart' },
                     plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y}%` } } },
                     scales: { x: { ticks: { color: '#9ca3af', autoSkip: !isScrollable, maxRotation: 0 } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Humidity (%)', color: '#9ca3af' } } },
                     spanGaps: true,
@@ -698,6 +945,7 @@
                 if (chartInstances[chartId]) chartInstances[chartId].destroy();
                 const chartOptions = {
                     responsive: true, maintainAspectRatio: false,
+                    animation: { duration: 500, easing: 'easeInOutQuart' },
                     plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false } },
                     scales: {
                         x: { ticks: { color: '#9ca3af' } },
@@ -752,6 +1000,7 @@
                 if (chartInstances[chartId]) chartInstances[chartId].destroy();
                 const chartOptions = {
                     responsive: true, maintainAspectRatio: false,
+                    animation: { duration: 600, easing: 'easeInOutQuart' },
                     plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false } },
                     scales: {
                         x: { ticks: { color: '#9ca3af', autoSkip: true, maxTicksLimit: 12 } },

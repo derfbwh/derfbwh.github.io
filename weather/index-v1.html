@@ -137,111 +137,41 @@
             </div>
         </div>
 
-
-
         <!-- Dashboard Grid -->
         <div class="grid grid-cols-1 gap-8">
 
             <!-- Current Conditions Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Current Temperature Card -->
                 <div class="card">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h2 class="text-lg font-semibold text-white">Temperature</h2>
-                            <p class="text-gray-400 text-sm">Live reading</p>
+                            <h2 class="text-xl font-semibold text-white">Current Temperature</h2>
+                            <p class="text-gray-400">Live reading from sensor</p>
                         </div>
                         <div class="text-right">
-                             <div class="flex items-center justify-end gap-2">
-                                <p class="text-2xl" id="current-condition-icon"> </p>
-                                <p class="text-3xl font-bold text-white" id="current-temp">-</p>
+                             <div class="flex items-baseline justify-end">
+                                <p class="text-4xl" id="current-condition-icon"> </p>
+                                <p class="text-4xl font-bold text-white" id="current-temp">-</p>
+                                <p class="text-lg text-orange-400 ml-2" id="feels-like-temp"></p>
                              </div>
-                             <p class="text-gray-400 text-sm">°F</p>
+                             <p class="text-gray-400">°F</p>
                         </div>
                     </div>
+                    <p id="yesterday-comparison" class="text-sm text-gray-400 mt-2"></p>
                 </div>
-                <!-- Feels Like Card -->
+                <!-- Current Humidity Card -->
                 <div class="card">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h2 class="text-lg font-semibold text-white">Feels Like</h2>
-                            <p class="text-gray-400 text-sm" id="feels-like-label">Heat Index</p>
+                            <h2 class="text-xl font-semibold text-white">Current Humidity</h2>
+                            <p class="text-gray-400">Live reading from sensor</p>
                         </div>
                         <div class="text-right">
-                             <p class="text-3xl font-bold" id="feels-like-temp">-</p>
-                             <p class="text-gray-400 text-sm">°F</p>
+                             <p class="text-4xl font-bold text-white" id="current-humidity">-</p>
+                             <p class="text-gray-400">%</p>
                         </div>
                     </div>
-                    <p id="feels-like-description" class="text-xs text-gray-500 mt-2 text-center"></p>
-                </div>
-                <!-- Humidity Card -->
-                <div class="card">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h2 class="text-lg font-semibold text-white">Humidity</h2>
-                            <p class="text-gray-400 text-sm">Live reading</p>
-                        </div>
-                        <div class="text-right">
-                             <p class="text-3xl font-bold text-white" id="current-humidity">-</p>
-                             <p class="text-gray-400 text-sm">%</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Dew Point Card -->
-                <div class="card">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h2 class="text-lg font-semibold text-white">Dew Point</h2>
-                            <p class="text-gray-400 text-sm" id="dew-point-comfort">Calculated</p>
-                        </div>
-                        <div class="text-right">
-                             <p class="text-3xl font-bold" id="current-dew-point">-</p>
-                             <p class="text-gray-400 text-sm">°F</p>
-                        </div>
-                    </div>
-                    <p id="dew-point-description" class="text-xs text-gray-500 mt-2 text-center"></p>
-                </div>
-            </div>
-
-            <!-- AI Insights Collapsible Section -->
-            <div class="gray_bg rounded-lg p-6">
-                <div class="flex justify-between items-center mb-4 cursor-pointer select-none" id="ai-toggle-header">
-                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">✨ AI Insights</h2>
-                    <button id="ai-toggle-button" class="text-3xl font-bold text-gray-400 hover:text-white leading-none">&minus;</button>
-                </div>
-                <div id="ai-content" class="collapsible-content grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Main Insight (Spans 2 columns on desktop) -->
-                    <div class="card md:col-span-2 border border-indigo-500/30 hover:border-indigo-500/60 transition-colors duration-300" style="background: linear-gradient(145deg, #1f2937, #263345);">
-                        <h2 class="text-xl font-bold text-white mb-3 flex items-center gap-2"><span class="text-2xl">✨</span> Weather Insight</h2>
-                        <p id="ai-insight-main" class="text-gray-200 text-lg leading-relaxed">Analyzing current conditions...</p>
-                    </div>
-                    <!-- Trend & Anomaly -->
-                    <div class="card border border-rose-500/30 hover:border-rose-500/60 transition-colors duration-300 text-center flex flex-col justify-center">
-                        <h3 class="text-lg font-semibold text-rose-200 mb-2 flex flex-col items-center gap-1"><span class="text-2xl">🚨</span> Trend & Anomaly</h3>
-                        <p id="ai-anomaly-box" class="text-gray-300 text-sm">Scanning historical data...</p>
-                    </div>
-                    <!-- Contextual Recommendation -->
-                    <div class="card md:col-span-3 border border-emerald-500/30 hover:border-emerald-500/60 transition-colors duration-300 flex items-center gap-4">
-                        <div class="text-4xl">🧭</div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-emerald-200 mb-1">Recommendation</h3>
-                            <p id="ai-recommendation-box" class="text-gray-300">Generating recommendations...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Comparison Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Yesterday Comparison -->
-                <div class="card">
-                    <h2 class="text-lg font-semibold text-white mb-3">Today vs Yesterday</h2>
-                    <div id="yesterday-comparison" class="space-y-2"></div>
-                </div>
-                <!-- Week Comparison -->
-                <div class="card">
-                    <h2 class="text-lg font-semibold text-white mb-3">This Week vs Last Week</h2>
-                    <div id="week-comparison" class="space-y-2"></div>
                 </div>
             </div>
 
@@ -278,6 +208,10 @@
                             <h3 class="text-lg font-semibold text-white mb-4">Hourly Breakdown</h3>
                             <div id="hourly-data-container" class="scroll-container"></div>
                         </div>
+                        <div class="card hidden md:block">
+                            <h3 class="text-lg font-semibold text-white mb-2">Quote of the Moment</h3>
+                            <p id="quote-text-desktop" class="text-gray-400 italic">Loading quote...</p>
+                        </div>
                     </div>
                     <div class="card">
                         <h3 class="text-lg font-semibold text-white mb-4">Hourly Trend</h3>
@@ -286,7 +220,11 @@
                         </div>
                     </div>
                 </div>
+                <div class="card mt-8 block md:hidden">
+                    <h3 class="text-lg font-semibold text-white mb-2">Quote of the Moment</h3>
+                    <p id="quote-text-mobile" class="text-gray-400 italic">Loading quote...</p>
                 </div>
+            </div>
             
             <!-- Contextual Cards Section -->
             <div class="gray_bg rounded-lg p-6">
@@ -358,6 +296,7 @@
             
             // --- GLOBAL STATE ---
             let rawData = [];
+            let quotes = [];
             let forecastData = null; 
             let isSmoothingEnabled = true;
             let historyDays = 7;
@@ -398,61 +337,7 @@
               return null;
             };
 
-            const calculateWindChill = (T, windSpeed) => {
-              if (T > 50 || windSpeed < 3) return null;
-              const V = Math.pow(windSpeed, 0.16);
-              return 35.74 + 0.6215 * T - 35.75 * V + 0.4275 * T * V;
-            };
-
-            const calculateDewPoint = (T, RH) => {
-              if (RH === 0 || RH === null) return null;
-              const a = 17.27;
-              const b = 237.7;
-              const alpha = ((a * T) / (b + T)) + Math.log(RH / 100);
-              return (b * alpha) / (a - alpha);
-            };
-
-            const getDewPointComfort = (dewPoint) => {
-              if (dewPoint < 55) return { label: 'Dry', color: 'text-blue-400', desc: 'Comfortable' };
-              if (dewPoint < 60) return { label: 'Comfortable', color: 'text-green-400', desc: 'Pleasant' };
-              if (dewPoint < 65) return { label: 'Slightly Muggy', color: 'text-yellow-400', desc: 'Noticeable' };
-              if (dewPoint < 70) return { label: 'Muggy', color: 'text-orange-400', desc: 'Uncomfortable' };
-              if (dewPoint < 75) return { label: 'Very Muggy', color: 'text-red-400', desc: 'Oppressive' };
-              return { label: 'Sweltering', color: 'text-red-600', desc: 'Dangerous' };
-            };
-
-            const getFeelsLikeType = (temp, feelsLike, windSpeed) => {
-              if (feelsLike === null) return { type: null, label: 'Actual', color: 'text-white' };
-              const diff = feelsLike - temp;
-              if (diff > 3) return { type: 'heat', label: 'Heat Index', color: 'text-red-400' };
-              if (diff < -3) return { type: 'wind', label: 'Wind Chill', color: 'text-blue-400' };
-              return { type: null, label: 'Feels Like', color: 'text-gray-400' };
-            };
-
             // --- EVENT LISTENERS ---
-            const aiContent = document.getElementById('ai-content');
-            const aiToggleButton = document.getElementById('ai-toggle-button');
-            const aiToggleHeader = document.getElementById('ai-toggle-header');
-            
-            // Initialize AI Insights state from localStorage (default true if not set)
-            let isAiExpanded = localStorage.getItem('aiInsightsExpanded') !== 'false';
-            if (!isAiExpanded) {
-                aiContent.classList.add('collapsed');
-                aiToggleButton.textContent = '+';
-            }
-            
-            aiToggleHeader.addEventListener('click', () => {
-                isAiExpanded = !isAiExpanded;
-                if (isAiExpanded) {
-                    aiContent.classList.remove('collapsed');
-                    aiToggleButton.textContent = '−';
-                } else {
-                    aiContent.classList.add('collapsed');
-                    aiToggleButton.textContent = '+';
-                }
-                localStorage.setItem('aiInsightsExpanded', isAiExpanded);
-            });
-
             document.getElementById('smoothing-toggle').addEventListener('change', (event) => {
                 isSmoothingEnabled = event.target.checked;
                 processAndRenderAll();
@@ -489,14 +374,22 @@
                     const lon = -71.08;
                     const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/New_York`;
                     
-                    const [weatherResponse, forecastResponse] = await Promise.all([
+                    const [weatherResponse, quotesResponse, forecastResponse] = await Promise.all([
                         fetch(new URL('weather_data.json', window.location.href)),
+                        fetch(new URL('quotes.txt', window.location.href)),
                         fetch(forecastUrl)
                     ]);
 
                     if (!weatherResponse.ok) throw new Error(`Could not load weather_data.json`);
+                    if (!quotesResponse.ok) throw new Error(`Could not load quotes.txt`);
 
                     rawData = await weatherResponse.json();
+                    const quotesText = await quotesResponse.text();
+                    quotes = quotesText.split('\n').filter(q => q.trim() !== '');
+
+                    const randomQuote = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
+                    document.getElementById('quote-text-desktop').textContent = randomQuote;
+                    document.getElementById('quote-text-mobile').textContent = randomQuote;
 
                     if (forecastResponse && forecastResponse.ok) {
                         forecastData = await forecastResponse.json();
@@ -515,60 +408,13 @@
                 const latestEntry = rawData[0];
                 const temp = parseFloat(latestEntry.temperature);
                 const humidity = parseFloat(latestEntry.humidity);
-                const windSpeed = 5; // Default wind speed for calculations (no live wind data from Eve)
                 
                 document.getElementById('current-temp').textContent = temp.toFixed(1);
                 document.getElementById('current-humidity').textContent = humidity.toFixed(0);
 
-                // Calculate feels like (heat index or wind chill)
-                const heatIndex = calculateHeatIndex(temp, humidity);
-                const windChill = calculateWindChill(temp, windSpeed);
-                let feelsLike = heatIndex || windChill;
-                if (heatIndex && windChill) feelsLike = Math.max(heatIndex, windChill);
-                
-                const feelsLikeType = getFeelsLikeType(temp, feelsLike, windSpeed);
+                const feelsLikeTemp = calculateHeatIndex(temp, humidity);
                 const feelsLikeEl = document.getElementById('feels-like-temp');
-                const feelsLikeLabel = document.getElementById('feels-like-label');
-                const feelsLikeDesc = document.getElementById('feels-like-description');
-                const feelsLikeCard = feelsLikeEl.closest('.card');
-                
-                if (feelsLike) {
-                    feelsLikeEl.textContent = feelsLike.toFixed(1);
-                    feelsLikeEl.className = `text-3xl font-bold ${feelsLikeType.color}`;
-                    feelsLikeLabel.textContent = feelsLikeType.label;
-                    const diff = feelsLike - temp;
-                    if (Math.abs(diff) > 1) {
-                        const sign = diff > 0 ? '+' : '';
-                        feelsLikeDesc.textContent = `${sign}${diff.toFixed(1)}° from actual`;
-                    } else {
-                        feelsLikeDesc.textContent = 'Similar to actual temperature';
-                    }
-                } else {
-                    feelsLikeEl.textContent = temp.toFixed(1);
-                    feelsLikeEl.className = 'text-3xl font-bold text-gray-400';
-                    feelsLikeLabel.textContent = 'No Adjustment';
-                    feelsLikeDesc.textContent = 'Temperature is comfortable';
-                }
-
-                // Calculate dew point
-                const dewPoint = calculateDewPoint(temp, humidity);
-                const dewPointEl = document.getElementById('current-dew-point');
-                const dewPointComfort = document.getElementById('dew-point-comfort');
-                const dewPointDesc = document.getElementById('dew-point-description');
-                const dewPointCard = dewPointEl.closest('.card');
-                
-                if (dewPoint !== null) {
-                    dewPointEl.textContent = dewPoint.toFixed(1);
-                    const comfort = getDewPointComfort(dewPoint);
-                    dewPointEl.className = `text-3xl font-bold ${comfort.color}`;
-                    dewPointComfort.textContent = comfort.label;
-                    dewPointComfort.className = `text-sm ${comfort.color}`;
-                    dewPointDesc.textContent = comfort.desc;
-                } else {
-                    dewPointEl.textContent = '---';
-                    dewPointComfort.textContent = 'N/A';
-                    dewPointDesc.textContent = '';
-                }
+                feelsLikeEl.textContent = feelsLikeTemp ? `(${feelsLikeTemp.toFixed(1)}°)` : '';
 
                 const lastUpdatedDate = new Date(latestEntry.date.replace(' ', 'T'));
                 const lastUpdatedString = `Last updated: ${lastUpdatedDate.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}`;
@@ -593,7 +439,6 @@
                     dailyMetrics[dateString] = {
                         high: Math.max(...tempsToProcess),
                         low: Math.min(...tempsToProcess),
-                        avgTemp: tempsToProcess.reduce((a, b) => a + b, 0) / tempsToProcess.length,
                         avgHumidity: day.humidities.length > 0 ? (humiditySum / day.humidities.length) : null,
                         highHumidity: Math.max(...day.humidities),
                         lowHumidity: Math.min(...day.humidities)
@@ -603,83 +448,8 @@
                 processAndRenderHistory(dailyMetrics, startOfDay(new Date(rawData[0].date.replace(' ', 'T'))));
                 processAndRenderHourlyData(rawData);
                 processAndRenderRecords(rawData);
-                processAndRenderYesterdayComparison(dailyMetrics, temp);
-                processAndRenderWeekComparison(dailyMetrics);
+                processAndRenderYesterdayComparison(rawData, temp);
                 if (forecastData) processAndRenderForecast(forecastData);
-                
-                // Fetch AI Insight after data is loaded and parsed
-                fetchAIInsight(temp, humidity, feelsLike, dailyMetrics);
-            }
-            
-            async function fetchAIInsight(temp, humidity, feelsLike, dailyMetrics) {
-                const today = new Date();
-                const yesterday = new Date(today);
-                yesterday.setDate(yesterday.getDate() - 1);
-                const yesterdayStr = yesterday.toISOString().split('T')[0];
-                const yesterdayData = dailyMetrics[yesterdayStr];
-                
-                let historicalContext = "No historical data available for comparison.";
-                if (yesterdayData) {
-                    historicalContext = `Yesterday's average temperature was ${yesterdayData.avgTemp.toFixed(1)}°F with a high of ${yesterdayData.high.toFixed(1)}°F.`;
-                }
-
-                const prompt = `You are an expert home weather assistant analyzing personal backyard weather station data. 
-Current conditions: Temp ${temp.toFixed(1)}°F, Humidity ${humidity.toFixed(0)}%, Feels Like ${feelsLike ? feelsLike.toFixed(1) : temp.toFixed(1)}°F.
-Historical context: ${historicalContext}
-
-Provide your response strictly as a JSON object with exactly these three keys:
-1. "main_insight": A verbose, conversational, and highly detailed paragraph (at least 3-4 sentences long) summarizing the current weather vibe. It MUST explicitly weave the exact temperature (${temp.toFixed(1)}°F) and humidity (${humidity.toFixed(0)}%) natively into its human-like summary.
-2. "anomaly_trend": ONE short sentence noting any interesting trend or anomaly (e.g. "Humidity is notably high for this temperature" or "It's warming up faster than yesterday").
-3. "recommendation": A practical, contextual recommendation for the user based on the conditions (e.g. "Great time to open windows", "Bring a heavy jacket", "Drink extra water today").
-
-Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
-
-                const API_KEY = 'AIzaSyBpLa0Shl1j35wNHt-flIOi8gefyLlWK5I';
-                const modelId = 'gemma-3-27b-it';
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${API_KEY}`;
-                
-                document.getElementById('ai-insight-main').innerHTML = '<span class="animate-pulse">✨ Gemma is analyzing your weather...</span>';
-                document.getElementById('ai-anomaly-box').innerHTML = '<span class="animate-pulse">Scanning historical data...</span>';
-                document.getElementById('ai-recommendation-box').innerHTML = '<span class="animate-pulse">Processing context...</span>';
-
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: prompt }] }],
-                            generationConfig: { temperature: 0.2, maxOutputTokens: 500 }
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (!response.ok) {
-                        throw new Error(data.error?.message || `API Error ${response.status}`);
-                    }
-                    
-                    if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts.length > 0) {
-                        let text = data.candidates[0].content.parts[0].text;
-                        text = text.replace(/```json/g, '').replace(/```/g, '').trim();
-                        const aiData = JSON.parse(text);
-                        
-                        document.getElementById('ai-insight-main').textContent = aiData.main_insight || "Weather looks quiet right now.";
-                        document.getElementById('ai-anomaly-box').textContent = aiData.anomaly_trend || "No anomalies detected.";
-                        document.getElementById('ai-recommendation-box').textContent = aiData.recommendation || "Enjoy the weather out there!";
-                    }
-                } catch (error) {
-                    console.error("Failed to fetch or parse AI insight:", error);
-                    let errorMessage = "Couldn't load AI insights at this time.";
-                    
-                    // If the user's API key restricts empty referrers (e.g. running locally via file://)
-                    if (error.message.includes("referer") || error.message.includes("blocked")) {
-                        errorMessage = "API Key Error: Requests from local files are blocked by your API restrictions. Try hosting on localhost or GitHub Pages.";
-                    }
-                    
-                    document.getElementById('ai-insight-main').textContent = errorMessage;
-                    document.getElementById('ai-anomaly-box').textContent = "Unavailable";
-                    document.getElementById('ai-recommendation-box').textContent = "Unavailable";
-                }
             }
             
             function processAndRenderHourlyData(rawData) {
@@ -854,161 +624,32 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                 `;
             }
 
-            function processAndRenderYesterdayComparison(dailyMetrics, currentTemp) {
-                const container = document.getElementById('yesterday-comparison');
-                const today = new Date();
-                const yesterday = new Date(today);
-                yesterday.setDate(yesterday.getDate() - 1);
+            function processAndRenderYesterdayComparison(rawData, currentTemp) {
+                const now = new Date();
+                const yesterday = new Date(now.getTime() - (24 * 60 * 60 * 1000));
                 
-                const todayStr = today.toISOString().split('T')[0];
-                const yesterdayStr = yesterday.toISOString().split('T')[0];
-                
-                const todayData = dailyMetrics[todayStr];
-                const yesterdayData = dailyMetrics[yesterdayStr];
-                
-                if (!todayData) {
-                    container.innerHTML = '<p class="text-gray-500 text-sm">No data for today yet</p>';
-                    return;
+                let yesterdayTemp = null;
+                for (const entry of rawData) {
+                    const entryDate = new Date(entry.date.replace(' ', 'T'));
+                    if (entryDate < yesterday) {
+                        yesterdayTemp = parseFloat(entry.temperature);
+                        break;
+                    }
                 }
                 
-                let html = '';
-                
-                // Current temp comparison
-                if (yesterdayData) {
-                    const tempDiff = currentTemp - yesterdayData.avgTemp;
-                    const tempSign = tempDiff > 0 ? '+' : '';
-                    const tempColor = tempDiff > 0 ? 'text-red-400' : tempDiff < 0 ? 'text-blue-400' : 'text-gray-400';
-                    html += `<div class="flex justify-between items-center">
-                        <span class="text-gray-400">Current Temp</span>
-                        <span class="${tempColor} font-semibold">${tempSign}${tempDiff.toFixed(1)}°F</span>
-                    </div>`;
-                    
-                    // High comparison
-                    const highDiff = todayData.high - yesterdayData.high;
-                    const highSign = highDiff > 0 ? '+' : '';
-                    const highColor = highDiff > 0 ? 'text-red-400' : highDiff < 0 ? 'text-blue-400' : 'text-gray-400';
-                    html += `<div class="flex justify-between items-center">
-                        <span class="text-gray-400">High (${todayData.high.toFixed(0)}° vs ${yesterdayData.high.toFixed(0)}°)</span>
-                        <span class="${highColor} font-semibold">${highSign}${highDiff.toFixed(1)}°F</span>
-                    </div>`;
-                    
-                    // Low comparison
-                    const lowDiff = todayData.low - yesterdayData.low;
-                    const lowSign = lowDiff > 0 ? '+' : '';
-                    const lowColor = lowDiff > 0 ? 'text-red-400' : lowDiff < 0 ? 'text-blue-400' : 'text-gray-400';
-                    html += `<div class="flex justify-between items-center">
-                        <span class="text-gray-400">Low (${todayData.low.toFixed(0)}° vs ${yesterdayData.low.toFixed(0)}°)</span>
-                        <span class="${lowColor} font-semibold">${lowSign}${lowDiff.toFixed(1)}°F</span>
-                    </div>`;
-                    
-                    // Humidity comparison
-                    if (todayData.avgHumidity && yesterdayData.avgHumidity) {
-                        const humidDiff = todayData.avgHumidity - yesterdayData.avgHumidity;
-                        const humidSign = humidDiff > 0 ? '+' : '';
-                        html += `<div class="flex justify-between items-center">
-                            <span class="text-gray-400">Humidity</span>
-                            <span class="text-green-400 font-semibold">${humidSign}${humidDiff.toFixed(0)}%</span>
-                        </div>`;
+                const container = document.getElementById('yesterday-comparison');
+                if (yesterdayTemp !== null) {
+                    const diff = currentTemp - yesterdayTemp;
+                    const sign = diff > 0 ? '+' : '';
+                    const color = diff > 0 ? 'text-red-400' : 'text-blue-400';
+                    if (Math.abs(diff) < 0.1) {
+                         container.textContent = 'Same as yesterday';
+                    } else {
+                        container.innerHTML = `<span class="${color}">${sign}${diff.toFixed(1)}°</span> vs yesterday`;
                     }
                 } else {
-                    html = '<p class="text-gray-500 text-sm">No data for yesterday</p>';
+                    container.textContent = '';
                 }
-                
-                container.innerHTML = html;
-            }
-
-            function processAndRenderWeekComparison(dailyMetrics) {
-                const container = document.getElementById('week-comparison');
-                const today = new Date();
-                
-                // Get this week's data (last 7 days including today)
-                const thisWeekDates = [];
-                for (let i = 0; i < 7; i++) {
-                    const date = new Date(today);
-                    date.setDate(date.getDate() - i);
-                    thisWeekDates.push(date.toISOString().split('T')[0]);
-                }
-                
-                // Get last week's data (8-14 days ago)
-                const lastWeekDates = [];
-                for (let i = 8; i < 15; i++) {
-                    const date = new Date(today);
-                    date.setDate(date.getDate() - i);
-                    lastWeekDates.push(date.toISOString().split('T')[0]);
-                }
-                
-                const thisWeekData = thisWeekDates.map(d => dailyMetrics[d]).filter(Boolean);
-                const lastWeekData = lastWeekDates.map(d => dailyMetrics[d]).filter(Boolean);
-                
-                if (thisWeekData.length === 0) {
-                    container.innerHTML = '<p class="text-gray-500 text-sm">No data for this week yet</p>';
-                    return;
-                }
-                
-                // Calculate weekly averages
-                const thisWeekAvgHigh = thisWeekData.reduce((sum, d) => sum + d.high, 0) / thisWeekData.length;
-                const thisWeekAvgLow = thisWeekData.reduce((sum, d) => sum + d.low, 0) / thisWeekData.length;
-                const thisWeekAvgTemp = thisWeekData.reduce((sum, d) => sum + d.avgTemp, 0) / thisWeekData.length;
-                
-                let html = '';
-                
-                if (lastWeekData.length > 0) {
-                    const lastWeekAvgHigh = lastWeekData.reduce((sum, d) => sum + d.high, 0) / lastWeekData.length;
-                    const lastWeekAvgLow = lastWeekData.reduce((sum, d) => sum + d.low, 0) / lastWeekData.length;
-                    const lastWeekAvgTemp = lastWeekData.reduce((sum, d) => sum + d.avgTemp, 0) / lastWeekData.length;
-                    
-                    // Average temp change
-                    const avgTempDiff = thisWeekAvgTemp - lastWeekAvgTemp;
-                    const avgTempSign = avgTempDiff > 0 ? '+' : '';
-                    const avgTempColor = avgTempDiff > 0 ? 'text-red-400' : avgTempDiff < 0 ? 'text-blue-400' : 'text-gray-400';
-                    html += `<div class="flex justify-between items-center">
-                        <span class="text-gray-400">Avg Temp</span>
-                        <span class="${avgTempColor} font-semibold">${avgTempSign}${avgTempDiff.toFixed(1)}°F</span>
-                    </div>`;
-                    
-                    // Average high change
-                    const avgHighDiff = thisWeekAvgHigh - lastWeekAvgHigh;
-                    const avgHighSign = avgHighDiff > 0 ? '+' : '';
-                    const avgHighColor = avgHighDiff > 0 ? 'text-red-400' : avgHighDiff < 0 ? 'text-blue-400' : 'text-gray-400';
-                    html += `<div class="flex justify-between items-center">
-                        <span class="text-gray-400">Avg High (${thisWeekAvgHigh.toFixed(0)}° / ${lastWeekAvgHigh.toFixed(0)}°)</span>
-                        <span class="${avgHighColor} font-semibold">${avgHighSign}${avgHighDiff.toFixed(1)}°F</span>
-                    </div>`;
-                    
-                    // Average low change
-                    const avgLowDiff = thisWeekAvgLow - lastWeekAvgLow;
-                    const avgLowSign = avgLowDiff > 0 ? '+' : '';
-                    const avgLowColor = avgLowDiff > 0 ? 'text-orange-400' : avgLowDiff < 0 ? 'text-blue-400' : 'text-gray-400';
-                    html += `<div class="flex justify-between items-center">
-                        <span class="text-gray-400">Avg Low (${thisWeekAvgLow.toFixed(0)}° / ${lastWeekAvgLow.toFixed(0)}°)</span>
-                        <span class="${avgLowColor} font-semibold">${avgLowSign}${avgLowDiff.toFixed(1)}°F</span>
-                    </div>`;
-                    
-                    // Trend indicator
-                    const trend = avgTempDiff > 1 ? 'Warming' : avgTempDiff < -1 ? 'Cooling' : 'Stable';
-                    const trendColor = avgTempDiff > 1 ? 'text-red-400' : avgTempDiff < -1 ? 'text-blue-400' : 'text-green-400';
-                    html += `<div class="flex justify-between items-center mt-2 pt-2 border-t border-gray-700">
-                        <span class="text-gray-400">Weekly Trend</span>
-                        <span class="${trendColor} font-semibold">${trend}</span>
-                    </div>`;
-                } else {
-                    html = `<p class="text-gray-500 text-sm mb-2">This week's averages:</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-400">Avg Temp</span>
-                        <span class="text-white font-semibold">${thisWeekAvgTemp.toFixed(1)}°F</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-400">Avg High</span>
-                        <span class="text-red-400 font-semibold">${thisWeekAvgHigh.toFixed(1)}°F</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-400">Avg Low</span>
-                        <span class="text-blue-400 font-semibold">${thisWeekAvgLow.toFixed(1)}°F</span>
-                    </div>
-                    <p class="text-gray-600 text-xs mt-2">Need more data for week comparison</p>`;
-                }
-                
-                container.innerHTML = html;
             }
 
             function renderHistoryTemperatureChart(labels, highs, lows, isScrollable) {
@@ -1016,7 +657,6 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                 if (chartInstances[chartId]) chartInstances[chartId].destroy();
                 const chartOptions = {
                     responsive: true, maintainAspectRatio: false,
-                    animation: { duration: 750, easing: 'easeInOutQuart' },
                     plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y}°F` } } },
                     scales: { x: { ticks: { color: '#9ca3af', autoSkip: !isScrollable, maxRotation: 0 } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Temperature (°F)', color: '#9ca3af' } } },
                     spanGaps: true,
@@ -1037,7 +677,6 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                 if (chartInstances[chartId]) chartInstances[chartId].destroy();
                 const chartOptions = {
                     responsive: true, maintainAspectRatio: false,
-                    animation: { duration: 750, easing: 'easeInOutQuart' },
                     plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#374151', callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y}%` } } },
                     scales: { x: { ticks: { color: '#9ca3af', autoSkip: !isScrollable, maxRotation: 0 } }, y: { ticks: { color: '#9ca3af' }, title: { display: true, text: 'Humidity (%)', color: '#9ca3af' } } },
                     spanGaps: true,
@@ -1059,7 +698,6 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                 if (chartInstances[chartId]) chartInstances[chartId].destroy();
                 const chartOptions = {
                     responsive: true, maintainAspectRatio: false,
-                    animation: { duration: 500, easing: 'easeInOutQuart' },
                     plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false } },
                     scales: {
                         x: { ticks: { color: '#9ca3af' } },
@@ -1114,7 +752,6 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                 if (chartInstances[chartId]) chartInstances[chartId].destroy();
                 const chartOptions = {
                     responsive: true, maintainAspectRatio: false,
-                    animation: { duration: 600, easing: 'easeInOutQuart' },
                     plugins: { legend: { display: true, labels: { color: '#9ca3af' } }, tooltip: { mode: 'index', intersect: false } },
                     scales: {
                         x: { ticks: { color: '#9ca3af', autoSkip: true, maxTicksLimit: 12 } },
