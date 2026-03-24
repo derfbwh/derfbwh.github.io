@@ -248,6 +248,7 @@
             let historyDays = 7;
             let isForecastExpanded = true;
             let chartInstances = {};
+            let hasFetchedAIInsight = false;
 
             // --- HELPER FUNCTIONS ---
             function startOfDay(date) {
@@ -469,8 +470,11 @@
                 processAndRenderWeekComparison(dailyMetrics);
                 if (forecastData) processAndRenderForecast(forecastData);
                 
-                // Fetch AI Insight after data is loaded and parsed
-                fetchAIInsight(temp, humidity, feelsLike, dailyMetrics, lastUpdatedDate);
+                // Fetch AI Insight after data is loaded and parsed, but only once
+                if (!hasFetchedAIInsight) {
+                    fetchAIInsight(temp, humidity, feelsLike, dailyMetrics, lastUpdatedDate);
+                    hasFetchedAIInsight = true;
+                }
             }
             
             async function fetchAIInsight(temp, humidity, feelsLike, dailyMetrics, lastUpdatedDate) {
