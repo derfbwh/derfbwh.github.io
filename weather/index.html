@@ -470,10 +470,10 @@
                 if (forecastData) processAndRenderForecast(forecastData);
                 
                 // Fetch AI Insight after data is loaded and parsed
-                fetchAIInsight(temp, humidity, feelsLike, dailyMetrics);
+                fetchAIInsight(temp, humidity, feelsLike, dailyMetrics, lastUpdatedDate);
             }
             
-            async function fetchAIInsight(temp, humidity, feelsLike, dailyMetrics) {
+            async function fetchAIInsight(temp, humidity, feelsLike, dailyMetrics, lastUpdatedDate) {
                 const today = new Date();
                 const yesterday = new Date(today);
                 yesterday.setDate(yesterday.getDate() - 1);
@@ -486,7 +486,8 @@
                 }
 
                 // Inject temporal context (Time of Day, Date)
-                const timeContext = today.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                const referenceDate = lastUpdatedDate || today;
+                const timeContext = referenceDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 
                 const prompt = `You are an expert home weather assistant analyzing personal backyard weather station data. 
 Current local time is ${timeContext}.
