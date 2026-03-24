@@ -571,13 +571,6 @@
                 processAndRenderWeekComparison(dailyMetrics);
                 if (forecastData) processAndRenderForecast(forecastData);
             }
-                
-                processAndRenderHistory(dailyMetrics, startOfDay(new Date(rawData[0].date.replace(' ', 'T'))));
-                processAndRenderHourlyData(rawData);
-                processAndRenderRecords(rawData);
-                processAndRenderYesterdayComparison(rawData, temp);
-                if (forecastData) processAndRenderForecast(forecastData);
-            }
             
             function processAndRenderHourlyData(rawData) {
                 const now = new Date();
