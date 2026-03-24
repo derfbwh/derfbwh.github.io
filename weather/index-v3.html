@@ -9,7 +9,7 @@
     <!-- Chart.js for creating charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Modern Minimal Styles */
+        /* Modern Card-less Minimal Styles */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: #212121;
@@ -17,7 +17,7 @@
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         /* Scrollbar styling */
@@ -33,35 +33,32 @@
         .toggle-checkbox:checked + .toggle-label { background-color: #10a37f; } /* ChatGPT green */
         
         #history-tabs button.active {
-            background-color: #424242;
+            border-bottom-color: #10a37f;
             color: #fff;
         }
 
-        .collapsible-content { transition: max-height 0.3s ease-out; overflow: hidden; max-height: 2000px; }
-        .collapsible-content.collapsed { max-height: 0; }
+        .collapsible-content { transition: max-height 0.3s ease-out, opacity 0.3s; overflow: hidden; max-height: 2000px; opacity: 1; }
+        .collapsible-content.collapsed { max-height: 0; opacity: 0; }
 
         /* Modal */
         .modal-overlay { position: fixed; inset: 0; background-color: rgba(33, 33, 33, 0.9); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 100; }
-        .modal-content { width: 90%; max-width: 800px; height: 60%; background: #2f2f2f; border: 1px solid #424242; border-radius: 0.75rem; padding: 1.5rem; transform: scale(0.95); animation: zoomIn 0.2s forwards; }
+        .modal-content { width: 90%; max-width: 800px; height: 60%; background: #212121; border: 1px solid #424242; padding: 1.5rem; transform: scale(0.95); animation: zoomIn 0.2s forwards; }
         @keyframes zoomIn { to { transform: scale(1); } }
-        
-        .chat-bubble-ai { border-left: 2px solid transparent; transition: border-color 0.2s; }
-        .chat-bubble-ai:hover { border-left: 2px solid #424242; }
     </style>
 </head>
-<body class="bg-[#212121] text-gray-200 antialiased w-full h-screen flex flex-col justify-between">
+<body class="bg-[#212121] text-gray-200 antialiased w-full min-h-screen flex flex-col">
     
     <main class="flex-grow w-full">
-        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 flex flex-col gap-6">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 flex flex-col gap-12">
             
             <!-- Header -->
-            <div class="border-b border-white/10 pb-4 mb-2 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+            <div class="border-b border-white/10 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
                 <div>
-                    <h1 class="text-2xl font-semibold text-white tracking-tight">Backyard Weather <span class="ml-2 text-xs font-mono text-gray-500">v3.0</span></h1>
+                    <h1 class="text-3xl font-semibold text-white tracking-tight">Backyard Weather <span class="ml-2 text-xs font-mono text-gray-500 font-normal">v3.0</span></h1>
                     <p id="last-updated" class="text-sm text-gray-400 mt-1">Last updated: ...</p>
                 </div>
-                <div class="flex items-center gap-3 bg-[#2f2f2f] py-1.5 px-3 rounded-lg border border-white/5">
-                    <label for="smoothing-toggle" class="text-xs font-semibold text-gray-300 cursor-pointer tracking-wide select-none">Smooth Spikes</label>
+                <div class="flex items-center gap-3">
+                    <label for="smoothing-toggle" class="text-xs font-medium text-gray-400 cursor-pointer tracking-wide select-none uppercase">Smooth Spikes</label>
                     <div class="relative inline-block w-[36px] align-middle select-none transition duration-200 ease-in">
                         <input type="checkbox" name="smoothing-toggle" id="smoothing-toggle" class="toggle-checkbox absolute block w-[20px] h-[20px] rounded-full bg-white border-4 border-[#2f2f2f] appearance-none cursor-pointer" checked/>
                         <label for="smoothing-toggle" class="toggle-label block overflow-hidden h-[20px] rounded-full bg-gray-600 cursor-pointer transition-colors"></label>
@@ -70,127 +67,130 @@
             </div>
 
             <!-- AI Primary Insight -->
-            <div class="bg-[#2f2f2f] rounded-xl p-6 md:p-8 border border-white/5 shadow-sm">
+            <div class="pb-10 border-b border-white/10">
                 <div class="flex items-center gap-2 mb-4">
-                    <span class="px-2 py-0.5 rounded bg-[#10a37f]/20 text-[#10a37f] text-[10px] font-bold uppercase tracking-widest">✨ Gemma 3 Analysis</span>
+                    <span class="text-[#10a37f] text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 border border-[#10a37f]/30 px-2 py-0.5 rounded-sm">✨ Gemma 3 Analysis</span>
                 </div>
-                <div class="prose prose-invert max-w-none text-white font-light text-lg md:text-xl leading-relaxed">
+                <div class="prose prose-invert max-w-none text-white font-light text-xl md:text-2xl leading-relaxed">
                     <p id="ai-insight-main" class="animate-pulse opacity-80">Analyzing current conditions...</p>
                 </div>
             </div>
 
             <!-- Main Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-x-12 gap-y-12 pb-10 border-b border-white/10">
                 
                 <!-- Current Metrics -->
-                <div class="lg:col-span-1 bg-[#2f2f2f] rounded-xl p-6 border border-white/5 shadow-sm flex flex-col">
-                    <p class="text-[11px] text-gray-500 uppercase tracking-widest font-bold mb-4 border-b border-white/5 pb-2">Current Data</p>
+                <div class="lg:col-span-1 flex flex-col">
+                    <p class="text-[11px] text-gray-500 uppercase tracking-widest font-bold mb-6">Current Data</p>
                     
-                    <div class="flex items-center gap-4 mb-6">
-                        <p class="text-5xl drop-shadow-md" id="current-condition-icon"> </p>
+                    <div class="flex items-center gap-4 mb-8">
+                        <p class="text-5xl" id="current-condition-icon"> </p>
                         <p class="text-6xl font-bold text-white tracking-tight"><span id="current-temp">-</span><span class="text-2xl text-gray-500 font-normal">°F</span></p>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-x-4 gap-y-6 text-sm flex-grow">
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-8 text-sm">
                         <div>
-                            <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1" id="feels-like-label">Feels Like</p>
-                            <p class="font-medium text-gray-200 text-xl"><span id="feels-like-temp">-</span>°F</p>
-                            <p id="feels-like-description" class="text-[10px] text-gray-400 mt-0.5"></p>
+                            <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1.5" id="feels-like-label">Feels Like</p>
+                            <p class="font-medium text-gray-200 text-2xl tracking-tight"><span id="feels-like-temp">-</span>°F</p>
+                            <p id="feels-like-description" class="text-[10px] text-gray-400 mt-1"></p>
                         </div>
                         <div>
-                            <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1">Humidity</p>
-                            <p class="font-medium text-gray-200 text-xl"><span id="current-humidity">-</span>%</p>
+                            <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1.5">Humidity</p>
+                            <p class="font-medium text-gray-200 text-2xl tracking-tight"><span id="current-humidity">-</span>%</p>
                         </div>
-                        <div class="col-span-2 border-t border-white/5 pt-4">
-                            <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1">Dew Point <span id="dew-point-comfort" class="ml-1 text-[10px] font-normal lowercase tracking-normal"></span></p>
-                            <p class="font-medium text-gray-200 text-xl"><span id="current-dew-point">-</span>°F <span id="dew-point-description" class="text-xs text-gray-400 font-normal ml-1"></span></p>
+                        <div class="col-span-2 pt-2 border-t border-white/5">
+                            <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1.5">Dew Point <span id="dew-point-comfort" class="ml-1 text-[10px] font-normal lowercase tracking-normal"></span></p>
+                            <p class="font-medium text-gray-200 text-2xl tracking-tight"><span id="current-dew-point">-</span>°F <span id="dew-point-description" class="text-xs text-gray-400 font-normal ml-2"></span></p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Secondary AI / Trends -->
-                <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-10 border-t border-white/10 lg:border-t-0 pt-10 lg:pt-0 lg:border-l lg:pl-12 lg:border-white/10">
                     <!-- AI Small Blocks -->
-                    <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div class="bg-[#2a2a2a] rounded-xl p-5 border border-rose-500/20">
-                            <p class="text-[11px] font-bold text-rose-400 mb-2 tracking-widest uppercase flex items-center gap-1.5"><span class="text-sm">🚨</span> Trend / Anomaly</p>
-                            <p id="ai-anomaly-box" class="text-sm text-gray-300 font-light leading-snug">Scanning historical data...</p>
-                        </div>
-                        <div class="bg-[#2a2a2a] rounded-xl p-5 border border-emerald-500/20">
-                            <p class="text-[11px] font-bold text-emerald-400 mb-2 tracking-widest uppercase flex items-center gap-1.5"><span class="text-sm">🧭</span> Suggestion</p>
-                            <p id="ai-recommendation-box" class="text-sm text-gray-300 font-light leading-snug">Processing context...</p>
-                        </div>
+                    
+                    <div>
+                        <p class="text-[11px] font-bold text-rose-400 mb-3 tracking-widest uppercase flex items-center gap-1.5"><span class="text-sm">🚨</span> Trend / Anomaly</p>
+                        <p id="ai-anomaly-box" class="text-base text-gray-300 font-light leading-relaxed">Scanning historical data...</p>
                     </div>
+                    <div>
+                        <p class="text-[11px] font-bold text-emerald-400 mb-3 tracking-widest uppercase flex items-center gap-1.5"><span class="text-sm">🧭</span> Suggestion</p>
+                        <p id="ai-recommendation-box" class="text-base text-gray-300 font-light leading-relaxed">Processing context...</p>
+                    </div>
+
                     
                     <!-- Comparisons -->
-                    <div class="bg-[#2f2f2f] rounded-xl p-5 border border-white/5">
-                        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-4 border-b border-white/5 pb-2">Today vs Yesterday</p>
-                        <div id="yesterday-comparison" class="space-y-2.5 font-light text-sm"></div>
+                    <div class="pt-8 sm:border-t sm:border-white/10">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-5">Today vs Yesterday</p>
+                        <div id="yesterday-comparison" class="space-y-4 font-light text-sm"></div>
                     </div>
-                    <div class="bg-[#2f2f2f] rounded-xl p-5 border border-white/5">
-                        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-4 border-b border-white/5 pb-2">This Wk vs Last Wk</p>
-                        <div id="week-comparison" class="space-y-2.5 font-light text-sm"></div>
+                    <div class="pt-8 border-t border-white/10">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-5">This Wk vs Last Wk</p>
+                        <div id="week-comparison" class="space-y-4 font-light text-sm"></div>
                     </div>
                 </div>
 
             </div>
 
             <!-- 24 Hour Data -->
-            <div class="bg-[#2f2f2f] rounded-xl p-6 border border-white/5 shadow-sm">
-                <p class="text-[11px] text-gray-500 uppercase tracking-widest font-bold mb-4 border-b border-white/5 pb-2">24 Hour Trend</p>
-                <div class="w-full h-[260px] bg-[#212121] rounded-lg p-2 border border-white/5">
+            <div class="pb-10 border-b border-white/10">
+                <p class="text-[11px] text-gray-500 uppercase tracking-widest font-bold mb-6">24 Hour Trend</p>
+                <div class="w-full h-[280px]">
                     <canvas id="hourlyTrendChart"></canvas>
                 </div>
-                <div id="hourly-data-container" class="flex overflow-x-auto gap-3 pt-4 scrollbar-thin hide-scroll-mobile"></div>
+                <div id="hourly-data-container" class="flex overflow-x-auto gap-8 pt-8 scrollbar-thin hide-scroll-mobile text-center"></div>
             </div>
 
             <!-- Historical Data -->
-            <div class="bg-[#2f2f2f] rounded-xl p-6 border border-white/5 shadow-sm">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b border-white/5 pb-2">
-                    <p class="text-[11px] text-gray-500 uppercase tracking-widest font-bold mb-2 sm:mb-0">Historical Metrics</p>
-                    <div class="flex space-x-1" id="history-tabs">
-                        <button class="px-3 py-1 rounded-md text-xs font-medium text-gray-400 hover:text-white transition-colors border border-transparent hover:border-gray-600 active" data-days="7">7D</button>
-                        <button class="px-3 py-1 rounded-md text-xs font-medium text-gray-400 hover:text-white transition-colors border border-transparent hover:border-gray-600" data-days="15">15D</button>
-                        <button class="px-3 py-1 rounded-md text-xs font-medium text-gray-400 hover:text-white transition-colors border border-transparent hover:border-gray-600" data-days="30">30D</button>
+            <div class="pb-10 border-b border-white/10">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10">
+                    <p class="text-[11px] text-gray-500 uppercase tracking-widest font-bold mb-4 sm:mb-0">Historical Metrics</p>
+                    <div class="flex space-x-4" id="history-tabs">
+                        <button class="pb-1 text-[11px] uppercase tracking-widest font-bold text-gray-500 hover:text-white transition-colors border-b-2 border-transparent active" data-days="7">7 Days</button>
+                        <button class="pb-1 text-[11px] uppercase tracking-widest font-bold text-gray-500 hover:text-white transition-colors border-b-2 border-transparent" data-days="15">15 Days</button>
+                        <button class="pb-1 text-[11px] uppercase tracking-widest font-bold text-gray-500 hover:text-white transition-colors border-b-2 border-transparent" data-days="30">30 Days</button>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="w-full h-[240px] bg-[#212121] rounded-lg p-2 border border-white/5">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div class="w-full h-[260px]">
                         <canvas id="historyTemperatureChart"></canvas>
                     </div>
-                    <div class="w-full h-[240px] bg-[#212121] rounded-lg p-2 border border-white/5">
+                    <div class="w-full h-[260px]">
                         <canvas id="historyHumidityChart"></canvas>
                     </div>
                 </div>
             </div>
 
             <!-- API Forecast -->
-            <div class="bg-[#2f2f2f] rounded-xl p-6 border border-white/5 shadow-sm">
-                <div class="flex justify-between items-center mb-2 cursor-pointer text-gray-300 hover:text-white transition-colors" id="forecast-toggle-button-container">
-                    <p class="text-[11px] text-gray-500 uppercase tracking-widest font-bold">API Forecast Details</p>
-                    <span id="forecast-toggle-button" class="text-xl font-light select-none">−</span>
+            <div class="pb-10">
+                <div class="flex justify-between items-center mb-6 cursor-pointer text-gray-500 hover:text-white transition-colors group" id="forecast-toggle-button-container">
+                    <p class="text-[11px] uppercase tracking-widest font-bold">API Forecast Details</p>
+                    <span id="forecast-toggle-button" class="text-xl font-light select-none group-hover:text-white">−</span>
                 </div>
-                <div id="forecast-content" class="space-y-6 pt-4 border-t border-white/5 collapsible-content">
+                <div id="forecast-content" class="space-y-10 pt-4 border-t border-white/10 collapsible-content">
                     
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-2 grid grid-cols-1 gap-6">
-                            <div class="w-full aspect-video rounded-xl overflow-hidden border border-white/5">
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-x-12 gap-y-12">
+                        <div class="lg:col-span-3 grid grid-cols-1 gap-10">
+                            <div class="w-full aspect-video border border-white/10">
                                 <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&lat=42.78&lon=-71.08&zoom=8&overlay=rain" width="100%" height="100%" frameborder="0" style="border:0;"></iframe>
                             </div>
-                            <div class="bg-[#212121] rounded-xl p-4 border border-white/5 overflow-x-auto">
-                                <div id="forecast-container" class="flex justify-between min-w-[400px] text-sm gap-2"></div>
+                            <div class="overflow-x-auto pt-4 border-t border-white/10">
+                                <div id="forecast-container" class="flex justify-between min-w-[500px] text-sm gap-8 items-center text-center"></div>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 gap-6">
-                            <div class="bg-[#212121] p-5 rounded-xl border border-white/5 flex flex-col justify-center gap-3">
-                                <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold text-center border-b border-white/5 pb-2">Official Conditions</p>
-                                <div id="official-conditions-container" class="space-y-3 text-sm text-gray-300 text-center"></div>
+                        <div class="flex flex-col gap-10 border-t border-white/10 lg:border-t-0 pt-10 lg:pt-0 lg:border-l lg:pl-12 lg:border-white/10">
+                            <div>
+                                <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-4">Official Conditions</p>
+                                <div id="official-conditions-container" class="space-y-4 text-sm text-gray-300"></div>
                             </div>
-                            <div class="bg-[#212121] p-5 rounded-xl border border-white/5 flex gap-4 justify-around items-center text-sm text-gray-300" id="sun-times-container"></div>
-                            <div class="bg-[#212121] p-5 rounded-xl border border-white/5">
-                                <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold text-center border-b border-white/5 pb-2 mb-3">All-Time Records</p>
-                                <div id="records-container" class="space-y-2 text-sm text-gray-300"></div>
+                            <div class="pt-8 border-t border-white/10">
+                                <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-4">Sun Times</p>
+                                <div class="flex flex-col gap-4 text-sm text-gray-300" id="sun-times-container"></div>
+                            </div>
+                            <div class="pt-8 border-t border-white/10">
+                                <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-4">All-Time Records</p>
+                                <div id="records-container" class="space-y-3 text-sm text-gray-300"></div>
                             </div>
                         </div>
                     </div>
@@ -201,10 +201,10 @@
         </div>
     </main>
 
-    <footer class="w-full bg-[#212121] border-t border-white/5 py-4 px-4 sm:px-6 shrink-0 mt-8">
+    <footer class="w-full border-t border-white/10 py-8 px-4 sm:px-6 mt-4">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] text-gray-500 font-medium">
             <p id="last-updated-footer">Last updated: ...</p>
-            <p>Gemma 3 can make mistakes. Verify important weather updates locally.</p>
+            <p>Gemma 3 might hallucinate anomalies. Verify critical weather updates locally.</p>
         </div>
     </footer>
     
