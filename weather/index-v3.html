@@ -8,12 +8,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for creating charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Google Fonts: Outfit -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* Custom Modern Styles */
         body {
-            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
             background-color: #0f172a; /* Deep modern navy */
             color: #f8fafc;
             overflow-x: hidden;
@@ -605,9 +603,9 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                     console.error("Failed to fetch or parse AI insight:", error);
                     let errorMessage = "Couldn't load AI insights at this time.";
                     
-                    // If the user's API key restricts empty referrers (e.g. running locally via file://)
-                    if (error.message.includes("referer") || error.message.includes("blocked")) {
-                        errorMessage = "API Key Error: Requests from local files are blocked by your API restrictions. Try hosting on localhost or GitHub Pages.";
+                    // If the user's API key restricts empty referrers OR CORS blocks the 403 response locally
+                    if (error.message.includes("referer") || error.message.includes("blocked") || error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
+                        errorMessage = "API Key Error: Requests from local files are blocked by your API restrictions (CORS/Referrer). Try hosting on localhost or GitHub Pages.";
                     }
                     
                     document.getElementById('ai-insight-main').textContent = errorMessage;
