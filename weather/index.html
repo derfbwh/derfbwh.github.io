@@ -378,7 +378,7 @@
                 const latestEntry = rawData[0];
                 const temp = parseFloat(latestEntry.temperature);
                 const humidity = parseFloat(latestEntry.humidity);
-                const windSpeed = 5; // Default wind speed for calculations (no live wind data from Eve)
+                const windSpeed = forecastData?.current?.wind_speed_10m ?? 5; // Use live wind data if available, fallback to 5
                 
                 document.getElementById('current-temp').textContent = temp.toFixed(1);
                 document.getElementById('current-humidity').textContent = humidity.toFixed(0);
