@@ -137,27 +137,7 @@
             </div>
         </div>
 
-        <!-- AI Insights Section -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <!-- Main Insight (Spans 2 columns on desktop) -->
-            <div class="card md:col-span-2 border border-indigo-500/30 hover:border-indigo-500/60 transition-colors duration-300" style="background: linear-gradient(145deg, #1f2937, #263345);">
-                <h2 class="text-xl font-bold text-white mb-3 flex items-center gap-2"><span class="text-2xl">✨</span> Weather Insight</h2>
-                <p id="ai-insight-main" class="text-gray-200 text-lg leading-relaxed">Analyzing current conditions...</p>
-            </div>
-            <!-- Trend & Anomaly -->
-            <div class="card border border-rose-500/30 hover:border-rose-500/60 transition-colors duration-300 text-center flex flex-col justify-center">
-                <h3 class="text-lg font-semibold text-rose-200 mb-2 flex flex-col items-center gap-1"><span class="text-2xl">🚨</span> Trend & Anomaly</h3>
-                <p id="ai-anomaly-box" class="text-gray-300 text-sm">Scanning historical data...</p>
-            </div>
-            <!-- Contextual Recommendation -->
-            <div class="card md:col-span-3 border border-emerald-500/30 hover:border-emerald-500/60 transition-colors duration-300 flex items-center gap-4">
-                <div class="text-4xl">🧭</div>
-                <div>
-                    <h3 class="text-lg font-semibold text-emerald-200 mb-1">Recommendation</h3>
-                    <p id="ai-recommendation-box" class="text-gray-300">Generating recommendations...</p>
-                </div>
-            </div>
-        </div>
+
 
         <!-- Dashboard Grid -->
         <div class="grid grid-cols-1 gap-8">
@@ -220,6 +200,34 @@
                         </div>
                     </div>
                     <p id="dew-point-description" class="text-xs text-gray-500 mt-2 text-center"></p>
+                </div>
+            </div>
+
+            <!-- AI Insights Collapsible Section -->
+            <div class="gray_bg rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4 cursor-pointer select-none" id="ai-toggle-header">
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">✨ AI Insights</h2>
+                    <button id="ai-toggle-button" class="text-3xl font-bold text-gray-400 hover:text-white leading-none">&minus;</button>
+                </div>
+                <div id="ai-content" class="collapsible-content grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Main Insight (Spans 2 columns on desktop) -->
+                    <div class="card md:col-span-2 border border-indigo-500/30 hover:border-indigo-500/60 transition-colors duration-300" style="background: linear-gradient(145deg, #1f2937, #263345);">
+                        <h2 class="text-xl font-bold text-white mb-3 flex items-center gap-2"><span class="text-2xl">✨</span> Weather Insight</h2>
+                        <p id="ai-insight-main" class="text-gray-200 text-lg leading-relaxed">Analyzing current conditions...</p>
+                    </div>
+                    <!-- Trend & Anomaly -->
+                    <div class="card border border-rose-500/30 hover:border-rose-500/60 transition-colors duration-300 text-center flex flex-col justify-center">
+                        <h3 class="text-lg font-semibold text-rose-200 mb-2 flex flex-col items-center gap-1"><span class="text-2xl">🚨</span> Trend & Anomaly</h3>
+                        <p id="ai-anomaly-box" class="text-gray-300 text-sm">Scanning historical data...</p>
+                    </div>
+                    <!-- Contextual Recommendation -->
+                    <div class="card md:col-span-3 border border-emerald-500/30 hover:border-emerald-500/60 transition-colors duration-300 flex items-center gap-4">
+                        <div class="text-4xl">🧭</div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-emerald-200 mb-1">Recommendation</h3>
+                            <p id="ai-recommendation-box" class="text-gray-300">Generating recommendations...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -422,6 +430,29 @@
             };
 
             // --- EVENT LISTENERS ---
+            const aiContent = document.getElementById('ai-content');
+            const aiToggleButton = document.getElementById('ai-toggle-button');
+            const aiToggleHeader = document.getElementById('ai-toggle-header');
+            
+            // Initialize AI Insights state from localStorage (default true if not set)
+            let isAiExpanded = localStorage.getItem('aiInsightsExpanded') !== 'false';
+            if (!isAiExpanded) {
+                aiContent.classList.add('collapsed');
+                aiToggleButton.textContent = '+';
+            }
+            
+            aiToggleHeader.addEventListener('click', () => {
+                isAiExpanded = !isAiExpanded;
+                if (isAiExpanded) {
+                    aiContent.classList.remove('collapsed');
+                    aiToggleButton.textContent = '−';
+                } else {
+                    aiContent.classList.add('collapsed');
+                    aiToggleButton.textContent = '+';
+                }
+                localStorage.setItem('aiInsightsExpanded', isAiExpanded);
+            });
+
             document.getElementById('smoothing-toggle').addEventListener('change', (event) => {
                 isSmoothingEnabled = event.target.checked;
                 processAndRenderAll();
