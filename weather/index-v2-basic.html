@@ -248,9 +248,9 @@
                             <h3 class="text-lg font-semibold text-white mb-4">Hourly Breakdown</h3>
                             <div id="hourly-data-container" class="scroll-container"></div>
                         </div>
-                        <div class="card hidden md:block border border-[#1f2937] hover:border-indigo-500/50 transition-colors duration-300">
-                            <h3 class="text-lg font-semibold text-white mb-2 flex items-center gap-2"><span class="text-xl">✨</span> Gemma Insight</h3>
-                            <p id="ai-insight-desktop" class="text-gray-400 italic leading-relaxed">Analyzing your weather...</p>
+                        <div class="card hidden md:block">
+                            <h3 class="text-lg font-semibold text-white mb-2">Quote of the Moment</h3>
+                            <p id="quote-text-desktop" class="text-gray-400 italic">Loading quote...</p>
                         </div>
                     </div>
                     <div class="card">
@@ -260,9 +260,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="card mt-8 block md:hidden border border-[#1f2937] hover:border-indigo-500/50 transition-colors duration-300">
-                    <h3 class="text-lg font-semibold text-white mb-2 flex items-center gap-2"><span class="text-xl">✨</span> Gemma Insight</h3>
-                    <p id="ai-insight-mobile" class="text-gray-400 italic leading-relaxed">Analyzing your weather...</p>
+                <div class="card mt-8 block md:hidden">
+                    <h3 class="text-lg font-semibold text-white mb-2">Quote of the Moment</h3>
+                    <p id="quote-text-mobile" class="text-gray-400 italic">Loading quote...</p>
                 </div>
             </div>
             
@@ -336,6 +336,7 @@
             
             // --- GLOBAL STATE ---
             let rawData = [];
+            let quotes = [];
             let forecastData = null; 
             let isSmoothingEnabled = true;
             let historyDays = 7;
@@ -444,14 +445,22 @@
                     const lon = -71.08;
                     const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/New_York`;
                     
-                    const [weatherResponse, forecastResponse] = await Promise.all([
+                    const [weatherResponse, quotesResponse, forecastResponse] = await Promise.all([
                         fetch(new URL('weather_data.json', window.location.href)),
+                        fetch(new URL('quotes.txt', window.location.href)),
                         fetch(forecastUrl)
                     ]);
 
                     if (!weatherResponse.ok) throw new Error(`Could not load weather_data.json`);
+                    if (!quotesResponse.ok) throw new Error(`Could not load quotes.txt`);
 
                     rawData = await weatherResponse.json();
+                    const quotesText = await quotesResponse.text();
+                    quotes = quotesText.split('\n').filter(q => q.trim() !== '');
+
+                    const randomQuote = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
+                    document.getElementById('quote-text-desktop').textContent = randomQuote;
+                    document.getElementById('quote-text-mobile').textContent = randomQuote;
 
                     if (forecastResponse && forecastResponse.ok) {
                         forecastData = await forecastResponse.json();
@@ -561,42 +570,6 @@
                 processAndRenderYesterdayComparison(dailyMetrics, temp);
                 processAndRenderWeekComparison(dailyMetrics);
                 if (forecastData) processAndRenderForecast(forecastData);
-                
-                // Fetch AI Insight after data is loaded and parsed
-                fetchAIInsight(temp, humidity, feelsLike);
-            }
-            
-            async function fetchAIInsight(temp, humidity, feelsLike) {
-                const API_KEY = 'AIzaSyA7QQuaP2hbega7nRNDA7hzF-r7XWxPlKA';
-                const modelId = 'gemma-3-27b-it';
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${API_KEY}`;
-                
-                const prompt = `You are a helpful and very brief weather assistant. Current conditions: Temperature ${temp.toFixed(1)}°F, Humidity ${humidity.toFixed(0)}%, Feels Like ${feelsLike ? feelsLike.toFixed(1) : temp.toFixed(1)}°F. Provide ONE friendly sentence summarizing this, and ONE practical recommendation (like 'drink water' or 'bring a light jacket'). Do not use markdown asterisks.`;
-
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: prompt }] }],
-                            generationConfig: { temperature: 0.4, maxOutputTokens: 100 }
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    let insightText = "Weather looks quiet right now.";
-                    
-                    if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts.length > 0) {
-                        insightText = data.candidates[0].content.parts[0].text;
-                    }
-                    
-                    document.getElementById('ai-insight-desktop').textContent = insightText;
-                    document.getElementById('ai-insight-mobile').textContent = insightText;
-                } catch (error) {
-                    console.error("Failed to fetch AI insight:", error);
-                    document.getElementById('ai-insight-desktop').textContent = "Couldn't load AI insights at this time.";
-                    document.getElementById('ai-insight-mobile').textContent = "Couldn't load AI insights at this time.";
-                }
             }
             
             function processAndRenderHourlyData(rawData) {
