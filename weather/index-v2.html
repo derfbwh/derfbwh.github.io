@@ -137,6 +137,28 @@
             </div>
         </div>
 
+        <!-- AI Insights Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Main Insight (Spans 2 columns on desktop) -->
+            <div class="card md:col-span-2 border border-indigo-500/30 hover:border-indigo-500/60 transition-colors duration-300" style="background: linear-gradient(145deg, #1f2937, #263345);">
+                <h2 class="text-xl font-bold text-white mb-3 flex items-center gap-2"><span class="text-2xl">✨</span> Gemma Weather Insight</h2>
+                <p id="ai-insight-main" class="text-gray-200 text-lg leading-relaxed">Analyzing current conditions...</p>
+            </div>
+            <!-- Trend & Anomaly -->
+            <div class="card border border-rose-500/30 hover:border-rose-500/60 transition-colors duration-300 text-center flex flex-col justify-center">
+                <h3 class="text-lg font-semibold text-rose-200 mb-2 flex flex-col items-center gap-1"><span class="text-2xl">🚨</span> Trend & Anomaly</h3>
+                <p id="ai-anomaly-box" class="text-gray-300 text-sm">Scanning historical data...</p>
+            </div>
+            <!-- Contextual Recommendation -->
+            <div class="card md:col-span-3 border border-emerald-500/30 hover:border-emerald-500/60 transition-colors duration-300 flex items-center gap-4">
+                <div class="text-4xl">🧭</div>
+                <div>
+                    <h3 class="text-lg font-semibold text-emerald-200 mb-1">Recommendation</h3>
+                    <p id="ai-recommendation-box" class="text-gray-300">Generating recommendations...</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Dashboard Grid -->
         <div class="grid grid-cols-1 gap-8">
 
@@ -248,10 +270,6 @@
                             <h3 class="text-lg font-semibold text-white mb-4">Hourly Breakdown</h3>
                             <div id="hourly-data-container" class="scroll-container"></div>
                         </div>
-                        <div class="card hidden md:block border border-[#1f2937] hover:border-indigo-500/50 transition-colors duration-300">
-                            <h3 class="text-lg font-semibold text-white mb-2 flex items-center gap-2"><span class="text-xl">✨</span> Gemma Insight</h3>
-                            <p id="ai-insight-desktop" class="text-gray-400 italic leading-relaxed">Analyzing your weather...</p>
-                        </div>
                     </div>
                     <div class="card">
                         <h3 class="text-lg font-semibold text-white mb-4">Hourly Trend</h3>
@@ -260,11 +278,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card mt-8 block md:hidden border border-[#1f2937] hover:border-indigo-500/50 transition-colors duration-300">
-                    <h3 class="text-lg font-semibold text-white mb-2 flex items-center gap-2"><span class="text-xl">✨</span> Gemma Insight</h3>
-                    <p id="ai-insight-mobile" class="text-gray-400 italic leading-relaxed">Analyzing your weather...</p>
                 </div>
-            </div>
             
             <!-- Contextual Cards Section -->
             <div class="gray_bg rounded-lg p-6">
@@ -563,15 +577,39 @@
                 if (forecastData) processAndRenderForecast(forecastData);
                 
                 // Fetch AI Insight after data is loaded and parsed
-                fetchAIInsight(temp, humidity, feelsLike);
+                fetchAIInsight(temp, humidity, feelsLike, dailyMetrics);
             }
             
-            async function fetchAIInsight(temp, humidity, feelsLike) {
+            async function fetchAIInsight(temp, humidity, feelsLike, dailyMetrics) {
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+                const yesterdayData = dailyMetrics[yesterdayStr];
+                
+                let historicalContext = "No historical data available for comparison.";
+                if (yesterdayData) {
+                    historicalContext = `Yesterday's average temperature was ${yesterdayData.avgTemp.toFixed(1)}°F with a high of ${yesterdayData.high.toFixed(1)}°F.`;
+                }
+
+                const prompt = `You are an expert home weather assistant analyzing personal backyard weather station data. 
+Current conditions: Temp ${temp.toFixed(1)}°F, Humidity ${humidity.toFixed(0)}%, Feels Like ${feelsLike ? feelsLike.toFixed(1) : temp.toFixed(1)}°F.
+Historical context: ${historicalContext}
+
+Provide your response strictly as a JSON object with exactly these three keys:
+1. "main_insight": ONE friendly and concise sentence summarizing the current weather vibe.
+2. "anomaly_trend": ONE short sentence noting any interesting trend or anomaly (e.g. "Humidity is notably high for this temperature" or "It's warming up faster than yesterday").
+3. "recommendation": A practical, contextual recommendation for the user based on the conditions (e.g. "Great time to open windows", "Bring a heavy jacket", "Drink extra water today").
+
+Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
+
                 const API_KEY = 'AIzaSyA7QQuaP2hbega7nRNDA7hzF-r7XWxPlKA';
                 const modelId = 'gemma-3-27b-it';
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${API_KEY}`;
                 
-                const prompt = `You are a helpful and very brief weather assistant. Current conditions: Temperature ${temp.toFixed(1)}°F, Humidity ${humidity.toFixed(0)}%, Feels Like ${feelsLike ? feelsLike.toFixed(1) : temp.toFixed(1)}°F. Provide ONE friendly sentence summarizing this, and ONE practical recommendation (like 'drink water' or 'bring a light jacket'). Do not use markdown asterisks.`;
+                document.getElementById('ai-insight-main').innerHTML = '<span class="animate-pulse">✨ Gemma is analyzing your weather...</span>';
+                document.getElementById('ai-anomaly-box').innerHTML = '<span class="animate-pulse">Scanning historical data...</span>';
+                document.getElementById('ai-recommendation-box').innerHTML = '<span class="animate-pulse">Processing context...</span>';
 
                 try {
                     const response = await fetch(url, {
@@ -579,23 +617,26 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             contents: [{ parts: [{ text: prompt }] }],
-                            generationConfig: { temperature: 0.4, maxOutputTokens: 100 }
+                            generationConfig: { temperature: 0.2, maxOutputTokens: 300 }
                         })
                     });
                     
                     const data = await response.json();
-                    let insightText = "Weather looks quiet right now.";
                     
                     if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts.length > 0) {
-                        insightText = data.candidates[0].content.parts[0].text;
+                        let text = data.candidates[0].content.parts[0].text;
+                        text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                        const aiData = JSON.parse(text);
+                        
+                        document.getElementById('ai-insight-main').textContent = aiData.main_insight || "Weather looks quiet right now.";
+                        document.getElementById('ai-anomaly-box').textContent = aiData.anomaly_trend || "No anomalies detected.";
+                        document.getElementById('ai-recommendation-box').textContent = aiData.recommendation || "Enjoy the weather out there!";
                     }
-                    
-                    document.getElementById('ai-insight-desktop').textContent = insightText;
-                    document.getElementById('ai-insight-mobile').textContent = insightText;
                 } catch (error) {
-                    console.error("Failed to fetch AI insight:", error);
-                    document.getElementById('ai-insight-desktop').textContent = "Couldn't load AI insights at this time.";
-                    document.getElementById('ai-insight-mobile').textContent = "Couldn't load AI insights at this time.";
+                    console.error("Failed to fetch or parse AI insight:", error);
+                    document.getElementById('ai-insight-main').textContent = "Couldn't load AI insights at this time.";
+                    document.getElementById('ai-anomaly-box').textContent = "Unavailable";
+                    document.getElementById('ai-recommendation-box').textContent = "Unavailable";
                 }
             }
             
