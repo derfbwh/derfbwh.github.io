@@ -623,6 +623,10 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                     
                     const data = await response.json();
                     
+                    if (!response.ok) {
+                        throw new Error(data.error?.message || `API Error ${response.status}`);
+                    }
+                    
                     if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts.length > 0) {
                         let text = data.candidates[0].content.parts[0].text;
                         text = text.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -634,7 +638,14 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                     }
                 } catch (error) {
                     console.error("Failed to fetch or parse AI insight:", error);
-                    document.getElementById('ai-insight-main').textContent = "Couldn't load AI insights at this time.";
+                    let errorMessage = "Couldn't load AI insights at this time.";
+                    
+                    // If the user's API key restricts empty referrers (e.g. running locally via file://)
+                    if (error.message.includes("referer") || error.message.includes("blocked")) {
+                        errorMessage = "API Key Error: Requests from local files are blocked by your API restrictions. Try hosting on localhost or GitHub Pages.";
+                    }
+                    
+                    document.getElementById('ai-insight-main').textContent = errorMessage;
                     document.getElementById('ai-anomaly-box').textContent = "Unavailable";
                     document.getElementById('ai-recommendation-box').textContent = "Unavailable";
                 }
