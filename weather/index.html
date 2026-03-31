@@ -68,11 +68,17 @@
 
             <!-- AI Primary Insight -->
             <div class="pb-10 border-b border-white/10">
-                <div class="flex items-center gap-2 mb-4">
-                    <span class="text-[#10a37f] text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 border border-[#10a37f]/30 px-2 py-0.5 rounded-sm">✨ Gemma 3 Analysis</span>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[#10a37f] text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 border border-[#10a37f]/30 px-2 py-0.5 rounded-sm">✨ Gemma 3 Analysis</span>
+                    </div>
+                    <button id="generate-ai-btn" class="text-xs bg-[#10a37f]/10 hover:bg-[#10a37f]/20 text-[#10a37f] border border-[#10a37f]/30 px-3 py-1.5 rounded transition-all focus:outline-none flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+                        Generate Insights
+                    </button>
                 </div>
                 <div class="prose prose-invert max-w-none text-white font-light text-xl md:text-2xl leading-relaxed">
-                    <p id="ai-insight-main" class="animate-pulse opacity-80">Analyzing current conditions...</p>
+                    <p id="ai-insight-main" class="opacity-80 text-gray-400 text-lg">Click "Generate Insights" for an AI analysis of current conditions.</p>
                 </div>
             </div>
 
@@ -111,11 +117,11 @@
                     
                     <div>
                         <p class="text-[11px] font-bold text-rose-400 mb-3 tracking-widest uppercase flex items-center gap-1.5"><span class="text-sm">🚨</span> Trend / Anomaly</p>
-                        <p id="ai-anomaly-box" class="text-base text-gray-300 font-light leading-relaxed">Scanning historical data...</p>
+                        <p id="ai-anomaly-box" class="text-base text-gray-400 font-light leading-relaxed">Awaiting generation...</p>
                     </div>
                     <div>
                         <p class="text-[11px] font-bold text-emerald-400 mb-3 tracking-widest uppercase flex items-center gap-1.5"><span class="text-sm">🧭</span> Suggestion</p>
-                        <p id="ai-recommendation-box" class="text-base text-gray-300 font-light leading-relaxed">Processing context...</p>
+                        <p id="ai-recommendation-box" class="text-base text-gray-400 font-light leading-relaxed">Awaiting generation...</p>
                     </div>
 
                     
@@ -248,7 +254,7 @@
             let historyDays = 7;
             let isForecastExpanded = true;
             let chartInstances = {};
-            let hasFetchedAIInsight = false;
+            let aiContextData = null;
 
             // --- HELPER FUNCTIONS ---
             function startOfDay(date) {
@@ -346,6 +352,28 @@
             modal.addEventListener('click', (event) => {
                 if (event.target === modal) {
                     modal.classList.add('hidden');
+                }
+            });
+
+            document.getElementById('generate-ai-btn').addEventListener('click', () => {
+                if (aiContextData) {
+                    const btn = document.getElementById('generate-ai-btn');
+                    btn.disabled = true;
+                    btn.classList.add('opacity-50', 'cursor-not-allowed');
+                    btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-[#10a37f]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Generating...`;
+                    
+                    fetchAIInsight(
+                        aiContextData.temp, 
+                        aiContextData.humidity, 
+                        aiContextData.feelsLike, 
+                        aiContextData.dailyMetrics, 
+                        aiContextData.lastUpdatedDate, 
+                        aiContextData.yesterdayAtThisTime
+                    ).finally(() => {
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg> Generate Insights`;
+                    });
                 }
             });
 
@@ -484,11 +512,8 @@
                 processAndRenderWeekComparison(dailyMetrics);
                 if (forecastData) processAndRenderForecast(forecastData);
                 
-                // Fetch AI Insight after data is loaded and parsed, but only once
-                if (!hasFetchedAIInsight) {
-                    fetchAIInsight(temp, humidity, feelsLike, dailyMetrics, lastUpdatedDate, yesterdayAtThisTime);
-                    hasFetchedAIInsight = true;
-                }
+                // Store context for AI generation upon user request
+                aiContextData = { temp, humidity, feelsLike, dailyMetrics, lastUpdatedDate, yesterdayAtThisTime };
             }
             
             async function fetchAIInsight(temp, humidity, feelsLike, dailyMetrics, lastUpdatedDate, yesterdayAtThisTime) {
@@ -534,13 +559,16 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                 const recBoxEl = document.getElementById('ai-recommendation-box');
 
                 mainInsightEl.innerHTML = '✨ Gemma is analyzing your weather...';
-                mainInsightEl.classList.add('animate-pulse', 'opacity-80');
+                mainInsightEl.classList.remove('text-gray-400', 'text-lg');
+                mainInsightEl.classList.add('animate-pulse', 'opacity-80', 'text-white');
                 
                 anomalyBoxEl.innerHTML = 'Scanning historical data...';
-                anomalyBoxEl.classList.add('animate-pulse', 'opacity-80');
+                anomalyBoxEl.classList.remove('text-gray-400');
+                anomalyBoxEl.classList.add('animate-pulse', 'opacity-80', 'text-gray-300');
                 
                 recBoxEl.innerHTML = 'Processing context...';
-                recBoxEl.classList.add('animate-pulse', 'opacity-80');
+                recBoxEl.classList.remove('text-gray-400');
+                recBoxEl.classList.add('animate-pulse', 'opacity-80', 'text-gray-300');
 
                 try {
                     const response = await fetch(url, {
