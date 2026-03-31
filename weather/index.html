@@ -66,21 +66,7 @@
                 </div>
             </div>
 
-            <!-- AI Primary Insight -->
-            <div class="pb-10 border-b border-white/10">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-2">
-                        <span class="text-[#10a37f] text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 border border-[#10a37f]/30 px-2 py-0.5 rounded-sm">✨ Gemma 3 Analysis</span>
-                    </div>
-                    <button id="generate-ai-btn" class="text-xs bg-[#10a37f]/10 hover:bg-[#10a37f]/20 text-[#10a37f] border border-[#10a37f]/30 px-3 py-1.5 rounded transition-all focus:outline-none flex items-center gap-1.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
-                        Generate Insights
-                    </button>
-                </div>
-                <div class="prose prose-invert max-w-none text-white font-light text-xl md:text-2xl leading-relaxed">
-                    <p id="ai-insight-main" class="opacity-80 text-gray-400 text-lg">Click "Generate Insights" for an AI analysis of current conditions.</p>
-                </div>
-            </div>
+
 
             <!-- Main Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-x-12 gap-y-12 pb-10 border-b border-white/10">
@@ -113,20 +99,11 @@
 
                 <!-- Secondary AI / Trends -->
                 <div class="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-10 border-t border-white/10 lg:border-t-0 pt-10 lg:pt-0 lg:border-l lg:pl-12 lg:border-white/10">
-                    <!-- AI Small Blocks -->
-                    
-                    <div>
-                        <p class="text-[11px] font-bold text-rose-400 mb-3 tracking-widest uppercase flex items-center gap-1.5"><span class="text-sm">🚨</span> Trend / Anomaly</p>
-                        <p id="ai-anomaly-box" class="text-base text-gray-400 font-light leading-relaxed">Awaiting generation...</p>
-                    </div>
-                    <div>
-                        <p class="text-[11px] font-bold text-emerald-400 mb-3 tracking-widest uppercase flex items-center gap-1.5"><span class="text-sm">🧭</span> Suggestion</p>
-                        <p id="ai-recommendation-box" class="text-base text-gray-400 font-light leading-relaxed">Awaiting generation...</p>
-                    </div>
+
 
                     
                     <!-- Comparisons -->
-                    <div class="pt-8 sm:border-t sm:border-white/10">
+                    <div>
                         <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-5">Today vs Yesterday</p>
                         <div id="yesterday-comparison" class="space-y-4 font-light text-sm"></div>
                     </div>
@@ -136,6 +113,38 @@
                     </div>
                 </div>
 
+            </div>
+
+            <!-- AI Analysis -->
+            <div class="pb-10 border-b border-white/10 transition-all duration-500 opacity-60 hover:opacity-100" id="ai-container">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 border border-gray-600/30 px-2 py-0.5 rounded-sm transition-colors" id="ai-badge">✨ Gemma 3 Analysis</span>
+                    </div>
+                    <button id="generate-ai-btn" class="text-xs bg-transparent hover:bg-white/5 text-gray-400 border border-gray-600 px-3 py-1.5 rounded transition-all focus:outline-none flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+                        Generate Insights
+                    </button>
+                </div>
+                
+                <div id="ai-results-container" class="hidden">
+                    <div class="prose prose-invert max-w-none text-white font-light text-xl md:text-2xl leading-relaxed mb-8 mt-6">
+                        <p id="ai-insight-main" class="text-gray-300"></p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 border-t border-white/10 pt-6">
+                        <div>
+                            <p class="text-[11px] font-bold text-rose-400/80 mb-2 tracking-widest uppercase flex items-center gap-1.5"><span class="text-sm">🚨</span> Trend / Anomaly</p>
+                            <p id="ai-anomaly-box" class="text-sm text-gray-400 font-light leading-relaxed"></p>
+                        </div>
+                        <div>
+                            <p class="text-[11px] font-bold text-emerald-400/80 mb-2 tracking-widest uppercase flex items-center gap-1.5"><span class="text-sm">🧭</span> Suggestion</p>
+                            <p id="ai-recommendation-box" class="text-sm text-gray-400 font-light leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+                <div id="ai-placeholder" class="text-sm text-gray-500 font-light mt-2">
+                    AI Insights are available on request to analyze current weather conditions and trends.
+                </div>
             </div>
 
             <!-- 24 Hour Data -->
@@ -558,8 +567,16 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                 const anomalyBoxEl = document.getElementById('ai-anomaly-box');
                 const recBoxEl = document.getElementById('ai-recommendation-box');
 
+                // UI Transitions
+                document.getElementById('ai-placeholder').classList.add('hidden');
+                document.getElementById('ai-results-container').classList.remove('hidden');
+                document.getElementById('ai-container').classList.remove('opacity-60', 'hover:opacity-100');
+                const badge = document.getElementById('ai-badge');
+                badge.classList.remove('text-gray-500', 'border-gray-600/30');
+                badge.classList.add('text-[#10a37f]', 'border-[#10a37f]/30', 'bg-[#10a37f]/10');
+
                 mainInsightEl.innerHTML = '✨ Gemma is analyzing your weather...';
-                mainInsightEl.classList.remove('text-gray-400', 'text-lg');
+                mainInsightEl.classList.remove('text-gray-400');
                 mainInsightEl.classList.add('animate-pulse', 'opacity-80', 'text-white');
                 
                 anomalyBoxEl.innerHTML = 'Scanning historical data...';
