@@ -1,40 +1,18 @@
 /*
- *                        ___
- *                       /\_ \
- *  _____     ___     ___\//\ \      __
+ * ___
+ * /\_ \
+ * _____     ___     ___\//\ \      __
  * /\ '__`\  / __`\  / __`\\ \ \   /'__`\
  * \ \ \_\ \/\ \_\ \/\ \_\ \\_\ \_/\  __/
- *  \ \ ,__/\ \____/\ \____//\____\ \____\
- *   \ \ \/  \/___/  \/___/ \/____/\/____/
- *    \ \_\
- *     \/_/
+ * \ \ ,__/\ \____/\ \____//\____\ \____\
+ * \ \ \/  \/___/  \/___/ \/____/\/____/
+ * \ \_\
+ * \/_/
  *
  * Designed, built, and released under MIT license by @mdo. Learn more at
  * https://github.com/poole/poole.
  */
 
-
-/*
- * Contents
- *
- * Body resets
- * Custom type
- * Messages
- * Container
- * Masthead
- * Posts and pages
- * Pagination
- * Reverse layout
- * Themes
- */
-
-
-/*
- * Body resets
- *
- * Update the foundational and global aspects of the page.
- */
- 
 * {
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
@@ -65,77 +43,49 @@ body {
     font-size: .9rem;
 }
 
-/* No `:visited` state is required by default (browsers will use `a`) */
+/* Light Mode Accent Color */
 a {
-  color: #62426F;
+  color: #0D3E3A; 
   text-decoration: none;
   font-weight: 600;
 }
 a strong {
   color: inherit;
 }
-/* `:focus` is linked to `:hover` for basic accessibility */
 a:hover,
 a:focus {
   text-decoration: underline;
 }
 
-/* Headings */
 h1, h2, h3, h4, h5, h6 {
   margin-bottom: .5rem;
   font-weight: bold;
   color: #9a9a9a;
   text-rendering: optimizeLegibility;
 }
-h1 {
-  font-size: 1.5rem;
-}
+h1 { font-size: 1.5rem; }
+h2 { margin-top: 1rem; font-size: 1.5rem; }
+h3 { margin-top: 1.5rem; font-size: 1.25rem; }
+h4, h5, h6 { margin-top: 1rem; font-size: 1rem; }
 
-h2 {
-  margin-top: 1rem;
-  font-size: 1.5rem;
-}
-h3 {
-  margin-top: 1.5rem;
-  font-size: 1.25rem;
-}
-h4, h5, h6 {
-  margin-top: 1rem;
-  font-size: 1rem;
-}
-
-/* Body text */
 p {
   margin-top: 0;
   margin-bottom: .75rem;
 }
 
-strong {
-  color: #9a9a9a;
-}
+strong { color: #9a9a9a; }
 
+ul, ol, dl { margin-top: 0; margin-bottom: 1rem; }
+dt { font-weight: bold; }
+dd { margin-bottom: .5rem; }
 
-/* Lists */
-ul, ol, dl {
-  margin-top: 0;
-  margin-bottom: 1rem;
-}
-
-dt {
-  font-weight: bold;
-}
-dd {
-  margin-bottom: .5rem;
-}
-
-/* Misc */
 hr {
   position: relative;
-    margin-left: auto;
-    margin-right: auto;
-	margin-top:1.2rem;
-	margin-bottom:1.2rem;
-	border: 0;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top:1.2rem;
+  margin-bottom:1.2rem;
+  border: 0;
   border-top: 1px solid #757575;
   border-bottom: 1px solid #fff;
   width: 75%;
@@ -152,11 +102,7 @@ abbr[title] {
   border-bottom: 1px dotted #e5e5e5;
 }
 
-/* Code */
-code,
-pre {
-  font-family: Menlo, Monaco, "Courier New", monospace;
-}
+code, pre { font-family: Menlo, Monaco, "Courier New", monospace; }
 code {
   padding: .25em .5em;
   font-size: 85%;
@@ -184,52 +130,25 @@ pre code {
   background-color: transparent;
 }
 
-/* Pygments via Jekyll */
-.highlight {
-  margin-bottom: 1rem;
-  border-radius: 4px;
-}
-.highlight pre {
-  margin-bottom: 0;
-}
+.highlight { margin-bottom: 1rem; border-radius: 4px; }
+.highlight pre { margin-bottom: 0; }
 
-/* Gist via GitHub Pages */
-.gist .gist-file {
-  font-family: Menlo, Monaco, "Courier New", monospace !important;
-}
-.gist .markdown-body {
-  padding: 15px;
-}
-.gist pre {
-  padding: 0;
-  background-color: transparent;
-}
-.gist .gist-file .gist-data {
-  font-size: .8rem !important;
-  line-height: 1.4;
-}
-.gist code {
-  padding: 0;
-  color: inherit;
-  background-color: transparent;
-  border-radius: 0;
-}
+.gist .gist-file { font-family: Menlo, Monaco, "Courier New", monospace !important; }
+.gist .markdown-body { padding: 15px; }
+.gist pre { padding: 0; background-color: transparent; }
+.gist .gist-file .gist-data { font-size: .8rem !important; line-height: 1.4; }
+.gist code { padding: 0; color: inherit; background-color: transparent; border-radius: 0; }
 
-/* Quotes */
+/* Light Mode Blockquote Accent */
 blockquote {
   padding: .5rem 1rem;
   margin: .8rem 0;
   color: #9a9a9a;
-  border-left: .25rem solid #62426F;
+  border-left: .25rem solid #0D3E3A;
 }
-blockquote p:last-child {
-  margin-bottom: 0;
-}
+blockquote p:last-child { margin-bottom: 0; }
 @media (min-width: 30em) {
-  blockquote {
-    padding-right: 5rem;
-    padding-left: 1.25rem;
-  }
+  blockquote { padding-right: 5rem; padding-left: 1.25rem; }
 }
 
 img {
@@ -239,42 +158,16 @@ img {
   border-radius: 5px;
 }
 
-/* Tables */
 table {
   margin-bottom: 1rem;
   width: 100%;
   border: 1px solid #e5e5e5;
   border-collapse: collapse;
 }
-td,
-th {
-  padding: .25rem .5rem;
-  border: 1px solid #e5e5e5;
-}
-tbody tr:nth-child(odd) td,
-tbody tr:nth-child(odd) th {
-  background-color: #f9f9f9;
-}
+td, th { padding: .25rem .5rem; border: 1px solid #e5e5e5; }
+tbody tr:nth-child(odd) td, tbody tr:nth-child(odd) th { background-color: #f9f9f9; }
 
-
-/*
- * Custom type
- *
- * Extend paragraphs with `.lead` for larger introductory text.
- */
-
-.lead {
-  font-size: 1.25rem;
-  font-weight: 300;
-}
-
-
-/*
- * Messages
- *
- * Show alert messages to users. You may add it to single elements like a `<p>`,
- * or to a parent if there are multiple elements to show.
- */
+.lead { font-size: 1.25rem; font-weight: 300; }
 
 .message {
   margin-bottom: 1rem;
@@ -282,13 +175,6 @@ tbody tr:nth-child(odd) th {
   color: #717171;
   background-color: #f9f9f9;
 }
-
-
-/*
- * Container
- *
- * Center the page content.
- */
 
 .container {
   max-width: 41rem;
@@ -300,39 +186,28 @@ tbody tr:nth-child(odd) th {
   line-height: 1.5;
 }
 
-
-/*
- * Masthead
- *
- * Super small header above the content for site name and short description.
- */
-
 .masthead {
-height: 400px;
-width: 100%;
-/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#4c7a0f+0,22520a+100 */
-background: url(/images/bg.jpg);
-background-repeat: no-repeat;
-background-size: cover;
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c7a0f', endColorstr='#22520a',GradientType=0 ); /* IE6-9 */;
+  height: 400px;
+  width: 100%;
+  background: url(/images/bg.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c7a0f', endColorstr='#22520a',GradientType=0 );
 }
 
 .masthead:before{
-    content: '';
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-background: rgb(0,0,0);
-background: -moz-linear-gradient(0deg, rgba(0,0,0,0.34637605042016806) 0%, rgba(0,0,0,0) 100%);
-background: -webkit-linear-gradient(0deg, rgba(0,0,0,0.34637605042016806) 0%, rgba(0,0,0,0) 100%);
-background: linear-gradient(0deg, rgba(0,0,0,0.34637605042016806) 0%, rgba(0,0,0,0) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endColorstr="#000000",GradientType=1);height:400px;
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: rgb(0,0,0);
+  background: -moz-linear-gradient(0deg, rgba(0,0,0,0.346376) 0%, rgba(0,0,0,0) 100%);
+  background: -webkit-linear-gradient(0deg, rgba(0,0,0,0.346376) 0%, rgba(0,0,0,0) 100%);
+  background: linear-gradient(0deg, rgba(0,0,0,0.346376) 0%, rgba(0,0,0,0) 100%);
+  height:400px;
 }
 
 .masthead-title {
-position:relative;
+  position:relative;
   max-width: 41rem;
   padding-top:205px;
   padding-left:  1rem;
@@ -348,71 +223,29 @@ position:relative;
   padding-bottom:5px;
 }
 
-.masthead-title a {
-  color: #ffffff;
-}
-.masthead-title small {
-  font-size: 75%;
-  font-weight: 400;
-  color: #ffffff;
-  letter-spacing: 0;
-}
+.masthead-title a { color: #ffffff; }
+.masthead-title small { font-size: 75%; font-weight: 400; color: #ffffff; letter-spacing: 0; }
+.masthead-title small a { font-size: 75%; font-weight: 400; color: #ffffff; letter-spacing: 0; }
 
-.masthead-title small a {
-  font-size: 75%;
-  font-weight: 400;
-  color: #ffffff;
-  letter-spacing: 0;
-}
+.banner { margin-top: -1.5rem; padding-bottom: .01rem; width: 100%; background-color: #ffffff; }
 
-.banner {
-  margin-top:    -1.5rem;
-  padding-bottom: .01rem;
-  width: 100%;
-  background-color: #ffffff;
-}
-
+/* Light Mode Banner Hover Accent */
 .banner a:hover {
-  margin-top:    -1.5rem;
+  margin-top: -1.5rem;
   padding-bottom: .01rem;
   width: 100%;
-  background-color: #62426F;
+  background-color: #0D3E3A;
   color: #ffffff;
-
 }
 
-.banner-text small {
-  color: #000000;
-  font-size: 60%;
-  font-weight: 400;
-}
+.banner-text small { color: #000000; font-size: 60%; font-weight: 400; }
 
+.page, .post { margin-bottom: 4em; }
 
+/* Light Mode Title Accent */
+.page-title, .post-title, .post-title a { color: #0D3E3A; }
+.page-title, .post-title { margin-top: 0; }
 
-/*
- * Posts and pages
- *
- * Each post is wrapped in `.post` and is used on default and post layouts. Each
- * page is wrapped in `.page` and is only used on the page layout.
- */
-
-.page,
-.post {
-  margin-bottom: 4em;
-}
-
-/* Blog post or page title */
-.page-title,
-.post-title,
-.post-title a {
-  color: #62426F;
-}
-.page-title,
-.post-title {
-  margin-top: 0;
-}
-
-/* Meta data line below post title */
 .post-date {
   display: block;
   margin-top: -.5rem;
@@ -420,40 +253,15 @@ position:relative;
   color: #9a9a9a;
 }
 
-/* Related posts */
-.related {
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-  border-top: 1px solid #eee;
-}
-.related-posts {
-  padding-left: 0;
-  list-style: none;
-}
-.related-posts h3 {
-  margin-top: 0;
-}
-.related-posts li small {
-  font-size: 75%;
-  color: #999;
-}
-.related-posts li a:hover {
-  text-decoration: underline;
-}
-.related-posts li a:hover small {
-  color: inherit;
-}
-
-
-/*
- * Pagination
- *
- * Super lightweight (HTML-wise) blog pagination. `span`s are provide for when
- * there are no more previous or next posts to show.
- */
+.related { padding-top: 2rem; padding-bottom: 2rem; border-top: 1px solid #eee; }
+.related-posts { padding-left: 0; list-style: none; }
+.related-posts h3 { margin-top: 0; }
+.related-posts li small { font-size: 75%; color: #999; }
+.related-posts li a:hover { text-decoration: underline; }
+.related-posts li a:hover small { color: inherit; }
 
 .pagination {
-  overflow: hidden; /* clearfix */
+  overflow: hidden;
   margin-left: -1rem;
   margin-right: -1rem;
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
@@ -461,63 +269,35 @@ position:relative;
   text-align: center;
 }
 
-/* Pagination items can be `span`s or `a`s */
-.pagination-item {
-  display: block;
-  padding: 1rem;
-  border: 1px solid #eee;
-}
-.pagination-item:first-child {
-  margin-bottom: -1px;
-}
-
-/* Only provide a hover state for linked pagination items */
-a.pagination-item:hover {
-  background-color: #f5f5f5;
-}
+.pagination-item { display: block; padding: 1rem; border: 1px solid #eee; }
+.pagination-item:first-child { margin-bottom: -1px; }
+a.pagination-item:hover { background-color: #f5f5f5; }
 
 @media (min-width: 30em) {
-  .pagination {
-    margin: 3rem 0;
-  }
-  .pagination-item {
-    float: left;
-    width: 50%;
-  }
-  .pagination-item:first-child {
-    margin-bottom: 0;
-    border-top-left-radius:    4px;
-    border-bottom-left-radius: 4px;
-  }
-  .pagination-item:last-child {
-    margin-left: -1px;
-    border-top-right-radius:    4px;
-    border-bottom-right-radius: 4px;
-  }
+  .pagination { margin: 3rem 0; }
+  .pagination-item { float: left; width: 50%; }
+  .pagination-item:first-child { margin-bottom: 0; border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+  .pagination-item:last-child { margin-left: -1px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
 }
 
-.footer {
-  font-size: 0.5rem;
-}
+.footer { font-size: 0.5rem; }
 
+/* * THE NEW DARK GREEN THEME 
+ */
 @media (prefers-color-scheme: dark) {
-body {
-background-color: rgb(45, 41, 55);
-color: rgb(255, 255, 255);
-}
+  body {
+    background-color: #071F1D; 
+    color: rgb(255, 255, 255);
+  }
 
-.post-title a {
-color: #A98CBC;
-}
+  .post-title a { color: #55D4C3; }
+  a { color: #55D4C3; }
+      
+  blockquote {
+    border-left: .25rem solid #55D4C3;
+  }
 
-a {
-color: #A98CBC; }
-    
-blockquote{
-        border-left: .25rem solid #A98CBC;
-}
-
-.pagination-item {
-border: 1px solid #1F1C28;
-}
+  .pagination-item {
+    border: 1px solid #14403B;
+  }
 }
