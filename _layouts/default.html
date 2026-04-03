@@ -10,80 +10,50 @@
   {% include head.html %}
 
   <style>
-    /* Engaging Header & Prominent Social Links */
-    .masthead {
-      margin-bottom: 3rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid #eaeaea;
-    }
-    
-    .masthead-title {
-      margin-bottom: 1rem;
-    }
-
-    .masthead-title a {
-      text-decoration: none;
-      color: #333;
-    }
-
-    .site-tagline {
-      display: block;
-      font-size: 1.1rem;
-      color: #666;
-      margin-top: 0.25rem;
-      font-weight: 400;
-    }
-
+    /* Modern Social Links specifically fitted for Poole's Header */
     .social-links {
+      position: relative;
+      z-index: 99999; /* Keeps links above the black gradient overlay so they are clickable */
+      max-width: 41rem; /* Matches the width of your masthead-title */
+      margin: 1rem auto 0; /* Centers the container perfectly */
+      padding-left: 15px; /* Aligns exactly with your title text */
+      padding-right: 15px;
       display: flex;
-      gap: 1rem;
+      gap: 0.75rem;
       flex-wrap: wrap;
-      margin-top: 1.5rem;
     }
 
     .social-link-btn {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.5rem 1.25rem;
+      padding: 0.4rem 1rem;
       border-radius: 50px;
-      background-color: #f4f4f4;
-      color: #333 !important;
+      background-color: rgba(255, 255, 255, 0.15); /* Translucent glass effect for dark background */
+      color: #fff !important; /* White text for contrast */
       text-decoration: none !important;
-      font-size: 0.9rem;
-      font-weight: 600;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
       transition: all 0.2s ease;
-      border: 1px solid transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(5px); /* Frosts the background image behind the button */
     }
 
     .social-link-btn i {
       font-size: 1.1rem;
     }
 
-    /* Hover Effects for Social Links */
+    /* Hover Effects */
     .social-link-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
       background-color: #fff;
-      border-color: #ddd;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
     
-    .social-link-btn.mastodon:hover { color: #6364FF !important; }
-    .social-link-btn.bluesky:hover { color: #0085FF !important; }
-    .social-link-btn.threads:hover { color: #000000 !important; }
-
-    /* Dark Mode Support (if your site uses it) */
-    @media (prefers-color-scheme: dark) {
-      .social-link-btn {
-        background-color: #222;
-        color: #eee !important;
-      }
-      .social-link-btn:hover {
-        background-color: #333;
-        border-color: #555;
-      }
-      .social-link-btn.threads:hover { color: #fff !important; }
-    }
+    .social-link-btn.mastodon:hover { color: #5a54d8 !important; border-color: #5a54d8; }
+    .social-link-btn.bluesky:hover { color: #0085FF !important; border-color: #0085FF; }
+    .social-link-btn.threads:hover { color: #000000 !important; border-color: #000000; }
   </style>
 </head>
 
@@ -91,12 +61,10 @@
 
   <div class="masthead">
     <h3 class="masthead-title">
-      <a href="/" title="Home">{{ site.title }}</a>
-      <small class="site-tagline">
-        <a href="http://mastodon.social/@brianhough" style="color: inherit; text-decoration: none;">{{ site.tagline }}</a>
-      </small>
+      <a href="/" title="Home">{{ site.title }}</a><br>
+      <small><a href="http://twitter.com/bwhough">{{ site.tagline }}</a></small>
     </h3>
-
+    
     <div class="social-links">
       <a rel="me" href="https://mastodon.social/@brianhough" class="social-link-btn mastodon" title="Follow on Mastodon">
         <i class="fa-brands fa-mastodon"></i> Mastodon
