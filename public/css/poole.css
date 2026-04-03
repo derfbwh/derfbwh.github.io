@@ -198,11 +198,11 @@ tbody tr:nth-child(odd) td, tbody tr:nth-child(odd) th { background-color: #f9f9
   background-size: cover;
   box-shadow: 0 12px 36px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
   
-  /* Flexbox vertically aligns your text and buttons to the center */
+  /* Anchors the content back to the bottom */
   display: flex;
   flex-direction: column;
-  justify-content: center; /* This is the magic line that vertically centers everything */
-  /* padding-bottom removed to ensure true centering */
+  justify-content: flex-end; 
+  padding-bottom: 2.5rem; 
 }
 
 .masthead:before {
