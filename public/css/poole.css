@@ -188,22 +188,21 @@ tbody tr:nth-child(odd) td, tbody tr:nth-child(odd) th { background-color: #f9f9
 
 .masthead {
   position: relative;
-  height: 320px; /* Slightly shorter for a modern proportion */
-  max-width: 65rem; /* Wide, but doesn't stretch to the very edges */
-  width: calc(100% - 2rem); /* Ensures breathing room on mobile screens */
-  margin: 2rem auto; /* Floats off the top of the browser window */
-  border-radius: 24px; /* Smooth, modern rounded corners */
-  overflow: hidden; /* Keeps the gradient overlay inside the corners */
+  height: 320px;
+  max-width: 65rem;
+  width: calc(100% - 2rem);
+  margin: 2rem auto;
+  border-radius: 24px;
+  overflow: hidden;
   background: url(/images/bg.jpg) no-repeat center center;
   background-size: cover;
-  /* The "special something": A premium, multi-layered soft shadow */
   box-shadow: 0 12px 36px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
   
-  /* Flexbox seamlessly aligns your text and buttons to the bottom */
+  /* Flexbox vertically aligns your text and buttons to the center */
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding-bottom: 2rem;
+  justify-content: center; /* This is the magic line that vertically centers everything */
+  /* padding-bottom removed to ensure true centering */
 }
 
 .masthead:before {
