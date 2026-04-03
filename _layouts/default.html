@@ -10,19 +10,23 @@
   {% include head.html %}
 
   <style>
-    /* Modern Social Links specifically fitted for Poole's Header */
+/* Modern Social Links specifically fitted for Poole's Header */
     .social-links {
       position: relative;
-      z-index: 99999; /* Keeps links above the black gradient overlay so they are clickable */
-      max-width: 41rem; /* Matches the width of your masthead-title */
-      margin: 1rem auto 0; /* Centers the container perfectly */
-      padding-left: 15px; /* Aligns exactly with your title text */
-      padding-right: 15px;
+      z-index: 99999; 
+      margin: 1rem 0 0; /* Removes the auto-centering margin */
+      padding-left: 4rem; /* Matches the exact padding of the title */
+      padding-right: 2rem;
       display: flex;
       gap: 0.75rem;
       flex-wrap: wrap;
+      justify-content: flex-start; /* Explicitly forces left-alignment */
     }
 
+    @media (max-width: 600px) {
+      .social-links { padding-left: 2rem; }
+    }
+    
     .social-link-btn {
       display: inline-flex;
       align-items: center;
