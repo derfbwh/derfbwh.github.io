@@ -287,17 +287,43 @@ a.pagination-item:hover { background-color: #f5f5f5; }
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #071F1D; 
-    color: rgb(255, 255, 255);
+    color: #E8F0EF;
   }
 
+  /* Fix Typography Legibility */
+  h1, h2, h3, h4, h5, h6, strong { color: #FFFFFF; }
+  .post-date, small, .related-posts li small, .site-tagline { color: #8CABA7; }
+  blockquote {
+    color: #A9B8B6;
+    border-left: .25rem solid #55D4C3;
+  }
+  
+  /* Fix Links */
   .post-title a { color: #55D4C3; }
   a { color: #55D4C3; }
-      
-  blockquote {
-    border-left: .25rem solid #55D4C3;
+  a:hover, a:focus { color: #7BF0E1; }
+
+  /* Darken Bright Containers & Borders */
+  code, pre, .message, tbody tr:nth-child(odd) td, tbody tr:nth-child(odd) th { 
+    background-color: #041412; /* Deep, subtle background */
+    color: #C2D6D3;
+  }
+  pre { border: 1px solid #14403B; }
+  code { color: #55D4C3; }
+  
+  table, td, th { border-color: #14403B; }
+  
+  hr {
+    border-top: 1px solid #14403B;
+    border-bottom: none;
   }
 
   .pagination-item {
+    background-color: #041412;
     border: 1px solid #14403B;
+    color: #E8F0EF;
+  }
+  a.pagination-item:hover {
+    background-color: #0A2926;
   }
 }
