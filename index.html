@@ -50,12 +50,13 @@ title: Home
     gap: 1.5rem;
   }
   
+  /* Base Light Theme Card Styles */
   .project-card {
     padding: 1.5rem;
     border: 1px solid #eaeaea;
     border-radius: 8px;
     background: #fafafa;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   }
   
   .project-card:hover {
@@ -88,6 +89,26 @@ title: Home
       flex-direction: column;
       text-align: center;
     }
+  }
+
+  /* Adapts the portfolio layout to your new Dark Green Theme */
+  @media (prefers-color-scheme: dark) {
+    .portfolio-header { border-bottom-color: #14403B !important; }
+    .bio-content p { color: #A9B8B6 !important; }
+    
+    /* Darken the project cards - Forced with !important */
+    .project-card { 
+      background: #041412 !important; 
+      border-color: #14403B !important; 
+    }
+    .project-card:hover { 
+      background: #0A2926 !important; 
+      box-shadow: 0 8px 15px rgba(0,0,0,0.5) !important; 
+    }
+    
+    /* Improve card text contrast */
+    .project-card h3 { color: #FFFFFF !important; }
+    .project-card p { color: #A9B8B6 !important; }
   }
 </style>
 
