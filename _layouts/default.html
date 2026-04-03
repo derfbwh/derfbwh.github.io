@@ -1,42 +1,128 @@
 <!DOCTYPE html>
 <html prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
 
-<meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% else %}{% endif %}">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="{{ site.title }}">
-<meta property="og:locale" content="en_US">
+<head>
+  <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% else %}{% endif %}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ site.title }}">
+  <meta property="og:locale" content="en_US">
 
   {% include head.html %}
 
-  <body>
+  <style>
+    /* Engaging Header & Prominent Social Links */
+    .masthead {
+      margin-bottom: 3rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #eaeaea;
+    }
+    
+    .masthead-title {
+      margin-bottom: 1rem;
+    }
 
-      <div class="masthead">
-        <h3 class="masthead-title">
-          <a href="/" title="Home">{{ site.title }}</a><br>
-          <small><a href="http://twitter.com/bwhough">{{ site.tagline }}</a></small><br><br>
-          <div style="color: white; font-size: 55% !important; font-weight: 400 !important; --noir-inline-color: #e8e6e3;line-height:1.4;">Follow on <i class="fa-brands fa-mastodon"></i> <strong><a rel="me" href="https://mastodon.social/@brianhough">Mastodon</a></strong>
-          <br>
-          Follow on <i class="fa-brands fa-bluesky"></i> <strong><a rel="me" href="https://bsky.app/profile/brianhough.com">Bluesky</a>
-          </strong>
-                    <br>
-          Follow on <i class="fa-brands fa-threads"></i> <strong><a rel="me" href="https://www.threads.net/@bwhough">Threads</a>
-          </strong>
-          </div>
-        </h3>
-      </div>
+    .masthead-title a {
+      text-decoration: none;
+      color: #333;
+    }
 
+    .site-tagline {
+      display: block;
+      font-size: 1.1rem;
+      color: #666;
+      margin-top: 0.25rem;
+      font-weight: 400;
+    }
 
-    <div class="container content">
+    .social-links {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
 
-      {{ content }}
-      <div align="center"><p><a href="/archive">Archive</a></p><br/></div>
+    .social-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1.25rem;
+      border-radius: 50px;
+      background-color: #f4f4f4;
+      color: #333 !important;
+      text-decoration: none !important;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
 
-      <div class="footer">
-        <p>
-          &copy; {{ site.time | date: '%Y' }} by Brian Hough. All rights reserved.
-        </p>
-      </div>
+    .social-link-btn i {
+      font-size: 1.1rem;
+    }
+
+    /* Hover Effects for Social Links */
+    .social-link-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      background-color: #fff;
+      border-color: #ddd;
+    }
+    
+    .social-link-btn.mastodon:hover { color: #6364FF !important; }
+    .social-link-btn.bluesky:hover { color: #0085FF !important; }
+    .social-link-btn.threads:hover { color: #000000 !important; }
+
+    /* Dark Mode Support (if your site uses it) */
+    @media (prefers-color-scheme: dark) {
+      .social-link-btn {
+        background-color: #222;
+        color: #eee !important;
+      }
+      .social-link-btn:hover {
+        background-color: #333;
+        border-color: #555;
+      }
+      .social-link-btn.threads:hover { color: #fff !important; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="masthead">
+    <h3 class="masthead-title">
+      <a href="/" title="Home">{{ site.title }}</a>
+      <small class="site-tagline">
+        <a href="http://mastodon.social/@brianhough" style="color: inherit; text-decoration: none;">{{ site.tagline }}</a>
+      </small>
+    </h3>
+
+    <div class="social-links">
+      <a rel="me" href="https://mastodon.social/@brianhough" class="social-link-btn mastodon" title="Follow on Mastodon">
+        <i class="fa-brands fa-mastodon"></i> Mastodon
+      </a>
+      <a rel="me" href="https://bsky.app/profile/brianhough.com" class="social-link-btn bluesky" title="Follow on Bluesky">
+        <i class="fa-brands fa-bluesky"></i> Bluesky
+      </a>
+      <a rel="me" href="https://www.threads.net/@bwhough" class="social-link-btn threads" title="Follow on Threads">
+        <i class="fa-brands fa-threads"></i> Threads
+      </a>
+    </div>
+  </div>
+
+  <div class="container content">
+    {{ content }}
+    
+    <div align="center">
+      <p><a href="/archive">Archive</a></p><br/>
     </div>
 
-  </body>
+    <div class="footer">
+      <p>
+        &copy; {{ site.time | date: '%Y' }} by Brian Hough. All rights reserved.
+      </p>
+    </div>
+  </div>
+
+</body>
 </html>
