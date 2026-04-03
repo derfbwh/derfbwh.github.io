@@ -218,15 +218,18 @@ tbody tr:nth-child(odd) td, tbody tr:nth-child(odd) th { background-color: #f9f9
 .masthead-title {
   position: relative;
   z-index: 2; /* Sits above the gradient overlay */
-  max-width: 41rem;
   width: 100%;
-  margin: 0 auto;
+  margin: 0; /* Removes the previous auto-centering */
   color: #505050;
   font-weight: 800;
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: 4rem; /* Generous padding anchoring it to the left */
+  padding-right: 2rem;
 }
 
+/* Reduces the padding slightly on mobile so it doesn't look squished */
+@media (max-width: 600px) {
+  .masthead-title { padding-left: 2rem; }
+}
 .masthead-title a { color: #ffffff; }
 .masthead-title small { font-size: 75%; font-weight: 400; color: #ffffff; letter-spacing: 0; }
 .masthead-title small a { font-size: 75%; font-weight: 400; color: #ffffff; letter-spacing: 0; }
