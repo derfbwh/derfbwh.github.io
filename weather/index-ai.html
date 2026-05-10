@@ -78,7 +78,7 @@
             <!-- Header -->
             <div class="border-b border-white/10 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
                 <div>
-                    <h1 class="text-3xl font-semibold text-white tracking-tight">Backyard Weather <span class="ml-2 text-xs font-mono text-gray-500 font-normal">v3.0</span></h1>
+                    <h1 class="text-3xl font-semibold text-white tracking-tight">Backyard Weather <span class="ml-2 text-xs font-mono text-gray-500 font-normal">v3.1</span></h1>
                     <p id="last-updated" class="text-sm text-gray-400 mt-1">Last updated: ...</p>
                 </div>
                 <div class="flex items-center gap-6">
@@ -648,7 +648,7 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer your-custom-super-secure-token' },
                         body: JSON.stringify({
                             model: modelId,
                             messages: [{ role: 'user', content: prompt }],
