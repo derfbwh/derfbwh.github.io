@@ -648,7 +648,7 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer your-custom-super-secure-token' },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             model: modelId,
                             messages: [{ role: 'user', content: prompt }],
@@ -683,8 +683,9 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                     }
                     
                     // If connection fails, provide direct troubleshooting help
-                    if (error.message.includes("referer") || error.message.includes("blocked") || error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
-                        errorMessage = "API Connection Error: Could not connect to your local Apple Intelligence server at http://127.0.0.1:8080. Make sure the server is running.";
+                    const errStr = error.message.toLowerCase();
+                    if (errStr.includes("referer") || errStr.includes("blocked") || errStr.includes("failed to fetch") || errStr.includes("networkerror") || errStr.includes("load failed") || errStr.includes("typeerror")) {
+                        errorMessage = "API Connection Error: Could not connect to your local Apple Intelligence server or gateway. Make sure the server and CORS gateway are running.";
                     }
                     
                     mainInsightEl.textContent = errorMessage;
