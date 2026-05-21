@@ -703,7 +703,36 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- 11. Initial Kickoff ---
+    // --- 11. Automated CSV Feed Loader ---
+    function loadAutomatedFeed() {
+        fetch("./polls.csv")
+            .then(res => {
+                if (!res.ok) throw new Error("Local automated feed not found. Using baseline.");
+                return res.text();
+            })
+            .then(csvText => {
+                Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        const count = processParsedPollingAverages(results.data);
+                        if (count > 0) {
+                            console.log(`Auto-loaded ${count} live polls from polls.csv`);
+                            elements.apiStatusDot.className = "status-indicator success";
+                            elements.apiStatusText.textContent = "Live Automated Feed Connected";
+                        }
+                        runModelSimulation();
+                    }
+                });
+            })
+            .catch(err => {
+                console.log(err.message);
+                // Fallback to baseline
+                runModelSimulation();
+            });
+    }
+
+    // --- 12. Initial Kickoff ---
     bindMapInteractions();
-    runModelSimulation();
+    loadAutomatedFeed();
 });
