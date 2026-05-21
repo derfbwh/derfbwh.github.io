@@ -305,7 +305,7 @@ function runMonteCarloForecast(activeSenatePolls, activeHousePolls, genericBallo
             distribution: houseDemSeatsDist,
             raceRates: houseDistrictRates
         },
-        uncertaintyFactor,
+        uncertaintyFactor: uncertaintyMultiplier,
         daysLeft
     };
 }
