@@ -306,7 +306,17 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            
+            // --- GLOBAL STATE ---
+            let rawData = [];
+            let forecastData = null; 
+            let isSmoothingEnabled = true;
+            let historyDays = 7;
+            let isForecastExpanded = true;
+            let chartInstances = {};
+            let aiContextData = null;
+            let selectedAIModel = 'apple'; // 'apple' or 'gemini'
+            let selectedForecastSource = localStorage.getItem('weather-dashboard-source') || 'nws'; // 'openmeteo' or 'nws'
+
             // --- THEME LOGIC ---
             function initTheme() {
                 const savedTheme = localStorage.getItem('weather-dashboard-theme') || 'default';
@@ -403,17 +413,6 @@
                 updateSourceUI(selectedForecastSource);
             }
             
-            // --- GLOBAL STATE ---
-            let rawData = [];
-            let forecastData = null; 
-            let isSmoothingEnabled = true;
-            let historyDays = 7;
-            let isForecastExpanded = true;
-            let chartInstances = {};
-            let aiContextData = null;
-            let selectedAIModel = 'apple'; // 'apple' or 'gemini'
-            let selectedForecastSource = localStorage.getItem('weather-dashboard-source') || 'nws'; // 'openmeteo' or 'nws'
-
             // --- HELPER FUNCTIONS ---
             function startOfDay(date) {
                 const newDate = new Date(date);
