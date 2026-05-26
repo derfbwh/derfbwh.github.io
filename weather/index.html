@@ -287,10 +287,10 @@
             <div class="flex flex-col items-center gap-2 mt-2">
                 <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Forecast Provider</span>
                 <div class="flex items-center gap-3 bg-white/5 border border-white/10 p-1.5 rounded-full backdrop-blur-md shadow-lg">
-                    <button id="select-openmeteo-btn" class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 focus:outline-none bg-[var(--accent-color)] text-black shadow-inner">
+                    <button id="select-openmeteo-btn" class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide text-gray-400 hover:text-white transition-all duration-300 focus:outline-none bg-transparent">
                         🌐 Open-Meteo
                     </button>
-                    <button id="select-nws-btn" class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide text-gray-400 hover:text-white transition-all duration-300 focus:outline-none bg-transparent">
+                    <button id="select-nws-btn" class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 focus:outline-none bg-[var(--accent-color)] text-black shadow-inner">
                         🇺🇸 US Weather Service (NWS)
                     </button>
                 </div>
@@ -412,7 +412,7 @@
             let chartInstances = {};
             let aiContextData = null;
             let selectedAIModel = 'apple'; // 'apple' or 'gemini'
-            let selectedForecastSource = localStorage.getItem('weather-dashboard-source') || 'openmeteo'; // 'openmeteo' or 'nws'
+            let selectedForecastSource = localStorage.getItem('weather-dashboard-source') || 'nws'; // 'openmeteo' or 'nws'
 
             // --- HELPER FUNCTIONS ---
             function startOfDay(date) {
