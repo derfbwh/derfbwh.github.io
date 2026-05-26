@@ -78,7 +78,7 @@
             <!-- Header -->
             <div class="border-b border-white/10 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
                 <div>
-                    <h1 class="text-3xl font-semibold text-white tracking-tight">Backyard Weather <span class="ml-2 text-xs font-mono text-gray-500 font-normal">v3.1</span></h1>
+                    <h1 class="text-3xl font-semibold text-white tracking-tight">Backyard Weather <span class="ml-2 text-xs font-mono text-gray-500 font-normal">v3.2</span></h1>
                     <p id="last-updated" class="text-sm text-gray-400 mt-1">Last updated: ...</p>
                 </div>
                 <div class="flex items-center gap-6">
@@ -283,6 +283,19 @@
                 </button>
             </div>
             
+            <!-- Forecast Source Selector Switch -->
+            <div class="flex flex-col items-center gap-2 mt-2">
+                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Forecast Provider</span>
+                <div class="flex items-center gap-3 bg-white/5 border border-white/10 p-1.5 rounded-full backdrop-blur-md shadow-lg">
+                    <button id="select-openmeteo-btn" class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 focus:outline-none bg-[var(--accent-color)] text-black shadow-inner">
+                        🌐 Open-Meteo
+                    </button>
+                    <button id="select-nws-btn" class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide text-gray-400 hover:text-white transition-all duration-300 focus:outline-none bg-transparent">
+                        🇺🇸 US Weather Service (NWS)
+                    </button>
+                </div>
+            </div>
+            
             <div class="w-full flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] text-gray-500 font-medium border-t border-white/5 pt-4">
                 <p id="last-updated-footer">Last updated: ...</p>
                 <p id="disclaimer-text">Apple Intelligence might hallucinate anomalies. Verify critical weather updates locally.</p>
@@ -353,6 +366,42 @@
                 selectGeminiBtn.addEventListener('click', () => updateUI('gemini'));
             }
             initAIModelSelector();
+            initForecastSourceSelector();
+            
+            // --- FORECAST PROVIDER SELECTOR LOGIC ---
+            function initForecastSourceSelector() {
+                const selectOpenMeteoBtn = document.getElementById('select-openmeteo-btn');
+                const selectNwsBtn = document.getElementById('select-nws-btn');
+                
+                function updateSourceUI(source) {
+                    selectedForecastSource = source;
+                    localStorage.setItem('weather-dashboard-source', source);
+                    
+                    if (source === 'openmeteo') {
+                        selectOpenMeteoBtn.className = "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 focus:outline-none bg-[var(--accent-color)] text-black shadow-inner";
+                        selectNwsBtn.className = "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide text-gray-400 hover:text-white transition-all duration-300 focus:outline-none bg-transparent";
+                    } else {
+                        selectOpenMeteoBtn.className = "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide text-gray-400 hover:text-white transition-all duration-300 focus:outline-none bg-transparent";
+                        selectNwsBtn.className = "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 focus:outline-none bg-[var(--accent-color)] text-black shadow-inner";
+                    }
+                }
+                
+                selectOpenMeteoBtn.addEventListener('click', () => {
+                    if (selectedForecastSource !== 'openmeteo') {
+                        updateSourceUI('openmeteo');
+                        fetchData();
+                    }
+                });
+                
+                selectNwsBtn.addEventListener('click', () => {
+                    if (selectedForecastSource !== 'nws') {
+                        updateSourceUI('nws');
+                        fetchData();
+                    }
+                });
+                
+                updateSourceUI(selectedForecastSource);
+            }
             
             // --- GLOBAL STATE ---
             let rawData = [];
@@ -363,6 +412,7 @@
             let chartInstances = {};
             let aiContextData = null;
             let selectedAIModel = 'apple'; // 'apple' or 'gemini'
+            let selectedForecastSource = localStorage.getItem('weather-dashboard-source') || 'openmeteo'; // 'openmeteo' or 'nws'
 
             // --- HELPER FUNCTIONS ---
             function startOfDay(date) {
@@ -375,6 +425,104 @@
                 const newDate = new Date(date);
                 newDate.setDate(newDate.getDate() - amount);
                 return newDate;
+            }
+
+            function shortForecastToWmoCode(desc) {
+                if (!desc) return 0;
+                const d = desc.toLowerCase();
+                if (d.includes('thunderstorm') || d.includes('severe')) return 95;
+                if (d.includes('heavy rain') || d.includes('downpour')) return 65;
+                if (d.includes('rain showers') || d.includes('showers')) return 80;
+                if (d.includes('rain') || d.includes('drizzle')) return 63;
+                if (d.includes('snow') || d.includes('flurries')) return 73;
+                if (d.includes('sleet') || d.includes('freezing')) return 77;
+                if (d.includes('fog') || d.includes('haze')) return 45;
+                if (d.includes('cloudy') || d.includes('overcast')) return 3;
+                if (d.includes('mostly cloudy')) return 2;
+                if (d.includes('partly cloudy') || d.includes('partly sunny')) return 1;
+                if (d.includes('sunny') || d.includes('clear')) return 0;
+                return 0; // Default clear
+            }
+
+            function mapNwsToOpenMeteo(nwsData) {
+                const periods = nwsData.properties?.periods || [];
+                if (periods.length === 0) return null;
+                
+                // Group periods by date YYYY-MM-DD
+                const grouped = {};
+                periods.forEach(p => {
+                    const date = p.startTime.substring(0, 10);
+                    if (!grouped[date]) grouped[date] = [];
+                    grouped[date].push(p);
+                });
+                
+                const dates = Object.keys(grouped).sort();
+                
+                const dailyTime = [];
+                const dailyTempMax = [];
+                const dailyTempMin = [];
+                const dailyWeatherCode = [];
+                const dailySunrise = [];
+                const dailySunset = [];
+                
+                dates.forEach(date => {
+                    const dayPeriods = grouped[date];
+                    dailyTime.push(date);
+                    
+                    const temps = dayPeriods.map(p => p.temperature);
+                    dailyTempMax.push(Math.max(...temps));
+                    dailyTempMin.push(Math.min(...temps));
+                    
+                    // Find WMO code for the daytime period or first period
+                    const dayPeriod = dayPeriods.find(p => p.isDaytime) || dayPeriods[0];
+                    dailyWeatherCode.push(shortForecastToWmoCode(dayPeriod.shortForecast));
+                    
+                    // Generate approximate sunrise/sunset based on coordinates/date
+                    // For late May in Haverhill, sunrise is ~5:10 AM, sunset is ~8:12 PM.
+                    dailySunrise.push(`${date}T05:10:00-04:00`);
+                    dailySunset.push(`${date}T20:12:00-04:00`);
+                });
+                
+                const currentPeriod = periods[0];
+                const currentTemp = currentPeriod.temperature;
+                
+                // Parse wind speed (e.g., "2 to 6 mph" or "6 mph")
+                let windSpeed = 5;
+                if (currentPeriod.windSpeed) {
+                    const match = currentPeriod.windSpeed.match(/\d+/g);
+                    if (match) {
+                        windSpeed = Math.max(...match.map(Number));
+                    }
+                }
+                
+                // Map NWS wind direction (e.g., "NW") to degrees
+                const dirMap = {
+                    'N': 0, 'NNE': 22.5, 'NE': 45, 'ENE': 67.5,
+                    'E': 90, 'ESE': 112.5, 'SE': 135, 'SSE': 157.5,
+                    'S': 180, 'SSW': 202.5, 'SW': 225, 'WSW': 247.5,
+                    'W': 270, 'WNW': 292.5, 'NW': 315, 'NNW': 337.5
+                };
+                const windDirection = dirMap[currentPeriod.windDirection] || 0;
+                
+                return {
+                    current: {
+                        temperature_2m: currentTemp,
+                        apparent_temperature: currentTemp, 
+                        weather_code: shortForecastToWmoCode(currentPeriod.shortForecast),
+                        wind_speed_10m: windSpeed,
+                        wind_direction_10m: windDirection,
+                        wind_gusts_10m: windSpeed * 1.2, 
+                        is_day: currentPeriod.isDaytime ? 1 : 0
+                    },
+                    daily: {
+                        time: dailyTime,
+                        weather_code: dailyWeatherCode,
+                        temperature_2m_max: dailyTempMax,
+                        temperature_2m_min: dailyTempMin,
+                        sunrise: dailySunrise,
+                        sunset: dailySunset
+                    }
+                };
             }
 
             const applyMedianFilter = (data, windowSize = 5) => {
@@ -490,22 +638,50 @@
                 try {
                     const lat = 42.78;
                     const lon = -71.08;
-                    const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/New_York`;
                     
-                    const [weatherResponse, forecastResponse] = await Promise.all([
-                        fetch(new URL('weather_data.json', window.location.href)),
-                        fetch(forecastUrl).catch(err => {
-                            console.warn("Failed to fetch live forecast from Open-Meteo API:", err);
-                            return null;
-                        })
-                    ]);
+                    let forecastResponse = null;
+                    let weatherResponse = null;
+                    
+                    if (selectedForecastSource === 'openmeteo') {
+                        const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/New_York`;
+                        
+                        const [wRes, fRes] = await Promise.all([
+                            fetch(new URL('weather_data.json', window.location.href)),
+                            fetch(forecastUrl).catch(err => {
+                                console.warn("Failed to fetch live forecast from Open-Meteo API:", err);
+                                return null;
+                            })
+                        ]);
+                        weatherResponse = wRes;
+                        forecastResponse = fRes;
+                    } else {
+                        // US Weather Service (NWS) keyless API
+                        const forecastUrl = `https://api.weather.gov/gridpoints/BOX/67,120/forecast`;
+                        
+                        const [wRes, fRes] = await Promise.all([
+                            fetch(new URL('weather_data.json', window.location.href)),
+                            fetch(forecastUrl).catch(err => {
+                                console.warn("Failed to fetch live forecast from US Weather Service (NWS):", err);
+                                return null;
+                            })
+                        ]);
+                        weatherResponse = wRes;
+                        forecastResponse = fRes;
+                    }
 
                     if (!weatherResponse.ok) throw new Error(`Could not load weather_data.json`);
 
                     rawData = await weatherResponse.json();
+                    forecastData = null; // Reset
 
                     if (forecastResponse && forecastResponse.ok) {
-                        forecastData = await forecastResponse.json();
+                        const rawForecast = await forecastResponse.json();
+                        if (selectedForecastSource === 'openmeteo') {
+                            forecastData = rawForecast;
+                        } else {
+                            // Map NWS format to Open-Meteo format
+                            forecastData = mapNwsToOpenMeteo(rawForecast);
+                        }
                     }
 
                     processAndRenderAll();
