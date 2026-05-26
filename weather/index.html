@@ -494,7 +494,10 @@
                     
                     const [weatherResponse, forecastResponse] = await Promise.all([
                         fetch(new URL('weather_data.json', window.location.href)),
-                        fetch(forecastUrl)
+                        fetch(forecastUrl).catch(err => {
+                            console.warn("Failed to fetch live forecast from Open-Meteo API:", err);
+                            return null;
+                        })
                     ]);
 
                     if (!weatherResponse.ok) throw new Error(`Could not load weather_data.json`);
@@ -618,7 +621,38 @@
                 processAndRenderRecords(rawData);
                 processAndRenderYesterdayComparison(dailyMetrics, temp, yesterdayAtThisTime);
                 processAndRenderWeekComparison(dailyMetrics);
-                if (forecastData) processAndRenderForecast(forecastData);
+                if (forecastData) {
+                    processAndRenderForecast(forecastData);
+                } else {
+                    const forecastCont = document.getElementById('forecast-container');
+                    if (forecastCont) {
+                        forecastCont.innerHTML = `
+                            <div class="text-gray-500 py-6 w-full text-center text-xs font-light tracking-wide uppercase">
+                                ⚠️ Live Forecast API Unavailable
+                            </div>
+                        `;
+                    }
+                    const officialCont = document.getElementById('official-conditions-container');
+                    if (officialCont) {
+                        officialCont.innerHTML = `
+                            <div class="text-gray-500 text-xs text-center py-2 font-light tracking-wide uppercase">
+                                Unavailable
+                            </div>
+                        `;
+                    }
+                    const sunCont = document.getElementById('sun-times-container');
+                    if (sunCont) {
+                        sunCont.innerHTML = `
+                            <div class="text-gray-500 text-xs text-center py-2 font-light tracking-wide uppercase">
+                                Unavailable
+                            </div>
+                        `;
+                    }
+                    const iconCont = document.getElementById('current-condition-icon');
+                    if (iconCont) {
+                        iconCont.textContent = '🌡️';
+                    }
+                }
                 
                 // Store context for AI generation upon user request
                 aiContextData = { temp, humidity, feelsLike, dailyMetrics, lastUpdatedDate, yesterdayAtThisTime };
