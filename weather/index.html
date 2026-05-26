@@ -445,18 +445,20 @@
             }
 
             function mapNwsToOpenMeteo(nwsData) {
-                const periods = nwsData.properties?.periods || [];
+                const periods = nwsData?.properties?.periods || [];
                 if (periods.length === 0) return null;
                 
                 // Group periods by date YYYY-MM-DD
                 const grouped = {};
                 periods.forEach(p => {
+                    if (!p || !p.startTime || typeof p.startTime !== 'string') return;
                     const date = p.startTime.substring(0, 10);
                     if (!grouped[date]) grouped[date] = [];
                     grouped[date].push(p);
                 });
                 
                 const dates = Object.keys(grouped).sort();
+                if (dates.length === 0) return null;
                 
                 const dailyTime = [];
                 const dailyTempMax = [];
@@ -469,13 +471,13 @@
                     const dayPeriods = grouped[date];
                     dailyTime.push(date);
                     
-                    const temps = dayPeriods.map(p => p.temperature);
+                    const temps = dayPeriods.map(p => typeof p.temperature === 'number' ? p.temperature : 65);
                     dailyTempMax.push(Math.max(...temps));
                     dailyTempMin.push(Math.min(...temps));
                     
                     // Find WMO code for the daytime period or first period
                     const dayPeriod = dayPeriods.find(p => p.isDaytime) || dayPeriods[0];
-                    dailyWeatherCode.push(shortForecastToWmoCode(dayPeriod.shortForecast));
+                    dailyWeatherCode.push(shortForecastToWmoCode(dayPeriod?.shortForecast));
                     
                     // Generate approximate sunrise/sunset based on coordinates/date
                     // For late May in Haverhill, sunrise is ~5:10 AM, sunset is ~8:12 PM.
@@ -484,7 +486,8 @@
                 });
                 
                 const currentPeriod = periods[0];
-                const currentTemp = currentPeriod.temperature;
+                if (!currentPeriod) return null;
+                const currentTemp = typeof currentPeriod.temperature === 'number' ? currentPeriod.temperature : 65;
                 
                 // Parse wind speed (e.g., "2 to 6 mph" or "6 mph")
                 let windSpeed = 5;
@@ -675,12 +678,17 @@
                     forecastData = null; // Reset
 
                     if (forecastResponse && forecastResponse.ok) {
-                        const rawForecast = await forecastResponse.json();
-                        if (selectedForecastSource === 'openmeteo') {
-                            forecastData = rawForecast;
-                        } else {
-                            // Map NWS format to Open-Meteo format
-                            forecastData = mapNwsToOpenMeteo(rawForecast);
+                        try {
+                            const rawForecast = await forecastResponse.json();
+                            if (selectedForecastSource === 'openmeteo') {
+                                forecastData = rawForecast;
+                            } else {
+                                // Map NWS format to Open-Meteo format
+                                forecastData = mapNwsToOpenMeteo(rawForecast);
+                            }
+                        } catch (err) {
+                            console.warn("Failed to parse or map live forecast data:", err);
+                            forecastData = null;
                         }
                     }
 
