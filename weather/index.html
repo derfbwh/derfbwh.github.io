@@ -994,7 +994,7 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                         }
                     } else {
                         // Gemma via local proxy (avoids CORS)
-                        const url = '/api/gemma';
+                        const url = 'https://integrate.api.nvidia.com/v1/chat/completions';
                         const response = await fetch(url, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
