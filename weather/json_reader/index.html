@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather JSON Reader</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
+<style>
+:root {
+  --bg: #f5f5f7;
+  --text: #1d1d1f;
+  --text-secondary: #86868b;
+  --text-tertiary: #a1a1a6;
+  --card-bg: #fff;
+  --border: #d2d2d7;
+  --calendar-empty: #c7c7cc;
+  --dropzone-bg: #fff;
+  --chart-grid: #f0f0f0;
+  --accent: #007aff;
+}
+body.dark {
+  --bg: #1c1c1e;
+  --text: #f5f5f7;
+  --text-secondary: #98989d;
+  --text-tertiary: #636366;
+  --card-bg: #2c2c2e;
+  --border: #3a3a3c;
+  --calendar-empty: #48484a;
+  --dropzone-bg: #2c2c2e;
+  --chart-grid: #3a3a3c;
+  --accent: #0a84ff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; justify-content: center; padding: 40px 20px; transition: background .2s, color .2s; }
+.container { width: 100%; max-width: 1000px; }
+.header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.header-row h1 { font-size: 28px; font-weight: 600; margin: 0; }
+.theme-btn { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 18px; line-height: 1; color: var(--text); transition: all .15s; }
+.theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+#dropZone {
+border: 2px dashed var(--calendar-empty); border-radius: 16px; padding: 60px 20px; text-align: center;
+background: var(--dropzone-bg); cursor: pointer; transition: border-color .2s, background .2s, background-color .2s; margin-bottom: 24px;
+}
+#dropZone.dragover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--card-bg)); }
+#dropZone p { font-size: 16px; color: var(--text-secondary); }
+#dropZone p strong { color: var(--accent); }
+#dropZone .hint { font-size: 13px; margin-top: 8px; color: var(--text-tertiary); }
+#dropZone.has-data { padding: 20px; }
+#dropZone.has-data p { font-size: 14px; }
+#dropZone .file-name { font-weight: 500; color: var(--text); }
+
+#stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.stat-card { background: var(--card-bg); border-radius: 12px; padding: 16px; transition: background .2s; }
+.stat-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 2px; }
+.stat-latest { font-size: 28px; font-weight: 600; line-height: 1.2; display: flex; align-items: baseline; gap: 6px; }
+.stat-latest-label { font-size: 10px; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .3px; margin-right: 2px; }
+.trend { font-size: 14px; }
+.trend.up { color: #34c759; }
+.trend.down { color: #ff3b30; }
+.stat-details { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.stat-detail { font-size: 13px; color: var(--text); }
+.stat-detail-label { font-size: 10px; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .3px; margin-right: 4px; }
+.stat-footer { font-size: 11px; color: var(--text-tertiary); margin-top: 8px; }
+
+.chart-wrapper { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px; transition: background .2s; }
+.chart-wrapper h3 { font-size: 14px; font-weight: 500; color: var(--text-secondary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: .5px; }
+.chart-wrapper canvas { max-height: 300px; }
+
+#dailyView { margin-top: 32px; }
+#dailyView h2 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+
+.calendar { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px; transition: background .2s; }
+.calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.calendar-header .month-year { display: flex; align-items: center; gap: 4px; }
+.calendar-header .month-year span { font-size: 16px; font-weight: 600; }
+.calendar-nav { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 16px; color: var(--text); transition: all .15s; line-height: 1.2; }
+.calendar-nav:hover { border-color: var(--accent); color: var(--accent); }
+
+.year-btn { background: none; border: none; cursor: pointer; font-size: 16px; font-weight: 600; color: var(--accent); padding: 2px 8px; border-radius: 4px; transition: background .15s; }
+.year-btn:hover { background: color-mix(in srgb, var(--accent) 10%, var(--card-bg)); }
+.year-wrapper { position: relative; }
+.year-dropdown { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,.3); z-index: 10; min-width: 80px; overflow: hidden; margin-top: 4px; }
+.year-dropdown div { padding: 6px 16px; cursor: pointer; font-size: 13px; text-align: center; transition: background .15s; color: var(--text); }
+.year-dropdown div:hover { background: color-mix(in srgb, var(--accent) 10%, var(--card-bg)); }
+.year-dropdown div.active { background: var(--accent); color: #fff; }
+
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.day-name { text-align: center; font-size: 11px; font-weight: 500; color: var(--text-secondary); padding: 6px 0; text-transform: uppercase; }
+.day { text-align: center; padding: 8px 0; font-size: 14px; border-radius: 8px; cursor: default; color: var(--calendar-empty); }
+.day.has-data { color: var(--text); cursor: pointer; font-weight: 500; }
+.day.has-data:hover { background: color-mix(in srgb, var(--accent) 10%, var(--card-bg)); }
+.day.selected { background: var(--accent); color: #fff; }
+.day.selected:hover { background: var(--accent) !important; }
+#hourlyStats { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px; }
+
+.hidden { display: none !important; }
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.toolbar-btn { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text); transition: all .15s; display: flex; align-items: center; gap: 6px; }
+.toolbar-btn:hover { border-color: var(--accent); color: var(--accent); }
+.toolbar-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.day.pinned { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.ml-auto { margin-left: auto; }
+
+.comparison-legend { display: flex; gap: 16px; margin-bottom: 12px; font-size: 12px; color: var(--text-secondary); align-items: center; }
+.comparison-legend .swatch { width: 14px; height: 3px; border-radius: 2px; }
+.comparison-legend .swatch.dashed { height: 0; border-top: 3px dashed; }
+
+#placeholder { text-align: center; padding: 80px 20px; color: var(--text-secondary); }
+#placeholder svg { margin-bottom: 16px; opacity: .4; }
+#placeholder p { font-size: 18px; }
+#placeholder .sub { font-size: 14px; color: var(--text-tertiary); margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header-row">
+    <h1>Weather JSON Reader</h1>
+    <button class="theme-btn" id="themeBtn" title="Toggle Dark Mode">&#9790;</button>
+  </div>
+
+  <div id="dropZone">
+    <p>Drop a <strong>JSON</strong> file here, or <strong>browse</strong></p>
+    <p class="hint">Expects an array of objects with <code>date</code>, <code>temperature</code>, <code>humidity</code>, and <code>pressure</code></p>
+    <input type="file" id="fileInput" accept=".json" style="display:none">
+  </div>
+
+  <div class="toolbar hidden" id="toolbar">
+    <button class="toolbar-btn" id="trendlineBtn">〰 Trendline</button>
+    <button class="toolbar-btn" id="exportCsvBtn">⬇ CSV</button>
+    <button class="toolbar-btn" id="exportPngBtn">⬇ Charts</button>
+    <button class="toolbar-btn" id="resetZoomBtn">⟲ Reset Zoom</button>
+  </div>
+
+  <div id="placeholder">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <p>Load a JSON file to see charts and stats</p>
+    <p class="sub">Supports <code>.json</code> files with an array of data points</p>
+  </div>
+
+  <div id="content" class="hidden">
+    <div id="stats"></div>
+    <div class="chart-wrapper"><h3>Temperature</h3><canvas id="chartTemp"></canvas></div>
+    <div class="chart-wrapper"><h3>Humidity</h3><canvas id="chartHumidity"></canvas></div>
+    <div class="chart-wrapper"><h3>Pressure</h3><canvas id="chartPressure"></canvas></div>
+  </div>
+
+  <div id="dailyView" class="hidden">
+    <h2>Daily View</h2>
+    <div class="calendar">
+      <div class="calendar-header">
+        <button class="calendar-nav" id="prevMonth">&larr;</button>
+        <div class="month-year">
+          <span id="calendarMonthLabel"></span>
+          <span class="year-wrapper">
+            <button class="year-btn" id="yearBtn"></button>
+            <div class="year-dropdown hidden" id="yearDropdown"></div>
+          </span>
+        </div>
+        <button class="calendar-nav" id="latestBtn" title="Jump to latest date">Latest</button>
+        <button class="calendar-nav" id="nextMonth">&rarr;</button>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+    <div id="hourlyContent" class="hidden">
+      <div id="hourlyStats"></div>
+      <div class="comparison-legend hidden" id="comparisonLegend"></div>
+      <div class="chart-wrapper"><h3>Hourly Temperature</h3><canvas id="chartHourlyTemp"></canvas></div>
+      <div class="chart-wrapper"><h3>Hourly Humidity</h3><canvas id="chartHourlyHumidity"></canvas></div>
+      <div class="chart-wrapper"><h3>Hourly Pressure</h3><canvas id="chartHourlyPressure"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const content = document.getElementById('content');
+const stats = document.getElementById('stats');
+const placeholder = document.getElementById('placeholder');
+const dailyView = document.getElementById('dailyView');
+const hourlyContent = document.getElementById('hourlyContent');
+const hourlyStats = document.getElementById('hourlyStats');
+const calendarGrid = document.getElementById('calendarGrid');
+const calendarMonthLabel = document.getElementById('calendarMonthLabel');
+const yearBtn = document.getElementById('yearBtn');
+const yearDropdown = document.getElementById('yearDropdown');
+const prevMonthBtn = document.getElementById('prevMonth');
+const nextMonthBtn = document.getElementById('nextMonth');
+const latestBtn = document.getElementById('latestBtn');
+const themeBtn = document.getElementById('themeBtn');
+const toolbar = document.getElementById('toolbar');
+const trendlineBtn = document.getElementById('trendlineBtn');
+const exportCsvBtn = document.getElementById('exportCsvBtn');
+const exportPngBtn = document.getElementById('exportPngBtn');
+const resetZoomBtn = document.getElementById('resetZoomBtn');
+const comparisonLegend = document.getElementById('comparisonLegend');
+
+Chart.register(ChartZoom);
+
+let charts = {};
+let rawData = [];
+let currentYear, currentMonth, availableDates, selectedDate, pinnedDate, showTrendline;
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
+
+if (localStorage.getItem('dark') === 'true') document.body.classList.add('dark');
+
+themeBtn.addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+  localStorage.setItem('dark', document.body.classList.contains('dark'));
+  if (rawData.length > 0) {
+    Object.keys(charts).forEach(k => { charts[k]?.destroy(); delete charts[k]; });
+    const labels = rawData.map(d => d.date);
+    const temp = rawData.map(d => parseFloat(d.temperature));
+    const hum = rawData.map(d => parseFloat(d.humidity));
+    const pres = rawData.map(d => d.pressure !== null && d.pressure !== undefined ? parseFloat(d.pressure) : null);
+    renderChart('chartTemp', 'Temperature (°F)', labels, temp, '#ff6b6b');
+    renderChart('chartHumidity', 'Humidity (%)', labels, hum, '#4ecdc4');
+    renderChart('chartPressure', 'Pressure (hPa)', labels, pres, '#45b7d1');
+    if (selectedDate) onDateSelect(selectedDate, rawData);
+  }
+});
+
+trendlineBtn.addEventListener('click', () => {
+  showTrendline = !showTrendline;
+  trendlineBtn.classList.toggle('active');
+  if (rawData.length > 0) {
+    Object.keys(charts).forEach(k => { charts[k]?.destroy(); delete charts[k]; });
+    const labels = rawData.map(d => d.date);
+    const temp = rawData.map(d => parseFloat(d.temperature));
+    const hum = rawData.map(d => parseFloat(d.humidity));
+    const pres = rawData.map(d => d.pressure !== null && d.pressure !== undefined ? parseFloat(d.pressure) : null);
+    renderChart('chartTemp', 'Temperature (°F)', labels, temp, '#ff6b6b');
+    renderChart('chartHumidity', 'Humidity (%)', labels, hum, '#4ecdc4');
+    renderChart('chartPressure', 'Pressure (hPa)', labels, pres, '#45b7d1');
+    if (selectedDate) onDateSelect(selectedDate, rawData);
+  }
+});
+
+exportCsvBtn.addEventListener('click', () => {
+  if (!rawData.length) return;
+  const headers = ['date', 'temperature', 'humidity', 'pressure'];
+  const rows = rawData.map(d =>
+    [d.date, d.temperature, d.humidity, d.pressure != null ? d.pressure : ''].join(',')
+  );
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'data.csv'; a.click();
+  URL.revokeObjectURL(url);
+});
+
+exportPngBtn.addEventListener('click', () => {
+  const chartIds = ['chartTemp', 'chartHumidity', 'chartPressure'];
+  chartIds.forEach((id, i) => {
+    if (charts[id]) {
+      setTimeout(() => {
+        const link = document.createElement('a');
+        link.download = id + '.png';
+        link.href = charts[id].toBase64Image();
+        link.click();
+      }, i * 300);
+    }
+  });
+});
+
+resetZoomBtn.addEventListener('click', () => {
+  Object.values(charts).forEach(c => c?.resetZoom());
+});
+
+function handleFile(file) {
+  if (!file || !file.name.endsWith('.json')) { alert('Please select a .json file'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data) || data.length === 0) throw new Error('Empty or non-array');
+      render(data);
+      dropZone.classList.add('has-data');
+      dropZone.querySelector('p').innerHTML = `<span class="file-name">${file.name}</span> &mdash; ${data.length} data points`;
+    } catch (err) {
+      alert('Invalid JSON file. Expected an array of objects.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function render(data) {
+  placeholder.classList.add('hidden');
+  content.classList.remove('hidden');
+
+  data.sort((a, b) => a.date.localeCompare(b.date));
+  rawData = data;
+
+  const labels = data.map(d => d.date);
+  const temp = data.map(d => parseFloat(d.temperature));
+  const hum = data.map(d => parseFloat(d.humidity));
+  const pres = data.map(d => d.pressure !== null && d.pressure !== undefined ? parseFloat(d.pressure) : null);
+
+  renderStats([
+    { label: 'Temperature', values: temp.filter(v => !isNaN(v)), unit: '°F' },
+    { label: 'Humidity', values: hum.filter(v => !isNaN(v)), unit: '%' },
+    { label: 'Pressure', values: pres.filter(v => v !== null), unit: 'hPa' },
+  ]);
+
+  renderChart('chartTemp', 'Temperature (°F)', labels, temp, '#ff6b6b');
+  renderChart('chartHumidity', 'Humidity (%)', labels, hum, '#4ecdc4');
+  renderChart('chartPressure', 'Pressure (hPa)', labels, pres, '#45b7d1');
+
+  dailyView.classList.remove('hidden');
+  toolbar.classList.remove('hidden');
+  pinnedDate = null;
+  showTrendline = false;
+  trendlineBtn.classList.remove('active');
+  initCalendar(data);
+}
+
+function renderStats(metrics) {
+  stats.innerHTML = metrics.map(m => {
+    const vals = m.values;
+    if (vals.length === 0) return '';
+    const min = Math.min(...vals), max = Math.max(...vals);
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    const range = max - min;
+    const latest = vals[vals.length - 1];
+    const prev = vals.length > 1 ? vals[vals.length - 2] : null;
+    const trend = prev !== null ? (latest > prev ? 'up' : latest < prev ? 'down' : 'flat') : null;
+    return `
+      <div class="stat-card">
+        <div class="stat-label">${m.label}</div>
+        <div class="stat-latest"><span class="stat-latest-label">Latest</span>${latest.toFixed(1)}${m.unit}${trend ? `<span class="trend ${trend}">${trend === 'up' ? '▲' : '▼'}</span>` : ''}</div>
+        <div class="stat-details">
+          <div class="stat-detail"><span class="stat-detail-label">High</span>${max.toFixed(1)}${m.unit}</div>
+          <div class="stat-detail"><span class="stat-detail-label">Low</span>${min.toFixed(1)}${m.unit}</div>
+          <div class="stat-detail"><span class="stat-detail-label">Avg</span>${avg.toFixed(1)}${m.unit}</div>
+          <div class="stat-detail"><span class="stat-detail-label">Range</span>${range.toFixed(1)}${m.unit}</div>
+        </div>
+        <div class="stat-footer">${vals.length} reading${vals.length !== 1 ? 's' : ''}</div>
+      </div>`;
+  }).join('');
+}
+
+function chartTheme() {
+  const dark = document.body.classList.contains('dark');
+  return {
+    tick: dark ? '#98989d' : '#86868b',
+    grid: dark ? '#3a3a3c' : '#f0f0f0',
+  };
+}
+
+function movingAverage(data, window) {
+  const result = [];
+  for (let i = 0; i < data.length; i++) {
+    const slice = data.slice(Math.max(0, i - window + 1), i + 1).filter(v => v !== null);
+    result.push(slice.length ? slice.reduce((a, b) => a + b, 0) / slice.length : null);
+  }
+  return result;
+}
+
+function renderChart(id, label, labels, data, color, compareData) {
+  const ctx = document.getElementById(id).getContext('2d');
+  if (charts[id]) { charts[id].destroy(); }
+
+  const hasData = data.some(v => v !== null && !isNaN(v));
+  const fillData = data.map(v => (v === null || isNaN(v)) ? null : v);
+  const t = chartTheme();
+  const dense = labels.length > 50;
+
+  const datasets = [{
+    label,
+    data: fillData,
+    borderColor: color,
+    backgroundColor: color + '22',
+    borderWidth: 2,
+    pointRadius: dense ? 0 : 3,
+    pointHoverRadius: 5,
+    fill: hasData,
+    tension: 0.1,
+    spanGaps: false,
+  }];
+
+  if (showTrendline && labels.length >= 3) {
+    const window = Math.max(3, Math.round(labels.length / 10));
+    datasets.push({
+      label: label + ' (Trend)',
+      data: movingAverage(fillData, window),
+      borderColor: color + 'aa',
+      borderWidth: 2,
+      borderDash: [4, 3],
+      pointRadius: 0,
+      pointHoverRadius: 3,
+      fill: false,
+      tension: 0.3,
+    });
+  }
+
+  if (compareData) {
+    datasets.push({
+      label: compareData.label,
+      data: compareData.data.map(v => (v === null || isNaN(v)) ? null : v),
+      borderColor: compareData.color,
+      borderWidth: 2,
+      borderDash: [5, 3],
+      pointRadius: dense ? 0 : 3,
+      pointHoverRadius: 5,
+      fill: false,
+      tension: 0.1,
+    });
+  }
+
+  charts[id] = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: datasets.length > 1, labels: { color: t.tick, font: { size: 11 } } },
+        zoom: {
+          pan: { enabled: true, mode: 'x' },
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            mode: 'x',
+          },
+        }
+      },
+      scales: {
+        x: {
+          ticks: { maxTicksLimit: 10, font: { size: 11 }, color: t.tick },
+          grid: { display: false }
+        },
+        y: {
+          ticks: { font: { size: 11 }, color: t.tick },
+          grid: { color: t.grid }
+        }
+      },
+      interaction: { mode: 'index', intersect: false }
+    }
+  });
+}
+
+function initCalendar(data) {
+  availableDates = new Set(data.map(d => d.date.split(' ')[0]));
+  const sorted = [...availableDates].sort();
+  if (sorted.length === 0) return;
+  const first = new Date(sorted[0] + 'T00:00:00');
+  currentYear = first.getFullYear();
+  currentMonth = first.getMonth();
+  selectedDate = sorted[0];
+  renderCalendar();
+  onDateSelect(selectedDate, data);
+}
+
+function renderCalendar() {
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  calendarMonthLabel.textContent = months[currentMonth];
+  yearBtn.textContent = currentYear;
+
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  let html = '';
+  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => html += `<div class="day-name">${d}</div>`);
+
+  for (let i = 0; i < firstDay; i++) html += '<div></div>';
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const hasData = availableDates.has(dateStr);
+    const isSelected = dateStr === selectedDate;
+    const isPinned = dateStr === pinnedDate;
+    let cls = 'day';
+    if (hasData) cls += ' has-data';
+    if (isSelected) cls += ' selected';
+    if (isPinned) cls += ' pinned';
+    html += `<div class="${cls}" data-date="${dateStr}">${d}</div>`;
+  }
+
+  calendarGrid.innerHTML = html;
+
+  calendarGrid.querySelectorAll('.day.has-data').forEach(el => {
+    el.addEventListener('click', () => {
+      selectedDate = el.dataset.date;
+      renderCalendar();
+      onDateSelect(selectedDate, rawData);
+    });
+    el.addEventListener('dblclick', () => {
+      if (pinnedDate === el.dataset.date) {
+        pinnedDate = null;
+      } else {
+        pinnedDate = el.dataset.date;
+      }
+      renderCalendar();
+      onDateSelect(selectedDate, rawData);
+    });
+  });
+
+  const years = [...new Set([...availableDates].map(d => d.split('-')[0]))].sort();
+  yearDropdown.innerHTML = years.map(y =>
+    `<div class="${y === String(currentYear) ? 'active' : ''}">${y}</div>`
+  ).join('');
+  yearDropdown.querySelectorAll('div').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      yearDropdown.classList.add('hidden');
+      currentYear = parseInt(el.textContent);
+      const firstInMonth = [...availableDates].filter(d => d.startsWith(`${currentYear}-${String(currentMonth+1).padStart(2,'0')}`)).sort();
+      if (firstInMonth.length > 0) {
+        selectedDate = firstInMonth[0];
+      } else {
+        const anyInYear = [...availableDates].filter(d => d.startsWith(String(currentYear))).sort();
+        if (anyInYear.length > 0) {
+          selectedDate = anyInYear[0];
+          const dt = new Date(selectedDate + 'T00:00:00');
+          currentMonth = dt.getMonth();
+        }
+      }
+      renderCalendar();
+      if (selectedDate && availableDates.has(selectedDate)) onDateSelect(selectedDate, rawData);
+    });
+  });
+}
+
+prevMonthBtn.addEventListener('click', () => {
+  currentMonth--;
+  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  const firstInMonth = [...availableDates].filter(d => d.startsWith(`${currentYear}-${String(currentMonth+1).padStart(2,'0')}`)).sort();
+  if (firstInMonth.length > 0) {
+    selectedDate = firstInMonth[0];
+  } else {
+    selectedDate = null;
+  }
+  renderCalendar();
+  if (selectedDate) onDateSelect(selectedDate, rawData);
+  else hourlyContent.classList.add('hidden');
+});
+
+nextMonthBtn.addEventListener('click', () => {
+  currentMonth++;
+  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  const firstInMonth = [...availableDates].filter(d => d.startsWith(`${currentYear}-${String(currentMonth+1).padStart(2,'0')}`)).sort();
+  if (firstInMonth.length > 0) {
+    selectedDate = firstInMonth[0];
+  } else {
+    selectedDate = null;
+  }
+  renderCalendar();
+  if (selectedDate) onDateSelect(selectedDate, rawData);
+  else hourlyContent.classList.add('hidden');
+});
+
+latestBtn.addEventListener('click', () => {
+  if (!availableDates || availableDates.size === 0) return;
+  const sorted = [...availableDates].sort();
+  const latest = sorted[sorted.length - 1];
+  const dt = new Date(latest + 'T00:00:00');
+  currentYear = dt.getFullYear();
+  currentMonth = dt.getMonth();
+  selectedDate = latest;
+  renderCalendar();
+  onDateSelect(selectedDate, rawData);
+});
+
+yearBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  yearDropdown.classList.toggle('hidden');
+});
+
+document.addEventListener('click', () => yearDropdown.classList.add('hidden'));
+
+function getCompareData(dateStr, data) {
+  if (!pinnedDate || pinnedDate === dateStr) return null;
+  const dayData = data.filter(d => d.date.startsWith(pinnedDate)).sort((a, b) => a.date.localeCompare(b.date));
+  return {
+    label: formatShortDate(pinnedDate),
+    temp: dayData.map(d => parseFloat(d.temperature)),
+    hum: dayData.map(d => parseFloat(d.humidity)),
+    pres: dayData.map(d => d.pressure !== null && d.pressure !== undefined ? parseFloat(d.pressure) : null),
+  };
+}
+
+function formatShortDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function onDateSelect(dateStr, data) {
+  const dayData = data.filter(d => d.date.startsWith(dateStr)).sort((a, b) => a.date.localeCompare(b.date));
+
+  hourlyContent.classList.remove('hidden');
+
+  const labels = dayData.map(d => d.date.split(' ')[1].slice(0, 5));
+  const temp = dayData.map(d => parseFloat(d.temperature));
+  const hum = dayData.map(d => parseFloat(d.humidity));
+  const pres = dayData.map(d => d.pressure !== null && d.pressure !== undefined ? parseFloat(d.pressure) : null);
+  const cd = getCompareData(dateStr, data);
+
+  const compareColors = ['#ff9f43', '#54a0ff'];
+  renderStatsSection('hourlyStats', [
+    { label: 'Temperature', values: temp.filter(v => !isNaN(v)), unit: '°F' },
+    { label: 'Humidity', values: hum.filter(v => !isNaN(v)), unit: '%' },
+    { label: 'Pressure', values: pres.filter(v => v !== null), unit: 'hPa' },
+  ]);
+
+  if (cd) {
+    comparisonLegend.classList.remove('hidden');
+    comparisonLegend.innerHTML = `
+      <span><span class="swatch" style="background:#ff6b6b"></span> ${formatShortDate(dateStr)} (selected)</span>
+      <span><span class="swatch dashed" style="border-color:${compareColors[0]}"></span> ${cd.label} (pinned)</span>`;
+  } else {
+    comparisonLegend.classList.add('hidden');
+  }
+
+  renderChart('chartHourlyTemp', 'Temperature (°F)', labels, temp, '#ff6b6b', cd ? { label: cd.label, data: cd.temp, color: compareColors[0] } : null);
+  renderChart('chartHourlyHumidity', 'Humidity (%)', labels, hum, '#4ecdc4', cd ? { label: cd.label, data: cd.hum, color: compareColors[1] } : null);
+  renderChart('chartHourlyPressure', 'Pressure (hPa)', labels, pres, '#45b7d1', cd ? { label: cd.label, data: cd.pres, color: compareColors[0] } : null);
+}
+
+function renderStatsSection(containerId, metrics) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = metrics.map(m => {
+    const vals = m.values;
+    if (vals.length === 0) return '';
+    const min = Math.min(...vals), max = Math.max(...vals);
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    const range = max - min;
+    const latest = vals[vals.length - 1];
+    const prev = vals.length > 1 ? vals[vals.length - 2] : null;
+    const trend = prev !== null ? (latest > prev ? 'up' : latest < prev ? 'down' : 'flat') : null;
+    return `
+      <div class="stat-card">
+        <div class="stat-label">${m.label}</div>
+        <div class="stat-latest"><span class="stat-latest-label">Latest</span>${latest.toFixed(1)}${m.unit}${trend ? `<span class="trend ${trend}">${trend === 'up' ? '▲' : '▼'}</span>` : ''}</div>
+        <div class="stat-details">
+          <div class="stat-detail"><span class="stat-detail-label">High</span>${max.toFixed(1)}${m.unit}</div>
+          <div class="stat-detail"><span class="stat-detail-label">Low</span>${min.toFixed(1)}${m.unit}</div>
+          <div class="stat-detail"><span class="stat-detail-label">Avg</span>${avg.toFixed(1)}${m.unit}</div>
+          <div class="stat-detail"><span class="stat-detail-label">Range</span>${range.toFixed(1)}${m.unit}</div>
+        </div>
+        <div class="stat-footer">${vals.length} reading${vals.length !== 1 ? 's' : ''}</div>
+      </div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>

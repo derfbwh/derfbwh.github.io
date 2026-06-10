@@ -78,7 +78,7 @@
             <!-- Header -->
             <div class="border-b border-white/10 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
                 <div>
-                    <h1 class="text-3xl font-semibold text-white tracking-tight">Backyard Weather <span class="ml-2 text-xs font-mono text-gray-500 font-normal">v3.2</span></h1>
+                    <h1 class="text-3xl font-semibold text-white tracking-tight">Backyard Weather <span class="ml-2 text-xs font-mono text-gray-500 font-normal">v3.3</span></h1>
                     <p id="last-updated" class="text-sm text-gray-400 mt-1">Last updated: ...</p>
                 </div>
                 <div class="flex items-center gap-6">
@@ -279,7 +279,10 @@
                     🍎 Apple Intelligence
                 </button>
                 <button id="select-gemini-btn" class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide text-gray-400 hover:text-white transition-all duration-300 focus:outline-none bg-transparent">
-                    ✨ Gemini 2.5/3.1
+✨ Gemini 3.1
+                </button>
+                <button id="select-gemma-btn" class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide text-gray-400 hover:text-white transition-all duration-300 focus:outline-none bg-transparent">
+🧠 DiffusionGemma
                 </button>
             </div>
             
@@ -314,7 +317,7 @@
             let isForecastExpanded = true;
             let chartInstances = {};
             let aiContextData = null;
-            let selectedAIModel = 'apple'; // 'apple' or 'gemini'
+            let selectedAIModel = 'apple'; // 'apple', 'gemini', or 'gemma'
             let selectedForecastSource = localStorage.getItem('weather-dashboard-source') || 'nws'; // 'openmeteo' or 'nws'
 
             // --- THEME LOGIC ---
@@ -354,26 +357,37 @@
             function initAIModelSelector() {
                 const selectAppleBtn = document.getElementById('select-apple-btn');
                 const selectGeminiBtn = document.getElementById('select-gemini-btn');
+                const selectGemmaBtn = document.getElementById('select-gemma-btn');
                 const aiBadge = document.getElementById('ai-badge');
                 const disclaimerText = document.getElementById('disclaimer-text');
                 
                 function updateUI(model) {
                     selectedAIModel = model;
+                    const baseInactive = "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide text-gray-400 hover:text-white transition-all duration-300 focus:outline-none bg-transparent";
                     if (model === 'apple') {
                         selectAppleBtn.className = "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 focus:outline-none bg-[var(--accent-color)] text-black shadow-inner";
-                        selectGeminiBtn.className = "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide text-gray-400 hover:text-white transition-all duration-300 focus:outline-none bg-transparent";
+                        selectGeminiBtn.className = baseInactive;
+                        selectGemmaBtn.className = baseInactive;
                         aiBadge.textContent = "🍎 Apple Intelligence Analysis";
                         disclaimerText.textContent = "Apple Intelligence might hallucinate anomalies. Verify critical weather updates locally.";
-                    } else {
-                        selectAppleBtn.className = "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide text-gray-400 hover:text-white transition-all duration-300 focus:outline-none bg-transparent";
+                    } else if (model === 'gemini') {
+                        selectAppleBtn.className = baseInactive;
                         selectGeminiBtn.className = "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 focus:outline-none bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-indigo-500/20";
-                        aiBadge.textContent = "✨ Gemini 2.5/3.1 Analysis";
+                        selectGemmaBtn.className = baseInactive;
+                        aiBadge.textContent = "✨ Gemini 3.1 Analysis";
                         disclaimerText.textContent = "Gemini might hallucinate anomalies. Verify critical weather updates locally.";
+                    } else {
+                        selectAppleBtn.className = baseInactive;
+                        selectGeminiBtn.className = baseInactive;
+                        selectGemmaBtn.className = "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 focus:outline-none bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/20";
+                        aiBadge.textContent = "🧠 DiffusionGemma Analysis";
+                        disclaimerText.textContent = "DiffusionGemma might hallucinate anomalies. Verify critical weather updates locally.";
                     }
                 }
                 
                 selectAppleBtn.addEventListener('click', () => updateUI('apple'));
                 selectGeminiBtn.addEventListener('click', () => updateUI('gemini'));
+                selectGemmaBtn.addEventListener('click', () => updateUI('gemma'));
             }
             initAIModelSelector();
             initForecastSourceSelector();
@@ -888,8 +902,10 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
 
                 if (selectedAIModel === 'apple') {
                     mainInsightEl.innerHTML = '🍎 Apple Intelligence is analyzing your weather...';
-                } else {
+                } else if (selectedAIModel === 'gemini') {
                     mainInsightEl.innerHTML = '✨ Gemini is analyzing your weather...';
+                } else {
+                    mainInsightEl.innerHTML = '🧠 DiffusionGemma is analyzing your weather...';
                 }
                 mainInsightEl.classList.remove('text-gray-400');
                 mainInsightEl.classList.add('animate-pulse', 'opacity-80', 'text-white');
@@ -938,7 +954,7 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                         } else {
                             throw new Error("Empty response from Apple Intelligence gateway.");
                         }
-                    } else {
+                    } else if (selectedAIModel === 'gemini') {
                         const API_KEY = atob('QUl6YVN5QmlmdFRFZ1R2VmZ6S2xfZlR6UGxpNk9kZWRCOFhhb0I0');
                         // Utilizing the requested Gemini 3.1 Flash Preview model
                         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${API_KEY}`;
@@ -976,6 +992,44 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                         } else {
                             throw new Error("Empty response from Gemini API.");
                         }
+                    } else {
+                        // Gemma via local proxy (avoids CORS)
+                        const url = '/api/gemma';
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                model: 'google/diffusiongemma-26b-a4b-it',
+                                messages: [{ role: 'user', content: prompt }],
+                                max_tokens: 4096,
+                                temperature: 1.00,
+                                top_p: 0.95,
+                                stream: false,
+                                chat_template_kwargs: { enable_thinking: true }
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (!response.ok) {
+                            throw new Error(data.error?.message || `API Error ${response.status}`);
+                        }
+                        
+                        if (data.choices && data.choices[0] && data.choices[0].message) {
+                            let text = data.choices[0].message.content;
+                            text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                            
+                            // Unbreakable JSON block extraction
+                            const firstBrace = text.indexOf('{');
+                            const lastBrace = text.lastIndexOf('}');
+                            if (firstBrace !== -1 && lastBrace !== -1) {
+                                text = text.substring(firstBrace, lastBrace + 1);
+                            }
+                            
+                            aiData = JSON.parse(text);
+                        } else {
+                            throw new Error("Empty response from DiffusionGemma API.");
+                        }
                     }
                     
                     if (aiData) {
@@ -998,6 +1052,8 @@ Do not include markdown blocks like \`\`\`json, just return raw valid JSON.`;
                         errorMessage = "API Connection Error: Could not connect to your local Apple Intelligence server or gateway. Make sure the server and CORS gateway are running.";
                     } else if (selectedAIModel === 'gemini' && (errStr.includes("failed to fetch") || errStr.includes("networkerror") || errStr.includes("typeerror"))) {
                         errorMessage = "API Connection Error: Could not connect to the Google Gemini service. Check your internet connection.";
+                    } else if (selectedAIModel === 'gemma' && (errStr.includes("failed to fetch") || errStr.includes("networkerror") || errStr.includes("typeerror"))) {
+                        errorMessage = "API Connection Error: Could not connect to the NVIDIA build.nvidia.com DiffusionGemma service. Check your internet connection.";
                     }
                     
                     mainInsightEl.textContent = errorMessage;
