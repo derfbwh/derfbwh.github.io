@@ -37,6 +37,12 @@
                 document.head.appendChild(style2);
             }
 
+            if (data.themeCSS) {
+                const style3 = document.createElement('style');
+                style3.textContent = data.themeCSS;
+                document.head.appendChild(style3);
+            }
+
             // Setup HTML
             const wrapper = document.createElement('div');
             wrapper.className = 'custom-widget-container';
