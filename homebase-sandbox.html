@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Widget Sandbox</title>
+    <style>
+        html,body {
+            margin:0; padding:0; background:transparent; color:inherit;
+            font-family:system-ui,-apple-system,sans-serif;
+        }
+        body { overflow:hidden; }
+    </style>
+</head>
+<body>
+    <script>
+        let _widgetId = null;
+        let _mode = null;
+
+        window.addEventListener('message', (event) => {
+            // We do not strictly check event.source because the parent is an extension page
+            // and origins may differ, but we validate the data payload
+            const data = event.data;
+            if (!data || data.type !== 'INIT_WIDGET') return;
+
+            _widgetId = data.widgetId;
+            _mode = data.mode;
+            
+            // Setup styles
+            if (data.standardCSS) {
+                const style1 = document.createElement('style');
+                style1.textContent = data.standardCSS;
+                document.head.appendChild(style1);
+            }
+            if (data.css) {
+                const style2 = document.createElement('style');
+                style2.textContent = data.css;
+                document.head.appendChild(style2);
+            }
+
+            // Setup HTML
+            const wrapper = document.createElement('div');
+            wrapper.className = 'custom-widget-container';
+            wrapper.innerHTML = (data.html || '').replace(/<\/script/gi, '<\\/script');
+            document.body.appendChild(wrapper);
+
+            // Build hb API
+            const hb = {
+                id: _widgetId,
+                name: data.widgetName,
+                content: wrapper,
+                state: { loading: false, error: null, data: null },
+                onRender: null,
+                getValue: function(key, defaultValue) {
+                    return data.initialData[key] !== undefined ? data.initialData[key] : defaultValue;
+                },
+                setValue: function(key, value) {
+                    data.initialData[key] = value;
+                    event.source.postMessage({ 
+                        type: "HB_SET_VALUE", 
+                        widgetId: _widgetId, 
+                        mode: _mode, 
+                        key: key, 
+                        value: value 
+                    }, "*");
+                    return Promise.resolve();
+                },
+                on: function(element, eventType, handler, options) {
+                    element.addEventListener(eventType, handler, options);
+                },
+                setState: function(updates) {
+                    Object.assign(hb.state, updates);
+                    if (typeof hb.onRender === "function") hb.onRender(hb.state);
+                }
+            };
+
+            // Run JS
+            if (data.js) {
+                try {
+                    const safeJS = data.js.replace(/<\/script/gi, '<\\/script');
+                    // Because this file is hosted on a standard web server (not an extension page),
+                    // new Function is perfectly legal and not blocked by the extension CSP.
+                    const runLogic = new Function('hb', 'document', safeJS);
+                    runLogic.call(null, hb, document);
+                } catch(err) {
+                    wrapper.innerHTML += '<div style="color:#E74C4C;font-size:11px;padding:10px;font-family:monospace;background:rgba(231,76,76,0.08);border-top:1px solid rgba(231,76,76,0.15)">Error: ' + err.message + '</div>';
+                    event.source.postMessage({ type: "WIDGET_ERROR", widgetId: _widgetId, mode: _mode, error: err.message }, "*");
+                }
+            }
+
+            // Setup resize observer
+            const ro = new ResizeObserver(() => {
+                event.source.postMessage({ type: "WIDGET_RESIZE", widgetId: _widgetId, mode: _mode, height: document.documentElement.scrollHeight }, "*");
+            });
+            ro.observe(document.body);
+            setTimeout(() => {
+                event.source.postMessage({ type: "WIDGET_RESIZE", widgetId: _widgetId, mode: _mode, height: document.documentElement.scrollHeight }, "*");
+            }, 50);
+        });
+    </script>
+</body>
+</html>
