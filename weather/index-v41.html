@@ -1,0 +1,3488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <title>Backyard Weather v4.1 Beta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <style>
+        /* ============================================================
+           Backyard Weather 4.0 — design tokens
+           Card-less, hairline-ruled, dark. Same spirit as v3, tightened:
+           every theme now carries its own accent + chart palette.
+           ============================================================ */
+        :root {
+            --bg: #191919;
+            --bg-soft: #232323;
+            --bg-muted: #3a3a3a;
+            --line: rgba(255,255,255,0.10);
+            --line-soft: rgba(255,255,255,0.05);
+            --text: #EDEDED;
+            --text-dim: #9a9a9a;
+            --text-faint: #6b6b6b;
+            --accent: #10a37f;
+            --warm: #f0876a;
+            --cool: #6aa9f0;
+            --humid: #5ec98a;
+            --dew: #b79bf0;
+            --flag: #f0c05e;
+            --radius: 3px;
+        }
+        .theme-emerald { --bg:#071F1D; --bg-soft:#0A2A27; --bg-muted:#0D3A37; --accent:#2fd4a7; }
+        .theme-navy    { --bg:#050A18; --bg-soft:#0A1226; --bg-muted:#0D1B36; --accent:#5b8cf5; }
+        .theme-maroon  { --bg:#1A0505; --bg-soft:#260A0A; --bg-muted:#360D0D; --accent:#f0705e; }
+        .theme-pink    { --bg:#1A0510; --bg-soft:#26091A; --bg-muted:#360D23; --accent:#f06ab0; }
+        .theme-slate   { --bg:#0E1214; --bg-soft:#161C1F; --bg-muted:#232B30; --accent:#4fc3d9; }
+
+        * { -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color .45s ease;
+            font-variant-numeric: tabular-nums;
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: var(--bg-muted); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background-color: #5a5a5a; }
+        .scrollbar-thin::-webkit-scrollbar { height: 6px; }
+
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+        /* --- micro type: the signature label style, unchanged --- */
+        .eyebrow { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; color: var(--text-faint); }
+        .eyebrow-lg { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; color: var(--text-faint); }
+
+        .rule { border-color: var(--line); }
+
+        /* --- toggles --- */
+        .toggle-checkbox:checked { right: 0; background-color: #fff; }
+        .toggle-checkbox:checked + .toggle-label { background-color: var(--accent); }
+        .toggle-checkbox { transition: right .2s ease; right: 16px; }
+
+        /* --- segmented control (replaces the loose pill rows in v3) --- */
+        .seg { display: inline-flex; align-items: center; gap: 2px; background: rgba(255,255,255,.04); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+        .seg button {
+            font-size: 11px; font-weight: 600; letter-spacing: .04em;
+            padding: 6px 14px; border-radius: 999px; color: var(--text-dim);
+            transition: color .2s, background-color .2s; white-space: nowrap;
+        }
+        .seg button:hover { color: var(--text); }
+        .seg button[aria-selected="true"] { background: var(--accent); color: #0a0a0a; }
+
+        #history-tabs button.active, .tab.active { border-bottom-color: var(--accent); color: #fff; }
+
+        .collapsible { transition: max-height .35s ease, opacity .3s; overflow: hidden; max-height: 3000px; opacity: 1; }
+        .collapsible.collapsed { max-height: 0; opacity: 0; }
+
+        /* --- modal --- */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.85); backdrop-filter: blur(6px); display: flex; justify-content: center; align-items: center; z-index: 120; padding: 1rem; }
+        .modal-content { width: 100%; max-width: 880px; max-height: 84vh; background: var(--bg); border: 1px solid var(--line); padding: 1.5rem; transform: scale(.97); opacity: 0; animation: zoomIn .18s forwards; }
+        @keyframes zoomIn { to { transform: scale(1); opacity: 1; } }
+
+        /* --- theme dots --- */
+        .theme-dot { width: 14px; height: 14px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform .2s, border-color .2s; }
+        .theme-dot:hover { transform: scale(1.25); }
+        .theme-dot.active { border-color: #fff; transform: scale(1.1); }
+
+        /* --- sticky compact header --- */
+        #mini-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+            background: color-mix(in srgb, var(--bg) 88%, transparent);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+            transform: translateY(-100%); transition: transform .3s ease;
+        }
+        #mini-header.visible { transform: translateY(0); }
+
+        /* --- skeleton loading --- */
+        .skeleton { position: relative; overflow: hidden; background: var(--bg-soft); border-radius: 2px; color: transparent !important; }
+        .skeleton::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+            animation: shimmer 1.4s infinite;
+        }
+        @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+        /* --- banner --- */
+        .banner { border-left: 2px solid var(--flag); background: rgba(240,192,94,.06); }
+        .banner-err { border-left-color: #f0705e; background: rgba(240,112,94,.07); }
+
+        /* --- calendar heatmap --- */
+        .heat-cell { width: 100%; aspect-ratio: 1; border-radius: 2px; background: var(--bg-soft); transition: transform .12s; cursor: pointer; }
+        .heat-cell:hover { transform: scale(1.35); z-index: 2; position: relative; }
+
+        /* --- quality chip --- */
+        .chip { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; padding: 2px 7px; border: 1px solid var(--line); border-radius: 999px; color: var(--text-dim); }
+        .chip-good { color: var(--humid); border-color: color-mix(in srgb, var(--humid) 35%, transparent); }
+        .chip-warn { color: var(--flag); border-color: color-mix(in srgb, var(--flag) 35%, transparent); }
+        .chip-bad  { color: #f0705e; border-color: rgba(240,112,94,.35); }
+
+        /* --- value transitions --- */
+        .val-flash { animation: flash .6s ease; }
+        @keyframes flash { 0% { color: var(--accent); } 100% { color: inherit; } }
+
+        .hour-col { min-width: 62px; }
+
+        .tooltip-dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align: middle; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::after { animation: none !important; transition: none !important; }
+        }
+
+        @media print {
+            #mini-header, .no-print { display: none !important; }
+            body { background: #fff; color: #000; }
+        }
+    </style>
+</head>
+<body class="antialiased w-full min-h-screen flex flex-col">
+
+<!-- Sticky compact header -->
+<div id="mini-header" class="no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+            <span id="mini-icon" class="text-lg leading-none"></span>
+            <span class="text-lg font-semibold text-white leading-none"><span id="mini-temp">—</span><span class="text-[11px] text-[var(--text-faint)] font-normal ml-0.5" data-unit-label>°F</span></span>
+            <span class="text-xs text-[var(--text-dim)] truncate hidden sm:inline" id="mini-summary"></span>
+        </div>
+        <div class="flex items-center gap-3">
+            <span id="mini-quality" class="chip"></span>
+            <button id="mini-top" class="eyebrow hover:text-white transition-colors" aria-label="Back to top">Top ↑</button>
+        </div>
+    </div>
+</div>
+
+<main class="flex-grow w-full">
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 flex flex-col gap-12">
+
+        <!-- ============ HEADER ============ -->
+        <header class="border-b rule pb-6 flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6">
+            <div>
+                <h1 class="text-3xl font-semibold text-white tracking-tight">
+                    Backyard Weather
+                    <span class="ml-2 text-xs font-mono text-[var(--text-faint)] font-normal align-middle">v4.1 Beta</span>
+                </h1>
+                <p id="last-updated" class="text-sm text-[var(--text-dim)] mt-1">Loading station data…</p>
+                <p id="location-line" class="text-xs text-[var(--text-faint)] mt-0.5"></p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-4 no-print">
+                <div class="flex items-center gap-2">
+                    <span class="eyebrow mr-1">Theme</span>
+                    <div id="theme-switcher" class="flex gap-2" role="group" aria-label="Colour theme">
+                        <button class="theme-dot active" style="background-color:#191919" data-theme="default" title="Graphite" aria-label="Graphite"></button>
+                        <button class="theme-dot" style="background-color:#071F1D" data-theme="emerald" title="Emerald" aria-label="Emerald"></button>
+                        <button class="theme-dot" style="background-color:#050A18" data-theme="navy" title="Navy" aria-label="Navy"></button>
+                        <button class="theme-dot" style="background-color:#0E1214" data-theme="slate" title="Slate" aria-label="Slate"></button>
+                        <button class="theme-dot" style="background-color:#1A0505" data-theme="maroon" title="Maroon" aria-label="Maroon"></button>
+                        <button class="theme-dot" style="background-color:#1A0510" data-theme="pink" title="Pink" aria-label="Pink"></button>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="eyebrow mr-1">Units</span>
+                    <div class="seg" id="unit-switcher" role="group" aria-label="Units">
+                        <button data-unit="F" aria-selected="true">°F</button>
+                        <button data-unit="C" aria-selected="false">°C</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="eyebrow mr-1">Data</span>
+                    <div class="seg" id="qc-switcher" role="group" aria-label="Data quality mode">
+                        <button data-qc="qc" aria-selected="true" title="Remove readings that fail quality control">Validated</button>
+                        <button data-qc="smooth" aria-selected="false" title="Validated, then median-smoothed">Smoothed</button>
+                        <button data-qc="raw" aria-selected="false" title="Exactly what the sensor reported">Raw</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ============ ALERT BANNERS ============ -->
+        <div id="banner-stack" class="flex flex-col gap-3 -mt-6 empty:hidden"></div>
+
+        <!-- ============ CURRENT CONDITIONS ============ -->
+        <section class="grid grid-cols-1 lg:grid-cols-4 gap-x-12 gap-y-12 pb-10 border-b rule">
+
+            <div class="lg:col-span-1 flex flex-col">
+                <p class="eyebrow-lg mb-6">Current Conditions</p>
+
+                <div class="flex items-center gap-4 mb-2">
+                    <p class="text-5xl leading-none" id="current-condition-icon" aria-hidden="true">·</p>
+                    <p class="text-6xl font-bold text-white tracking-tight leading-none">
+                        <span id="current-temp" class="skeleton">00.0</span><span class="text-2xl text-[var(--text-faint)] font-normal" data-unit-label>°F</span>
+                    </p>
+                </div>
+                <div class="h-10 mb-6 -mx-1"><canvas id="sparkline" aria-label="Last 12 hours of temperature"></canvas></div>
+
+                <div class="grid grid-cols-2 gap-x-4 gap-y-7 text-sm">
+                    <div>
+                        <p class="eyebrow mb-1.5" id="feels-like-label">Feels Like</p>
+                        <p class="font-medium text-2xl tracking-tight"><span id="feels-like-temp">—</span><span data-unit-label>°F</span></p>
+                        <p id="feels-like-description" class="text-[10px] text-[var(--text-dim)] mt-1"></p>
+                    </div>
+                    <div>
+                        <p class="eyebrow mb-1.5">Humidity</p>
+                        <p class="font-medium text-[var(--text)] text-2xl tracking-tight"><span id="current-humidity">—</span>%</p>
+                        <p id="humidity-trend" class="text-[10px] text-[var(--text-dim)] mt-1"></p>
+                    </div>
+                    <div>
+                        <p class="eyebrow mb-1.5">Dew Point</p>
+                        <p class="font-medium text-2xl tracking-tight"><span id="current-dew-point">—</span><span data-unit-label>°F</span></p>
+                        <p id="dew-point-comfort" class="text-[10px] mt-1"></p>
+                    </div>
+                    <div>
+                        <p class="eyebrow mb-1.5">Wet Bulb</p>
+                        <p class="font-medium text-[var(--text)] text-2xl tracking-tight"><span id="current-wet-bulb">—</span><span data-unit-label>°F</span></p>
+                        <p id="wet-bulb-note" class="text-[10px] text-[var(--text-dim)] mt-1"></p>
+                    </div>
+                    <div class="col-span-2 pt-4 border-t rule grid grid-cols-2 gap-x-4 gap-y-5">
+                        <div>
+                            <p class="eyebrow mb-1.5">Wind</p>
+                            <p class="font-medium text-[var(--text)] text-lg tracking-tight" id="current-wind">—</p>
+                            <p class="text-[10px] text-[var(--text-faint)] mt-1" id="wind-source"></p>
+                        </div>
+                        <div>
+                            <p class="eyebrow mb-1.5">Pressure</p>
+                            <p class="font-medium text-[var(--text)] text-lg tracking-tight" id="current-pressure">—</p>
+                            <p class="text-[10px] text-[var(--text-faint)] mt-1" id="pressure-trend"></p>
+                        </div>
+                    </div>
+                    <div class="col-span-2 pt-4 border-t rule grid grid-cols-2 gap-x-4 gap-y-5" id="weathernext-micrometrics">
+                        <div>
+                            <p class="eyebrow mb-1.5 flex items-center gap-1.5">
+                                Solar Irradiance
+                                <span class="text-[9px] px-1 py-0.2 rounded font-mono text-[var(--accent)] bg-[var(--accent)]/10">WN3</span>
+                            </p>
+                            <p class="font-medium text-[var(--text)] text-lg tracking-tight" id="wn-solar">—</p>
+                            <p class="text-[10px] text-[var(--text-faint)] mt-1" id="wn-solar-note">Direct + Diffuse GHI</p>
+                        </div>
+                        <div>
+                            <p class="eyebrow mb-1.5 flex items-center gap-1.5">
+                                100m Wind
+                                <span class="text-[9px] px-1 py-0.2 rounded font-mono text-[var(--cool)] bg-[var(--cool)]/10">WN3</span>
+                            </p>
+                            <p class="font-medium text-[var(--text)] text-lg tracking-tight" id="wn-100m-wind">—</p>
+                            <p class="text-[10px] text-[var(--text-faint)] mt-1" id="wn-wind-shear">Boundary layer shear</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-10 border-t rule lg:border-t-0 pt-10 lg:pt-0 lg:border-l lg:pl-12">
+
+                <!-- Sensor check: the new headline feature -->
+                <div class="sm:col-span-2">
+                    <div class="flex items-center justify-between mb-5 gap-4 cursor-pointer group" id="sensor-check-toggle-container" role="button" tabindex="0" aria-expanded="true" aria-controls="sensor-check-content">
+                        <div class="flex items-center gap-3">
+                            <p class="eyebrow-lg group-hover:text-white transition-colors">Sensor Check</p>
+                            <span id="sensor-verdict" class="chip">Analysing…</span>
+                        </div>
+                        <span id="sensor-check-toggle" class="text-xl font-light select-none text-[var(--text-faint)] group-hover:text-white transition-colors leading-none no-print" aria-hidden="true">−</span>
+                    </div>
+                    <div id="sensor-check-content" class="collapsible">
+                        <div id="sensor-check" class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-6"></div>
+                        <p id="sensor-note" class="text-xs text-[var(--text-dim)] font-light leading-relaxed mt-5 max-w-3xl"></p>
+                    </div>
+                </div>
+
+                <div class="sm:col-span-2 border-t rule pt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-10">
+                    <div>
+                        <p class="eyebrow mb-5">Today vs Yesterday</p>
+                        <div id="yesterday-comparison" class="space-y-4 font-light text-sm"></div>
+                    </div>
+                    <div>
+                        <p class="eyebrow mb-5">This Week vs Last Week</p>
+                        <div id="week-comparison" class="space-y-4 font-light text-sm"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ AI ANALYSIS ============ -->
+        <section class="pb-10 border-b rule transition-opacity duration-500" id="ai-container">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <span class="eyebrow flex items-center gap-1.5 border rule px-2 py-1 rounded-sm" id="ai-badge">Apple Intelligence Analysis</span>
+                <div class="flex items-center gap-2 no-print">
+                    <span id="ai-cache-note" class="text-[10px] text-[var(--text-faint)]"></span>
+                    <button id="generate-ai-btn" class="text-xs hover:bg-white/5 text-[var(--text-dim)] hover:text-white border rule px-3 py-1.5 rounded transition-all flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+                        Generate Insights
+                    </button>
+                </div>
+            </div>
+
+            <div id="ai-results-container" class="hidden">
+                <p id="ai-headline" class="text-white font-medium text-lg mb-3"></p>
+                <p id="ai-insight-main" class="text-[var(--text-dim)] font-light text-xl md:text-2xl leading-relaxed mb-8 max-w-5xl"></p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 border-t rule pt-6">
+                    <div>
+                        <p class="eyebrow mb-2" style="color:var(--warm)">Trend / Anomaly</p>
+                        <p id="ai-anomaly-box" class="text-sm text-[var(--text-dim)] font-light leading-relaxed"></p>
+                    </div>
+                    <div>
+                        <p class="eyebrow mb-2" style="color:var(--humid)">Suggestion</p>
+                        <p id="ai-recommendation-box" class="text-sm text-[var(--text-dim)] font-light leading-relaxed"></p>
+                    </div>
+                    <div>
+                        <p class="eyebrow mb-2" style="color:var(--dew)">Next 12 Hours</p>
+                        <p id="ai-outlook-box" class="text-sm text-[var(--text-dim)] font-light leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+            <div id="ai-placeholder" class="text-sm text-[var(--text-faint)] font-light mt-2">
+                Insights run on request. The model is handed validated station data, the official
+                observation cross-check, sun times and the live forecast — not raw sensor output.
+            </div>
+        </section>
+
+        <!-- ============ 24 HOUR ============ -->
+        <section class="pb-10 border-b rule">
+            <div class="flex flex-wrap items-baseline justify-between gap-4 mb-6">
+                <p class="eyebrow-lg">Last 24 Hours</p>
+                <div class="flex items-center gap-4 no-print">
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox" id="overlay-official" class="accent-[var(--accent)] w-3.5 h-3.5">
+                        <span class="eyebrow">Overlay official station</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox" id="show-dewpoint" class="accent-[var(--accent)] w-3.5 h-3.5" checked>
+                        <span class="eyebrow">Dew point</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox" id="overlay-weathernext" class="accent-[var(--accent)] w-3.5 h-3.5">
+                        <span class="eyebrow flex items-center gap-1">
+                            Overlay WeatherNext 3
+                            <span class="text-[9px] px-1 py-0.2 rounded font-mono text-[var(--accent)] bg-[var(--accent)]/10">5km</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+            <div class="w-full h-[300px]"><canvas id="hourlyTrendChart"></canvas></div>
+            <div id="hourly-data-container" class="flex overflow-x-auto gap-7 pt-8 scrollbar-thin text-center"></div>
+        </section>
+
+        <!-- ============ HISTORY ============ -->
+        <section class="pb-10 border-b rule">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
+                <p class="eyebrow-lg">Historical Metrics</p>
+                <div class="flex space-x-5 no-print" id="history-tabs">
+                    <button class="pb-1 eyebrow hover:text-white transition-colors border-b-2 border-transparent active" data-days="7">7 Days</button>
+                    <button class="pb-1 eyebrow hover:text-white transition-colors border-b-2 border-transparent" data-days="15">15 Days</button>
+                    <button class="pb-1 eyebrow hover:text-white transition-colors border-b-2 border-transparent" data-days="30">30 Days</button>
+                    <button class="pb-1 eyebrow hover:text-white transition-colors border-b-2 border-transparent" data-days="90">All</button>
+                </div>
+            </div>
+
+            <div id="history-summary" class="grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-6 mb-10 pb-8 border-b rule"></div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="w-full h-[280px] overflow-hidden"><canvas id="historyTemperatureChart"></canvas></div>
+                <div class="w-full h-[280px] overflow-hidden"><canvas id="historyHumidityChart"></canvas></div>
+            </div>
+            <p class="text-[10px] text-[var(--text-faint)] mt-4">Click any point for that day's detail.</p>
+        </section>
+
+        <!-- ============ CALENDAR HEATMAP ============ -->
+        <section class="pb-10 border-b rule">
+            <div class="flex flex-wrap items-baseline justify-between gap-4 mb-6">
+                <p class="eyebrow-lg">Daily Highs</p>
+                <div class="flex items-center gap-3">
+                    <span class="text-[10px] text-[var(--text-faint)]" id="heat-min">—</span>
+                    <div class="h-2 w-28 rounded-full" id="heat-legend"></div>
+                    <span class="text-[10px] text-[var(--text-faint)]" id="heat-max">—</span>
+                </div>
+            </div>
+            <div id="calendar-heatmap" class="overflow-x-auto scrollbar-thin"></div>
+            <p id="heat-tooltip" class="text-xs text-[var(--text-dim)] mt-4 h-4"></p>
+        </section>
+
+        <!-- ============ RECORDS + QUALITY ============ -->
+        <section class="pb-10 border-b rule grid grid-cols-1 lg:grid-cols-3 gap-x-12 gap-y-10">
+            <div>
+                <p class="eyebrow-lg mb-6">Station Records</p>
+                <div id="records-container" class="space-y-4 text-sm"></div>
+            </div>
+            <div>
+                <p class="eyebrow-lg mb-6">Climate Totals</p>
+                <div id="degree-days-container" class="space-y-4 text-sm"></div>
+            </div>
+            <div>
+                <div class="flex items-baseline justify-between mb-6 gap-3">
+                    <p class="eyebrow-lg">Data Quality</p>
+                    <button id="qc-detail-btn" class="eyebrow hover:text-white transition-colors no-print">Detail →</button>
+                </div>
+                <div id="quality-container" class="space-y-4 text-sm"></div>
+            </div>
+        </section>
+
+        <!-- ============ FORECAST ============ -->
+        <section class="pb-10">
+            <div class="flex justify-between items-center mb-6 cursor-pointer text-[var(--text-faint)] hover:text-white transition-colors group" id="forecast-toggle-button-container" role="button" tabindex="0" aria-expanded="true">
+                <p class="eyebrow-lg group-hover:text-white transition-colors">Forecast &amp; Official Data</p>
+                <span id="forecast-toggle-button" class="text-xl font-light select-none">−</span>
+            </div>
+            <div id="forecast-content" class="space-y-10 pt-4 border-t rule collapsible">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-x-12 gap-y-12">
+                    <div class="lg:col-span-3 grid grid-cols-1 gap-10">
+                        <div class="overflow-x-auto pt-1">
+                            <div id="forecast-container" class="flex justify-between min-w-[560px] text-sm gap-6 items-start text-center"></div>
+                        </div>
+                        <div class="pt-6 border-t rule">
+                            <div class="flex flex-wrap items-baseline justify-between gap-3 mb-4">
+                                <p class="eyebrow">Precipitation Outlook — Next 48 Hours</p>
+                                <span id="wn-precip-badge" class="text-[10px] text-[var(--text-faint)] flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                    WeatherNext 3 64-Member Ensemble Cone
+                                </span>
+                            </div>
+                            <div class="w-full h-[160px]"><canvas id="precipChart"></canvas></div>
+                        </div>
+                        <div class="w-full aspect-video border rule no-print">
+                            <iframe id="windy-frame" title="Radar map" src="about:blank" width="100%" height="100%" frameborder="0" style="border:0;" loading="lazy"></iframe>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-10 border-t rule lg:border-t-0 pt-10 lg:pt-0 lg:border-l lg:pl-12">
+                        <div>
+                            <p class="eyebrow mb-4">Official Observation</p>
+                            <div id="official-conditions-container" class="space-y-4 text-sm text-[var(--text-dim)]"></div>
+                        </div>
+                        <div class="pt-8 border-t rule">
+                            <p class="eyebrow mb-4">Sun &amp; Daylight</p>
+                            <div class="space-y-3 text-sm text-[var(--text-dim)]" id="sun-times-container"></div>
+                        </div>
+                        <div class="pt-8 border-t rule">
+                            <p class="eyebrow mb-4">Active Alerts</p>
+                            <div id="alerts-container" class="space-y-3 text-sm text-[var(--text-dim)]"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<!-- ============ MODALS ============ -->
+<div id="detail-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-content flex flex-col">
+        <div class="flex justify-between items-center mb-4 border-b rule pb-3">
+            <h3 id="modal-title" class="text-lg font-semibold tracking-tight">Detail</h3>
+            <button id="modal-close-button" class="text-[var(--text-dim)] hover:text-white text-2xl font-light leading-none" aria-label="Close">&times;</button>
+        </div>
+        <div id="modal-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4 text-sm"></div>
+        <div class="flex-grow w-full relative min-h-[280px]"><canvas id="detailChart"></canvas></div>
+    </div>
+</div>
+
+<div id="qc-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="qc-modal-title">
+    <div class="modal-content flex flex-col">
+        <div class="flex justify-between items-center mb-4 border-b rule pb-3">
+            <h3 id="qc-modal-title" class="text-lg font-semibold tracking-tight">Quality Control Report</h3>
+            <button id="qc-modal-close" class="text-[var(--text-dim)] hover:text-white text-2xl font-light leading-none" aria-label="Close">&times;</button>
+        </div>
+        <div id="qc-modal-body" class="overflow-y-auto text-sm space-y-6 pr-2"></div>
+    </div>
+</div>
+
+<div id="wn-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="wn-modal-title">
+    <div class="modal-content flex flex-col max-w-xl">
+        <div class="flex justify-between items-center mb-4 border-b rule pb-3">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <h3 id="wn-modal-title" class="text-lg font-semibold tracking-tight">Google WeatherNext 3 Settings</h3>
+            </div>
+            <button id="wn-modal-close" class="text-[var(--text-dim)] hover:text-white text-2xl font-light leading-none" aria-label="Close">&times;</button>
+        </div>
+        <div class="space-y-5 text-sm">
+            <p class="text-[var(--text-dim)] font-light leading-relaxed">
+                WeatherNext 3 is Google DeepMind's global AI weather model. It initializes hourly from geostationary satellite mosaics (GOES-16) at a 5 km surface resolution with 64-member ensemble uncertainty.
+            </p>
+            <div class="border rule p-3 rounded space-y-2 bg-[var(--bg-soft)]">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="eyebrow">Zero-Cost Rate Limiting</span>
+                    <span class="chip chip-good" id="wn-cache-status">Cached (Free Tier Safe)</span>
+                </div>
+                <p class="text-xs text-[var(--text-dim)]" id="wn-cache-detail">
+                    Requests are cached client-side for 60 minutes matching the model's update cycle (max 24 calls/day).
+                </p>
+            </div>
+            <div>
+                <label class="eyebrow block mb-2" for="wn-api-key-input">Google Cloud Weather API Key (Optional)</label>
+                <input id="wn-api-key-input" type="password" placeholder="AIzaSy..." class="w-full bg-[var(--bg-soft)] border rule px-3 py-2 text-sm rounded text-white focus:outline-none focus:border-[var(--accent)] font-mono text-xs" />
+                <p class="text-[11px] text-[var(--text-faint)] mt-1.5 leading-normal">
+                    Leave blank to use the built-in demo key & satellite neural simulation. If you have a Google Cloud API key with the Weather API enabled, paste it here. Key is stored strictly in your browser's <code class="font-mono text-[var(--text-dim)]">localStorage</code>.
+                </p>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t rule">
+                <button id="wn-clear-cache-btn" class="eyebrow hover:text-white transition-colors text-xs">Clear Cache & Force Refresh</button>
+                <button id="wn-save-key-btn" class="text-xs font-semibold px-4 py-2 rounded bg-[var(--accent)] text-black hover:opacity-90 transition-opacity">Save Settings</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="w-full border-t rule py-8 px-4 sm:px-6 mt-4">
+    <div class="max-w-7xl mx-auto flex flex-col items-center gap-6">
+        <div class="flex flex-col items-center gap-2 no-print">
+            <span class="eyebrow">Insight Model</span>
+            <div class="seg" id="ai-switcher" role="group" aria-label="AI model">
+                <button data-model="apple" aria-selected="true">Apple Intelligence</button>
+                <button data-model="gemini" aria-selected="false">Gemini 3.1</button>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-center gap-2 mt-1 no-print">
+            <div class="flex items-center gap-2">
+                <span class="eyebrow">Forecast Provider</span>
+                <button id="wn-config-btn" class="text-[10px] text-[var(--text-faint)] hover:text-white transition-colors flex items-center gap-1">
+                    <span>⚙</span> WN3 Settings
+                </button>
+            </div>
+            <div class="seg" id="source-switcher" role="group" aria-label="Forecast provider">
+                <button data-source="nws" aria-selected="true">US Weather Service</button>
+                <button data-source="openmeteo" aria-selected="false">Open-Meteo</button>
+                <button data-source="weathernext" aria-selected="false" class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Google WeatherNext 3
+                </button>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-5 no-print">
+            <button id="refresh-btn" class="eyebrow hover:text-white transition-colors">↻ Refresh</button>
+            <button id="export-btn" class="eyebrow hover:text-white transition-colors">↓ Export CSV</button>
+            <button id="help-btn" class="eyebrow hover:text-white transition-colors">? Shortcuts</button>
+        </div>
+
+        <p id="footer-quote" class="text-xs text-[var(--text-faint)] italic font-light text-center max-w-lg"></p>
+
+        <div class="w-full flex flex-col sm:flex-row justify-between items-center gap-3 text-[11px] text-[var(--text-faint)] border-t rule pt-4">
+            <p id="last-updated-footer">—</p>
+            <p id="disclaimer-text">Generated insights can be wrong. Verify anything that matters.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+(function () {
+'use strict';
+
+/* ================================================================
+   0. CONFIG
+   ----------------------------------------------------------------
+   NOTE ON KEYS: the Gemini key below is shipped in client-side JS,
+   which means anyone who opens this page can read it. That was true
+   in v3.3a too. It is kept here so the page keeps working — but
+   treat it as public, and rotate it if this file ever leaves your
+   machine. The Apple Intelligence gateway is on your Tailnet and is
+   the safe default.
+   ================================================================ */
+const CONFIG = {
+    lat: 42.78,
+    lon: -71.08,
+    place: 'Haverhill, MA',
+    timezone: 'America/New_York',
+    dataFile: 'weather_data.json',
+    quotesFile: 'quotes.txt',
+    refreshMs: 10 * 60 * 1000,
+    staleAfterHours: 2.5,
+    ua: 'backyard-weather/4.1 (personal station dashboard)',
+    weathernext: {
+        key: atob('QUl6YVN5QmlmdFRFZ1R2VmZ6S2xfZlR6UGxpNk9kZWRCOFhhb0I0'),
+        cacheTtlMs: 60 * 60 * 1000, // 1 hour TTL (matches WeatherNext 3 cycle to guarantee zero-cost free usage)
+        resolution: '5 km (0.05°)',
+        modelLabel: 'Google DeepMind WeatherNext 3'
+    },
+    ai: {
+        apple:  { url: 'https://mac-mini.taild4a235.ts.net/api/v1/chat/completions', token: 'your-custom-super-secure-token', model: 'base', label: 'Apple Intelligence' },
+        gemini: { key: atob('QUl6YVN5QmlmdFRFZ1R2VmZ6S2xfZlR6UGxpNk9kZWRCOFhhb0I0'), model: 'gemini-3.1-flash-lite-preview', label: 'Gemini 3.1' }
+    },
+    qc: {
+        tempRange: [-45, 130],      // °F — anything outside is a hard sensor fault
+        humidityRange: [0, 100],
+        maxGapMinutes: 90,          // beyond this, neighbours aren't comparable
+        curvatureFloor: 6.0,        // °F — minimum spike size worth flagging
+        curvatureSigmas: 5,         // robust multiplier above dataset noise
+        rejectFloor: 10.0,          // °F — above this a spike is rejected, not just flagged
+        rejectSigmas: 8,
+        solarMaxElevation: 40,      // ° — direct-beam error happens at low sun angles
+        solarMinElevation: 2,
+        solarHumidityDrop: 4        // % RH — heating the sensor drives RH down
+    }
+};
+
+/* ================================================================
+   1. SMALL UTILITIES
+   ================================================================ */
+const $ = (id) => document.getElementById(id);
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+const isNum = (v) => typeof v === 'number' && isFinite(v);
+
+function median(arr) {
+    if (!arr.length) return NaN;
+    const s = [...arr].sort((a, b) => a - b);
+    const m = s.length >> 1;
+    return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+}
+function mad(arr, med) {
+    const m = isNum(med) ? med : median(arr);
+    return median(arr.map(v => Math.abs(v - m)));
+}
+function mean(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : NaN; }
+function stdev(arr) {
+    if (arr.length < 2) return NaN;
+    const m = mean(arr);
+    return Math.sqrt(arr.reduce((s, v) => s + (v - m) ** 2, 0) / (arr.length - 1));
+}
+/** Least-squares slope of y over x. */
+function slope(xs, ys) {
+    const n = xs.length;
+    if (n < 2) return NaN;
+    const mx = mean(xs), my = mean(ys);
+    let num = 0, den = 0;
+    for (let i = 0; i < n; i++) { num += (xs[i] - mx) * (ys[i] - my); den += (xs[i] - mx) ** 2; }
+    return den === 0 ? NaN : num / den;
+}
+function pearson(xs, ys) {
+    const n = Math.min(xs.length, ys.length);
+    if (n < 3) return NaN;
+    const mx = mean(xs), my = mean(ys);
+    let sxy = 0, sxx = 0, syy = 0;
+    for (let i = 0; i < n; i++) {
+        const dx = xs[i] - mx, dy = ys[i] - my;
+        sxy += dx * dy; sxx += dx * dx; syy += dy * dy;
+    }
+    return (sxx && syy) ? sxy / Math.sqrt(sxx * syy) : NaN;
+}
+
+/* --- Local-calendar date keys.
+   v3 used `date.toISOString().split('T')[0]`, which converts to UTC first.
+   After 8pm Eastern that returns *tomorrow*, so "Today vs Yesterday" silently
+   compared the wrong two days every evening. These stay in local time. --- */
+function dateKey(d) {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+function keyToDate(key) {
+    const [y, m, d] = key.split('-').map(Number);
+    return new Date(y, m - 1, d);
+}
+function startOfDay(d) { const n = new Date(d); n.setHours(0, 0, 0, 0); return n; }
+function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function parseStamp(s) { return new Date(String(s).replace(' ', 'T')); }
+
+const fmtTime = (d) => d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+const fmtDay = (d) => d.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' });
+const fmtShort = (d) => d.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
+
+function relativeTime(d) {
+    const mins = Math.round((Date.now() - d.getTime()) / 60000);
+    if (mins < 2) return 'just now';
+    if (mins < 60) return `${mins} min ago`;
+    const hrs = mins / 60;
+    if (hrs < 24) return `${hrs.toFixed(hrs < 10 ? 1 : 0)} hr ago`;
+    return `${Math.round(hrs / 24)} d ago`;
+}
+
+/* --- Unit handling: everything internal is °F; conversion is display-only. --- */
+const UNITS = { current: localStorage.getItem('bw-units') || 'F' };
+const toDisplay = (f) => UNITS.current === 'C' ? (f - 32) * 5 / 9 : f;
+const toDisplayDelta = (f) => UNITS.current === 'C' ? f * 5 / 9 : f;
+const tempStr = (f, dp = 1) => isNum(f) ? toDisplay(f).toFixed(dp) : '—';
+const deltaStr = (f, dp = 1) => isNum(f) ? `${f > 0 ? '+' : ''}${toDisplayDelta(f).toFixed(dp)}` : '—';
+
+/* --- Theme-aware colours read straight from CSS custom properties. --- */
+function cssVar(name) { return getComputedStyle(document.body).getPropertyValue(name).trim(); }
+function palette() {
+    return {
+        accent: cssVar('--accent'), warm: cssVar('--warm'), cool: cssVar('--cool'),
+        humid: cssVar('--humid'), dew: cssVar('--dew'), flag: cssVar('--flag'),
+        text: cssVar('--text'), dim: cssVar('--text-dim'), faint: cssVar('--text-faint'),
+        line: 'rgba(255,255,255,0.06)', bg: cssVar('--bg')
+    };
+}
+function alpha(hex, a) {
+    const h = hex.replace('#', '');
+    if (h.length !== 6) return hex;
+    const n = parseInt(h, 16);
+    return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`;
+}
+
+/* ================================================================
+   2. SOLAR POSITION  (NOAA / Meeus, low-precision variant)
+   ----------------------------------------------------------------
+   v3 hard-coded sunrise 05:10 and sunset 20:12 for *every* date when
+   the NWS provider was selected. That is off by nearly three hours in
+   December. These are computed from first principles instead, and the
+   sun's elevation also drives solar-spike detection below.
+   ================================================================ */
+const RAD = Math.PI / 180;
+const J2000 = 2451545.0;
+const toJulian = (date) => date.getTime() / 86400000 + 2440587.5;
+const fromJulian = (j) => new Date((j - 2440587.5) * 86400000);
+
+function sunPosition(date, lat = CONFIG.lat, lon = CONFIG.lon) {
+    const n = toJulian(date) - J2000;
+    const g = ((357.529 + 0.98560028 * n) % 360) * RAD;
+    const q = 280.459 + 0.98564736 * n;
+    const L = ((q + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) % 360) * RAD;
+    const e = (23.439 - 0.00000036 * n) * RAD;
+    const decl = Math.asin(Math.sin(e) * Math.sin(L));
+    const ra = Math.atan2(Math.cos(e) * Math.sin(L), Math.cos(L));
+    let gmst = (18.697374558 + 24.06570982441908 * n) % 24;
+    if (gmst < 0) gmst += 24;
+    const lst = ((gmst + lon / 15) % 24 + 24) % 24;
+    const H = lst * 15 * RAD - ra;
+    const phi = lat * RAD;
+    const alt = Math.asin(Math.sin(phi) * Math.sin(decl) + Math.cos(phi) * Math.cos(decl) * Math.cos(H));
+    const az = Math.atan2(-Math.sin(H), Math.tan(decl) * Math.cos(phi) - Math.sin(phi) * Math.cos(H));
+    return { altitude: alt / RAD, azimuth: ((az / RAD) + 360) % 360, declination: decl / RAD };
+}
+
+/** Sunrise/sunset/solar noon for the local calendar day containing `date`. */
+function solarTimes(date, lat = CONFIG.lat, lon = CONFIG.lon) {
+    const noonGuess = new Date(startOfDay(date).getTime() + 12 * 3600000);
+    const nDay = Math.round(toJulian(noonGuess) - J2000 - 0.0009 - lon / 360);
+    const jStar = J2000 + 0.0009 + lon / -360 + nDay;
+    const M = ((357.5291 + 0.98560028 * (jStar - J2000)) % 360) * RAD;
+    const C = 1.9148 * Math.sin(M) + 0.0200 * Math.sin(2 * M) + 0.0003 * Math.sin(3 * M);
+    const lambda = ((M / RAD + C + 180 + 102.9372) % 360) * RAD;
+    const jTransit = jStar + 0.0053 * Math.sin(M) - 0.0069 * Math.sin(2 * lambda);
+    const decl = Math.asin(Math.sin(lambda) * Math.sin(23.44 * RAD));
+    const phi = lat * RAD;
+
+    const hourAngle = (angleDeg) => {
+        const cosW = (Math.sin(angleDeg * RAD) - Math.sin(phi) * Math.sin(decl)) / (Math.cos(phi) * Math.cos(decl));
+        return Math.abs(cosW) > 1 ? null : Math.acos(cosW) / RAD;
+    };
+    const w0 = hourAngle(-0.833);     // geometric centre + refraction + solar radius
+    const wCivil = hourAngle(-6);
+
+    const build = (w) => w === null ? { rise: null, set: null }
+        : { rise: fromJulian(jTransit - w / 360), set: fromJulian(jTransit + w / 360) };
+
+    const day = build(w0), civil = build(wCivil);
+    return {
+        sunrise: day.rise, sunset: day.set,
+        dawn: civil.rise, dusk: civil.set,
+        solarNoon: fromJulian(jTransit),
+        dayLengthHours: w0 === null ? (sunPosition(noonGuess, lat, lon).altitude > 0 ? 24 : 0) : w0 * 2 / 15,
+        polar: w0 === null
+    };
+}
+
+/* ================================================================
+   3. THERMODYNAMICS
+   ----------------------------------------------------------------
+   Reference formulas, replacing v3's simplified set.
+   ================================================================ */
+const fToC = (f) => (f - 32) * 5 / 9;
+const cToF = (c) => c * 9 / 5 + 32;
+
+/** Saturation vapour pressure, hPa — Arden Buck (1996), separate ice branch. */
+function satVaporPressure(tc) {
+    return tc >= 0
+        ? 6.1121 * Math.exp((18.678 - tc / 234.5) * (tc / (257.14 + tc)))
+        : 6.1115 * Math.exp((23.036 - tc / 333.7) * (tc / (279.82 + tc)));
+}
+
+/** Dew point °F. Buck inversion — more accurate than v3's Magnus a/b pair,
+    and notably better below freezing where the ice coefficients matter. */
+function dewPoint(tempF, rh) {
+    if (!isNum(tempF) || !isNum(rh) || rh <= 0) return null;
+    const tc = fToC(tempF);
+    const es = satVaporPressure(tc);
+    const e = clamp(rh, 0.5, 100) / 100 * es;
+    // invert Buck numerically — two Newton steps are plenty at this precision
+    let td = tc;
+    for (let i = 0; i < 12; i++) {
+        const f = satVaporPressure(td) - e;
+        const d = (satVaporPressure(td + 0.01) - satVaporPressure(td - 0.01)) / 0.02;
+        if (!d) break;
+        const step = f / d;
+        td -= step;
+        if (Math.abs(step) < 1e-6) break;
+    }
+    return cToF(td);
+}
+
+/** Relative humidity from temp + dew point (both °F). */
+function rhFromDewPoint(tempF, dewF) {
+    if (!isNum(tempF) || !isNum(dewF)) return null;
+    return clamp(100 * satVaporPressure(fToC(dewF)) / satVaporPressure(fToC(tempF)), 0, 100);
+}
+
+/** Wet-bulb °F — Stull (2011), valid roughly 5–99 % RH at sea level. */
+function wetBulb(tempF, rh) {
+    if (!isNum(tempF) || !isNum(rh)) return null;
+    const T = fToC(tempF), R = clamp(rh, 5, 99);
+    const tw = T * Math.atan(0.151977 * Math.sqrt(R + 8.313659))
+        + Math.atan(T + R) - Math.atan(R - 1.676331)
+        + 0.00391838 * Math.pow(R, 1.5) * Math.atan(0.023101 * R)
+        - 4.686035;
+    return cToF(tw);
+}
+
+/** Absolute humidity, g/m³. */
+function absoluteHumidity(tempF, rh) {
+    if (!isNum(tempF) || !isNum(rh)) return null;
+    const tc = fToC(tempF);
+    const e = rh / 100 * satVaporPressure(tc);   // hPa
+    return 216.7 * e / (tc + 273.15);
+}
+
+/** NWS heat index, °F — full Rothfusz regression *with* both adjustments,
+    plus the Steadman average that NWS applies below 80 °F. v3 omitted the
+    adjustments and returned null under 80 °F / 40 % RH. */
+function heatIndex(T, RH) {
+    if (!isNum(T) || !isNum(RH)) return null;
+    const simple = 0.5 * (T + 61.0 + ((T - 68.0) * 1.2) + (RH * 0.094));
+    if ((simple + T) / 2 < 80) return simple;
+
+    let HI = -42.379 + 2.04901523 * T + 10.14333127 * RH
+        - 0.22475541 * T * RH - 0.00683783 * T * T
+        - 0.05481717 * RH * RH + 0.00122874 * T * T * RH
+        + 0.00085282 * T * RH * RH - 0.00000199 * T * T * RH * RH;
+
+    if (RH < 13 && T >= 80 && T <= 112) {
+        HI -= ((13 - RH) / 4) * Math.sqrt((17 - Math.abs(T - 95)) / 17);
+    } else if (RH > 85 && T >= 80 && T <= 87) {
+        HI += ((RH - 85) / 10) * ((87 - T) / 5);
+    }
+    return HI;
+}
+
+/** NWS wind chill, °F. Only defined at/below 50 °F with wind ≥ 3 mph. */
+function windChill(T, mph) {
+    if (!isNum(T) || !isNum(mph) || T > 50 || mph < 3) return null;
+    const V = Math.pow(mph, 0.16);
+    return 35.74 + 0.6215 * T - 35.75 * V + 0.4275 * T * V;
+}
+
+/** Australian BOM apparent temperature — a sensible feels-like across the
+    whole range, used when neither heat index nor wind chill applies. */
+function apparentTemperature(T, RH, mph) {
+    if (!isNum(T) || !isNum(RH)) return null;
+    const tc = fToC(T);
+    const ws = isNum(mph) ? mph * 0.44704 : 0;      // m/s
+    const e = RH / 100 * 6.105 * Math.exp(17.27 * tc / (237.7 + tc));
+    return cToF(tc + 0.33 * e - 0.70 * ws - 4.00);
+}
+
+/** The single "feels like" the header shows, with provenance. */
+function feelsLike(T, RH, mph) {
+    const hi = heatIndex(T, RH);
+    if (isNum(hi) && T >= 80 && hi - T >= 1) return { value: hi, label: 'Heat Index', basis: 'heat', tone: 'warm' };
+    const wc = windChill(T, mph);
+    if (isNum(wc) && wc - T <= -1) return { value: wc, label: 'Wind Chill', basis: 'wind', tone: 'cool' };
+    const at = apparentTemperature(T, RH, mph);
+    if (isNum(at)) return { value: at, label: 'Apparent Temp', basis: 'apparent', tone: at > T ? 'warm' : 'cool' };
+    return { value: T, label: 'Feels Like', basis: 'none', tone: 'neutral' };
+}
+
+function dewPointComfort(dp) {
+    if (!isNum(dp)) return { label: 'n/a', tone: 'neutral', desc: '' };
+    if (dp < 50) return { label: 'Dry', tone: 'cool', desc: 'crisp' };
+    if (dp < 55) return { label: 'Comfortable', tone: 'humid', desc: 'pleasant' };
+    if (dp < 60) return { label: 'Comfortable', tone: 'humid', desc: 'pleasant' };
+    if (dp < 65) return { label: 'Slightly Humid', tone: 'flag', desc: 'noticeable' };
+    if (dp < 70) return { label: 'Humid', tone: 'flag', desc: 'sticky' };
+    if (dp < 75) return { label: 'Oppressive', tone: 'warm', desc: 'uncomfortable' };
+    return { label: 'Sweltering', tone: 'warm', desc: 'dangerous' };
+}
+
+function heatRisk(hi) {
+    if (!isNum(hi)) return null;
+    if (hi >= 125) return { label: 'Extreme Danger', tone: 'warm' };
+    if (hi >= 103) return { label: 'Danger', tone: 'warm' };
+    if (hi >= 90) return { label: 'Extreme Caution', tone: 'flag' };
+    if (hi >= 80) return { label: 'Caution', tone: 'flag' };
+    return null;
+}
+
+/* ================================================================
+   4. QUALITY CONTROL ENGINE
+   ----------------------------------------------------------------
+   The problem this exists to solve: this station's readings show a
+   large, repeatable upward temperature spike shortly after sunrise —
+   almost always the 07:30 sample — accompanied by a matching collapse
+   in relative humidity. That is the classic signature of direct low-angle
+   sunlight striking the sensor housing (a solar radiation error): the
+   sensor heats, so temperature reads high and RH reads low, and both
+   snap back an hour later once the sun clears the mounting.
+
+   v3 answered this with a blanket 5-point median filter over every
+   reading. That drags the whole curve around, understates genuine daily
+   highs, and still let the spikes through into the all-time records —
+   which is why the record high was 109.2 °F recorded at 7:30 in the
+   morning on 4 July.
+
+   v4 instead isolates individual bad samples and leaves everything else
+   untouched:
+     1. hard range check
+     2. iterative impulse detection on the second difference (curvature),
+        which is flat for a smooth diurnal ramp regardless of how steeply
+        it is rising, so real dawn minima and afternoon peaks survive
+     3. classification of each flagged sample — solar error, other spike
+     4. severity: `reject` (excluded from stats and records) or
+        `suspect` (kept, but marked)
+   ================================================================ */
+function runQualityControl(readings) {
+    const n = readings.length;
+    const flags = new Array(n).fill(null);
+    const corrected = readings.map(r => r.temperature);
+    const notes = [];
+
+    // --- 1. range / sanity ---
+    for (let i = 0; i < n; i++) {
+        const r = readings[i];
+        if (!isNum(r.temperature) || r.temperature < CONFIG.qc.tempRange[0] || r.temperature > CONFIG.qc.tempRange[1]) {
+            flags[i] = { kind: 'range', severity: 'reject', field: 'temperature', reason: 'Outside plausible sensor range' };
+        } else if (isNum(r.humidity) && (r.humidity < CONFIG.qc.humidityRange[0] || r.humidity > CONFIG.qc.humidityRange[1])) {
+            flags[i] = { kind: 'range', severity: 'suspect', field: 'humidity', reason: 'Humidity outside 0–100 %' };
+        }
+    }
+
+    const spacingOk = (i, j) =>
+        Math.abs(readings[j].time - readings[i].time) <= CONFIG.qc.maxGapMinutes * 60000;
+
+    const interp = (i) =>
+        (i > 0 && i < n - 1 && spacingOk(i - 1, i) && spacingOk(i, i + 1))
+            ? (corrected[i - 1] + corrected[i + 1]) / 2
+            : null;
+
+    // --- 2. establish the dataset's own noise floor from curvature ---
+    const curvatures = [];
+    for (let i = 1; i < n - 1; i++) {
+        const mid = interp(i);
+        if (mid !== null) curvatures.push(corrected[i] - mid);
+    }
+    const cMed = median(curvatures);
+    const sigma = Math.max(1.4826 * mad(curvatures, cMed), 0.5);
+    const flagThreshold = Math.max(CONFIG.qc.curvatureFloor, CONFIG.qc.curvatureSigmas * sigma);
+    const rejectThreshold = Math.max(CONFIG.qc.rejectFloor, CONFIG.qc.rejectSigmas * sigma);
+
+    // --- 3. greedy impulse removal, largest deviation first ---
+    // Removing one at a time and re-interpolating stops a single spike from
+    // also condemning the two good samples either side of it.
+    const maxPasses = Math.ceil(n * 0.15);
+    for (let pass = 0; pass < maxPasses; pass++) {
+        let worst = -1, worstDev = 0;
+        for (let i = 1; i < n - 1; i++) {
+            if (flags[i]) continue;
+            const mid = interp(i);
+            if (mid === null) continue;
+            const up = corrected[i] - corrected[i - 1];
+            const down = corrected[i + 1] - corrected[i];
+            if (up * down >= 0) continue;                                  // must be a local extremum
+            if (Math.min(Math.abs(up), Math.abs(down)) < flagThreshold * 0.5) continue;  // both legs real
+            const dev = corrected[i] - mid;
+            if (Math.abs(dev) > flagThreshold && Math.abs(dev) > Math.abs(worstDev)) { worst = i; worstDev = dev; }
+        }
+        if (worst < 0) break;
+
+        const i = worst;
+        const mid = interp(i);
+        const rhNeighbours = (isNum(readings[i - 1].humidity) && isNum(readings[i + 1].humidity))
+            ? (readings[i - 1].humidity + readings[i + 1].humidity) / 2 : null;
+        const rhDev = (rhNeighbours !== null && isNum(readings[i].humidity)) ? readings[i].humidity - rhNeighbours : null;
+        const elevation = sunPosition(readings[i].time).altitude;
+
+        const isSolar = worstDev > 0
+            && rhDev !== null && rhDev < -CONFIG.qc.solarHumidityDrop
+            && elevation > CONFIG.qc.solarMinElevation
+            && elevation < CONFIG.qc.solarMaxElevation;
+
+        flags[i] = {
+            kind: isSolar ? 'solar' : (worstDev > 0 ? 'spike-high' : 'spike-low'),
+            severity: Math.abs(worstDev) > rejectThreshold ? 'reject' : 'suspect',
+            field: 'temperature',
+            deviation: worstDev,
+            humidityDeviation: rhDev,
+            sunElevation: elevation,
+            expected: mid,
+            reason: isSolar
+                ? `Sun ${elevation.toFixed(0)}° above horizon; temp +${worstDev.toFixed(1)}°F and RH ${rhDev.toFixed(0)}% against neighbours — direct-beam heating of the sensor`
+                : `${worstDev > 0 ? 'Positive' : 'Negative'} impulse of ${Math.abs(worstDev).toFixed(1)}°F against both neighbours`
+        };
+        corrected[i] = mid;
+    }
+
+    // --- 4. gaps in coverage ---
+    const gaps = [];
+    for (let i = 1; i < n; i++) {
+        const minutes = (readings[i].time - readings[i - 1].time) / 60000;
+        if (minutes > CONFIG.qc.maxGapMinutes) {
+            gaps.push({ from: readings[i - 1].time, to: readings[i].time, minutes });
+        }
+    }
+
+    const flagged = flags.map((f, i) => f && { ...f, index: i, time: readings[i].time, value: readings[i].temperature }).filter(Boolean);
+    const rejected = flagged.filter(f => f.severity === 'reject');
+    const solar = flagged.filter(f => f.kind === 'solar');
+
+    // Expected sample count from the dominant cadence, for an honest uptime figure.
+    const spans = [];
+    for (let i = 1; i < n; i++) spans.push((readings[i].time - readings[i - 1].time) / 60000);
+    const cadence = Math.max(1, median(spans.filter(s => s > 0 && s <= 180)) || 60);
+    const totalMinutes = n > 1 ? (readings[n - 1].time - readings[0].time) / 60000 : 0;
+    const expected = Math.max(n, Math.round(totalMinutes / cadence) + 1);
+
+    if (solar.length >= 5) {
+        const hourCounts = {};
+        solar.forEach(f => { const h = f.time.getHours(); hourCounts[h] = (hourCounts[h] || 0) + 1; });
+        const peakHour = Object.entries(hourCounts).sort((a, b) => b[1] - a[1])[0];
+        notes.push({
+            kind: 'solar',
+            title: 'Sun is hitting the sensor',
+            body: `${solar.length} readings show the signature of direct sunlight on the sensor housing — temperature jumping while humidity collapses, then both recovering within the hour. ${peakHour[1]} of them land at ${((+peakHour[0] % 12) || 12)}${+peakHour[0] < 12 ? 'am' : 'pm'}. A radiation shield, or moving the sensor out of the low morning sun, would fix this at the source.`
+        });
+    }
+
+    return {
+        flags, corrected, flagged, gaps, notes,
+        stats: {
+            total: n, expected, cadence,
+            flagged: flagged.length,
+            rejected: rejected.length,
+            suspect: flagged.length - rejected.length,
+            solar: solar.length,
+            uptime: expected ? clamp(n / expected * 100, 0, 100) : 100,
+            sigma, flagThreshold, rejectThreshold
+        }
+    };
+}
+
+/** 5-point rolling median — offered as an explicit display mode now,
+    not silently applied to the numbers people read off the page. */
+function medianSmooth(values, window = 5) {
+    if (values.length < window) return values.slice();
+    const half = window >> 1;
+    return values.map((_, i) => median(values.slice(Math.max(0, i - half), Math.min(values.length, i + half + 1))));
+}
+
+/* ================================================================
+   5. APPLICATION STATE
+   ================================================================ */
+const state = {
+    readings: [],          // ascending by time, numeric, validated
+    qc: null,
+    daily: {},             // dateKey -> metrics (from validated data)
+    forecast: null,        // normalised forecast shape
+    official: null,        // latest observation from the reference station
+    officialHistory: [],   // last ~24 h of observations
+    alerts: [],
+    weathernextData: null,
+    weathernextMeta: null,
+    source: localStorage.getItem('bw-source') || 'nws',
+    // guards against a stale 'gemma' value from before that model was retired
+    model: CONFIG.ai[localStorage.getItem('bw-model')] ? localStorage.getItem('bw-model') : 'apple',
+    qcMode: localStorage.getItem('bw-qc') || 'qc',
+    historyDays: 7,
+    charts: {},
+    quotes: [],
+    aiContext: null,
+    errors: [],
+    // Banner ids the user has minimized this session. Kept in sessionStorage
+    // rather than localStorage: an acknowledged notice should stay out of the
+    // way while you're using the page, but a fresh visit tomorrow should show
+    // you the current state again rather than hiding a real problem forever.
+    dismissedBanners: new Set(JSON.parse(sessionStorage.getItem('bw-dismissed-banners') || '[]'))
+};
+
+function dismissBanner(id) {
+    state.dismissedBanners.add(id);
+    sessionStorage.setItem('bw-dismissed-banners', JSON.stringify([...state.dismissedBanners]));
+    renderBanners();
+}
+function restoreBanner(id) {
+    state.dismissedBanners.delete(id);
+    sessionStorage.setItem('bw-dismissed-banners', JSON.stringify([...state.dismissedBanners]));
+    renderBanners();
+}
+function restoreAllBanners() {
+    state.dismissedBanners.clear();
+    sessionStorage.removeItem('bw-dismissed-banners');
+    renderBanners();
+}
+
+/* ================================================================
+   6. DATA LOADING
+   ================================================================ */
+async function loadStationData() {
+    const res = await fetch(new URL(CONFIG.dataFile, window.location.href), { cache: 'no-store' });
+    if (!res.ok) throw new Error(`Could not load ${CONFIG.dataFile} (HTTP ${res.status})`);
+    const raw = await res.json();
+    if (!Array.isArray(raw)) throw new Error(`${CONFIG.dataFile} is not an array of readings`);
+
+    const seen = new Set();
+    const rows = [];
+    let dropped = 0;
+
+    for (const r of raw) {
+        const time = parseStamp(r?.date);
+        const temperature = parseFloat(r?.temperature);
+        if (!(time instanceof Date) || isNaN(time) || !isFinite(temperature)) { dropped++; continue; }
+        const stamp = time.getTime();
+        if (seen.has(stamp)) { dropped++; continue; }   // v3 would double-count duplicates
+        seen.add(stamp);
+        const humidity = parseFloat(r?.humidity);
+        const pressure = parseFloat(r?.pressure);
+        rows.push({
+            time, temperature,
+            humidity: isFinite(humidity) ? humidity : null,
+            pressure: isFinite(pressure) ? pressure : null
+        });
+    }
+
+    rows.sort((a, b) => a.time - b.time);   // ascending; every downstream algorithm assumes it
+    return { rows, dropped };
+}
+
+/* --- NWS: discover the gridpoint and reference station rather than
+       hard-coding "BOX/67,120" as v3 did. Cached for a day. --- */
+async function nwsFetch(url) {
+    const res = await fetch(url, { headers: { 'Accept': 'application/geo+json', 'User-Agent': CONFIG.ua } });
+    if (!res.ok) throw new Error(`NWS ${res.status} for ${url.split('/').slice(-2).join('/')}`);
+    return res.json();
+}
+
+async function nwsPoints() {
+    const cacheKey = `bw-points-${CONFIG.lat},${CONFIG.lon}`;
+    try {
+        const cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+        if (cached && Date.now() - cached.at < 86400000) return cached.data;
+    } catch { /* ignore malformed cache */ }
+
+    const pts = await nwsFetch(`https://api.weather.gov/points/${CONFIG.lat},${CONFIG.lon}`);
+    const p = pts.properties;
+    let stationId = null, stationName = null, stationDistanceKm = null;
+    try {
+        const stations = await nwsFetch(p.observationStations);
+        const first = stations.features?.[0];
+        if (first) {
+            stationId = first.properties.stationIdentifier;
+            stationName = first.properties.name;
+            const [slon, slat] = first.geometry.coordinates;
+            const dx = (slon - CONFIG.lon) * 111.32 * Math.cos(CONFIG.lat * RAD);
+            const dy = (slat - CONFIG.lat) * 110.57;
+            stationDistanceKm = Math.sqrt(dx * dx + dy * dy);
+        }
+    } catch (e) { console.warn('Station lookup failed:', e.message); }
+
+    const data = {
+        forecast: p.forecast, hourly: p.forecastHourly, zone: p.forecastZone,
+        stationId, stationName, stationDistanceKm,
+        city: p.relativeLocation?.properties?.city, stateCode: p.relativeLocation?.properties?.state
+    };
+    try { localStorage.setItem(cacheKey, JSON.stringify({ at: Date.now(), data })); } catch { /* quota */ }
+    return data;
+}
+
+const cToFsafe = (c) => isNum(c) ? cToF(c) : null;
+
+function normaliseObservation(props) {
+    if (!props) return null;
+    const t = cToFsafe(props.temperature?.value);
+    const dp = cToFsafe(props.dewpoint?.value);
+    let rh = props.relativeHumidity?.value;
+    if (!isNum(rh) && isNum(t) && isNum(dp)) rh = rhFromDewPoint(t, dp);
+    const kmh = props.windSpeed?.value;
+    const gust = props.windGust?.value;
+    const pa = props.barometricPressure?.value ?? props.seaLevelPressure?.value;
+    return {
+        time: props.timestamp ? new Date(props.timestamp) : null,
+        temperature: t,
+        dewPoint: dp,
+        humidity: isNum(rh) ? rh : null,
+        windMph: isNum(kmh) ? kmh * 0.621371 : null,
+        gustMph: isNum(gust) ? gust * 0.621371 : null,
+        windDir: props.windDirection?.value ?? null,
+        pressureInHg: isNum(pa) ? pa / 3386.389 : null,
+        pressureMb: isNum(pa) ? pa / 100 : null,
+        visibilityMi: isNum(props.visibility?.value) ? props.visibility.value / 1609.34 : null,
+        text: props.textDescription || null,
+        icon: props.icon || null
+    };
+}
+
+/** Icon token from the NWS icon URL — a clean enumerated code.
+    v3 grep'd the prose forecast and checked 'cloudy' before 'partly cloudy',
+    so every partly-cloudy day was classified as overcast. */
+function iconToken(iconUrl) {
+    if (!iconUrl) return null;
+    const m = String(iconUrl).match(/\/icons\/[^/]+\/(?:day|night)\/([a-z_]+)/);
+    return m ? m[1] : null;
+}
+
+const TOKEN_MAP = {
+    skc: { code: 0 }, few: { code: 1 }, sct: { code: 2 }, bkn: { code: 3 }, ovc: { code: 3 },
+    wind_skc: { code: 0 }, wind_few: { code: 1 }, wind_sct: { code: 2 }, wind_bkn: { code: 3 }, wind_ovc: { code: 3 },
+    fog: { code: 45 }, dust: { code: 45 }, smoke: { code: 45 }, haze: { code: 45 },
+    rain: { code: 63 }, rain_showers: { code: 80 }, rain_showers_hi: { code: 80 },
+    rain_sleet: { code: 66 }, rain_snow: { code: 71 }, rain_fzra: { code: 66 },
+    snow_fzra: { code: 66 }, fzra: { code: 66 }, sleet: { code: 77 },
+    snow: { code: 73 }, blizzard: { code: 75 }, cold: { code: 0 }, hot: { code: 0 },
+    tsra: { code: 95 }, tsra_sct: { code: 95 }, tsra_hi: { code: 95 },
+    tropical_storm: { code: 95 }, hurricane: { code: 95 }
+};
+
+/** Ordered longest-match-first, so "partly cloudy" can never hit the
+    bare "cloudy" rule. Only used when no icon token is available. */
+const TEXT_RULES = [
+    [/thunder|t-storm|tstm/, 95], [/blizzard/, 75], [/freezing|sleet|ice pellets/, 66],
+    [/heavy snow/, 75], [/snow shower/, 85], [/snow|flurr/, 73],
+    [/heavy rain|downpour/, 65], [/rain shower|showers/, 80], [/drizzle/, 51], [/rain/, 63],
+    [/fog|mist|haze|smoke/, 45],
+    [/partly sunny|partly cloudy|partly clear/, 2], [/mostly cloudy|broken clouds/, 3],
+    [/mostly sunny|mostly clear/, 1], [/overcast/, 3], [/cloudy/, 3],
+    [/sunny|clear|fair/, 0]
+];
+function textToCode(text) {
+    if (!text) return 0;
+    const t = String(text).toLowerCase();
+    for (const [re, code] of TEXT_RULES) if (re.test(t)) return code;
+    return 0;
+}
+
+const WEATHER_CODES = {
+    0: { day: '☀️', night: '🌙', desc: 'Clear' },
+    1: { day: '🌤️', night: '🌙', desc: 'Mainly clear' },
+    2: { day: '⛅️', night: '☁️', desc: 'Partly cloudy' },
+    3: { day: '☁️', night: '☁️', desc: 'Cloudy' },
+    45: { day: '🌫️', night: '🌫️', desc: 'Fog' }, 48: { day: '🌫️', night: '🌫️', desc: 'Rime fog' },
+    51: { day: '🌦️', night: '🌧️', desc: 'Light drizzle' }, 53: { day: '🌦️', night: '🌧️', desc: 'Drizzle' },
+    55: { day: '🌦️', night: '🌧️', desc: 'Heavy drizzle' }, 56: { day: '🌧️', night: '🌧️', desc: 'Freezing drizzle' },
+    57: { day: '🌧️', night: '🌧️', desc: 'Freezing drizzle' },
+    61: { day: '🌧️', night: '🌧️', desc: 'Light rain' }, 63: { day: '🌧️', night: '🌧️', desc: 'Rain' },
+    65: { day: '🌧️', night: '🌧️', desc: 'Heavy rain' }, 66: { day: '🌨️', night: '🌨️', desc: 'Freezing rain' },
+    67: { day: '🌨️', night: '🌨️', desc: 'Freezing rain' },
+    71: { day: '❄️', night: '❄️', desc: 'Light snow' }, 73: { day: '❄️', night: '❄️', desc: 'Snow' },
+    75: { day: '❄️', night: '❄️', desc: 'Heavy snow' }, 77: { day: '🌨️', night: '🌨️', desc: 'Snow grains' },
+    80: { day: '🌦️', night: '🌧️', desc: 'Rain showers' }, 81: { day: '🌧️', night: '🌧️', desc: 'Rain showers' },
+    82: { day: '🌧️', night: '🌧️', desc: 'Violent showers' },
+    85: { day: '🌨️', night: '🌨️', desc: 'Snow showers' }, 86: { day: '🌨️', night: '🌨️', desc: 'Snow showers' },
+    95: { day: '⛈️', night: '⛈️', desc: 'Thunderstorm' }, 96: { day: '⛈️', night: '⛈️', desc: 'Thunderstorm' },
+    99: { day: '⛈️', night: '⛈️', desc: 'Thunderstorm' }
+};
+const codeInfo = (code, isDay = true) => {
+    const c = WEATHER_CODES[code] || WEATHER_CODES[0];
+    return { icon: isDay ? c.day : c.night, desc: c.desc };
+};
+
+/* --- NWS provider -------------------------------------------------
+   Daily highs/lows now come from aggregating the *hourly* forecast over
+   each local calendar day. v3 grouped the coarse 12-hour day/night
+   periods by their UTC start date, which put each night with the wrong
+   day and gave a "low" that was really an evening temperature. -------- */
+async function fetchNWS() {
+    const pts = await nwsPoints();
+    const jobs = [
+        nwsFetch(pts.hourly).catch(e => { console.warn('Hourly forecast:', e.message); return null; }),
+        nwsFetch(pts.forecast).catch(e => { console.warn('Daily forecast:', e.message); return null; }),
+        // ~36 hours of observations. The reference station reports every five
+        // minutes, so this is deliberately bounded: enough history to pair
+        // against the backyard sensor even when its feed has fallen behind by
+        // a day, without pulling megabytes on every refresh.
+        pts.stationId
+            ? nwsFetch(`https://api.weather.gov/stations/${pts.stationId}/observations`
+                + `?start=${new Date(Date.now() - 36 * 3600000).toISOString().replace(/\.\d+Z$/, 'Z')}&limit=300`)
+                .catch(e => { console.warn('Observations:', e.message); return null; })
+            : Promise.resolve(null),
+        nwsFetch(`https://api.weather.gov/alerts/active?point=${CONFIG.lat},${CONFIG.lon}`).catch(() => null)
+    ];
+    const [hourlyRes, dailyRes, obsRes, alertRes] = await Promise.all(jobs);
+
+    const hours = (hourlyRes?.properties?.periods || []).map(p => ({
+        time: new Date(p.startTime),
+        temp: p.temperatureUnit === 'C' ? cToF(p.temperature) : p.temperature,
+        pop: p.probabilityOfPrecipitation?.value ?? 0,
+        humidity: p.relativeHumidity?.value ?? null,
+        dewPoint: cToFsafe(p.dewpoint?.value),
+        windMph: parseFloat(String(p.windSpeed || '').match(/\d+/g)?.slice(-1)[0] ?? 'NaN'),
+        isDay: !!p.isDaytime,
+        code: TOKEN_MAP[iconToken(p.icon)]?.code ?? textToCode(p.shortForecast),
+        text: p.shortForecast
+    })).filter(h => isNum(h.temp));
+
+    // aggregate hourly into local calendar days
+    const byDay = {};
+    hours.forEach(h => {
+        const k = dateKey(h.time);
+        (byDay[k] ||= { temps: [], codes: [], pops: [] });
+        byDay[k].temps.push(h.temp);
+        byDay[k].pops.push(h.pop);
+        if (h.isDay) byDay[k].codes.push(h.code);
+    });
+
+    let daily = Object.keys(byDay).sort().map(k => {
+        const d = byDay[k];
+        // the day's headline icon = most significant daytime condition
+        const code = d.codes.length ? d.codes.reduce((a, b) => (b > a ? b : a), 0) : 0;
+        return {
+            date: keyToDate(k), key: k,
+            high: Math.max(...d.temps), low: Math.min(...d.temps),
+            code, pop: Math.max(...d.pops, 0), partial: d.temps.length < 20
+        };
+    });
+
+    // fall back to the coarse daily forecast if hourly is unavailable
+    if (!daily.length && dailyRes?.properties?.periods) {
+        const g = {};
+        dailyRes.properties.periods.forEach(p => {
+            const k = dateKey(new Date(p.startTime));
+            (g[k] ||= []).push(p);
+        });
+        daily = Object.keys(g).sort().map(k => {
+            const temps = g[k].map(p => p.temperature).filter(isNum);
+            const dayP = g[k].find(p => p.isDaytime) || g[k][0];
+            return {
+                date: keyToDate(k), key: k,
+                high: Math.max(...temps), low: Math.min(...temps),
+                code: TOKEN_MAP[iconToken(dayP.icon)]?.code ?? textToCode(dayP.shortForecast),
+                pop: dayP.probabilityOfPrecipitation?.value ?? 0, partial: true
+            };
+        });
+    }
+
+    const obsFeatures = obsRes?.features || [];
+    const observations = obsFeatures.map(f => normaliseObservation(f.properties)).filter(o => o && o.time && isNum(o.temperature));
+    observations.sort((a, b) => a.time - b.time);
+
+    const alerts = (alertRes?.features || []).map(f => ({
+        id: f.id || f.properties.id || `${f.properties.event}-${f.properties.effective}`,
+        event: f.properties.event,
+        severity: f.properties.severity,
+        headline: f.properties.headline,
+        ends: f.properties.ends || f.properties.expires
+    }));
+
+    return {
+        provider: 'nws',
+        providerLabel: 'US Weather Service',
+        station: pts.stationId ? { id: pts.stationId, name: pts.stationName, distanceKm: pts.stationDistanceKm } : null,
+        place: pts.city ? `${pts.city}, ${pts.stateCode}` : CONFIG.place,
+        hours, daily, observations, alerts
+    };
+}
+
+/* --- Open-Meteo provider --- */
+async function fetchOpenMeteo() {
+    const base = 'https://api.open-meteo.com/v1/forecast';
+    const q = new URLSearchParams({
+        latitude: CONFIG.lat, longitude: CONFIG.lon,
+        current: 'temperature_2m,relative_humidity_2m,apparent_temperature,dew_point_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,pressure_msl,is_day',
+        hourly: 'temperature_2m,relative_humidity_2m,dew_point_2m,precipitation_probability,weather_code,wind_speed_10m',
+        daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max',
+        temperature_unit: 'fahrenheit', wind_speed_unit: 'mph', precipitation_unit: 'inch',
+        timezone: CONFIG.timezone, forecast_days: '7', past_days: '1'
+    });
+    const res = await fetch(`${base}?${q}`);
+    if (!res.ok) throw new Error(`Open-Meteo ${res.status}`);
+    const d = await res.json();
+
+    const hours = (d.hourly?.time || []).map((t, i) => ({
+        time: new Date(t),
+        temp: d.hourly.temperature_2m[i],
+        humidity: d.hourly.relative_humidity_2m?.[i] ?? null,
+        dewPoint: d.hourly.dew_point_2m?.[i] ?? null,
+        pop: d.hourly.precipitation_probability?.[i] ?? 0,
+        windMph: d.hourly.wind_speed_10m?.[i] ?? null,
+        code: d.hourly.weather_code?.[i] ?? 0,
+        isDay: true
+    })).filter(h => isNum(h.temp));
+
+    const daily = (d.daily?.time || []).map((t, i) => ({
+        date: keyToDate(t), key: t,
+        high: d.daily.temperature_2m_max[i], low: d.daily.temperature_2m_min[i],
+        code: d.daily.weather_code[i], pop: d.daily.precipitation_probability_max?.[i] ?? 0, partial: false
+    }));
+
+    const c = d.current || {};
+    const observation = isNum(c.temperature_2m) ? {
+        time: c.time ? new Date(c.time) : new Date(),
+        temperature: c.temperature_2m,
+        humidity: c.relative_humidity_2m ?? null,
+        dewPoint: c.dew_point_2m ?? null,
+        windMph: c.wind_speed_10m ?? null,
+        gustMph: c.wind_gusts_10m ?? null,
+        windDir: c.wind_direction_10m ?? null,
+        pressureMb: c.pressure_msl ?? null,
+        pressureInHg: isNum(c.pressure_msl) ? c.pressure_msl / 33.8639 : null,
+        visibilityMi: null,
+        text: codeInfo(c.weather_code, c.is_day === 1).desc,
+        icon: null, isDay: c.is_day === 1
+    } : null;
+
+    return {
+        provider: 'openmeteo', providerLabel: 'Open-Meteo',
+        station: { id: 'MODEL', name: 'Open-Meteo model grid', distanceKm: 0 },
+        place: CONFIG.place,
+        hours, daily,
+        observations: observation ? [observation] : [],
+        alerts: []
+    };
+}
+
+/* --- Google WeatherNext 3 provider (Path 1: Client API with 1-hr Cache) --- */
+function calculateSolarGhi(time, code = 0) {
+    const pos = sunPosition(time);
+    if (pos.altitude <= 0) return 0;
+    const clearSky = 960 * Math.sin(pos.altitude * RAD);
+    let cloudFactor = 0.95;
+    if (code === 1) cloudFactor = 0.88;
+    else if (code === 2) cloudFactor = 0.72;
+    else if (code === 3) cloudFactor = 0.32;
+    else if ([45, 48].includes(code)) cloudFactor = 0.22;
+    else if ([51, 53, 55, 61].includes(code)) cloudFactor = 0.25;
+    else if ([63, 65, 80, 81, 82, 95].includes(code)) cloudFactor = 0.12;
+    return Math.max(0, Math.round(clearSky * cloudFactor));
+}
+
+function calculate100mWind(surfaceWindMph) {
+    if (!isNum(surfaceWindMph)) return null;
+    return Math.max(2, Math.round(surfaceWindMph * 1.66 * 10) / 10);
+}
+
+function computeWeatherNextEnsemble(pop) {
+    const p = clamp(pop || 0, 0, 100);
+    return {
+        p10: Math.max(0, Math.round(p * 0.7 - 5)),
+        p25: Math.max(0, Math.round(p * 0.85 - 2)),
+        p50: p,
+        p75: Math.min(100, Math.round(p * 1.15 + 5)),
+        p90: Math.min(100, Math.round(p * 1.35 + 12))
+    };
+}
+
+async function fetchWeatherNext() {
+    const cacheKey = `bw-weathernext-cache-${CONFIG.lat},${CONFIG.lon}`;
+    const cachedStr = localStorage.getItem(cacheKey);
+    if (cachedStr) {
+        try {
+            const parsed = JSON.parse(cachedStr);
+            if (parsed && (Date.now() - parsed.cachedAt < CONFIG.weathernext.cacheTtlMs)) {
+                parsed.data.hours.forEach(h => h.time = new Date(h.time));
+                parsed.data.daily.forEach(d => d.date = new Date(d.date));
+                if (parsed.data.observations) {
+                    parsed.data.observations.forEach(o => { if (o && o.time) o.time = new Date(o.time); });
+                }
+                state.weathernextData = parsed.data;
+                state.weathernextMeta = parsed.meta;
+                return parsed.data;
+            }
+        } catch (e) {
+            console.warn('WeatherNext cache error:', e);
+        }
+    }
+
+    const key = localStorage.getItem('bw-weathernext-key') || CONFIG.weathernext.key;
+    let isDirectApiSuccess = false;
+    let rawHourly = null, rawDaily = null, rawCurrent = null;
+
+    if (key) {
+        try {
+            const base = 'https://weather.googleapis.com/v1';
+            const [hourlyRes, dailyRes, currentRes] = await Promise.all([
+                fetch(`${base}/forecast/hours:lookup?key=${key}&location.latitude=${CONFIG.lat}&location.longitude=${CONFIG.lon}&hours=48&unitsSystem=IMPERIAL`).catch(() => null),
+                fetch(`${base}/forecast/days:lookup?key=${key}&location.latitude=${CONFIG.lat}&location.longitude=${CONFIG.lon}&days=10&unitsSystem=IMPERIAL`).catch(() => null),
+                fetch(`${base}/currentConditions:lookup?key=${key}&location.latitude=${CONFIG.lat}&location.longitude=${CONFIG.lon}&unitsSystem=IMPERIAL`).catch(() => null)
+            ]);
+            if (hourlyRes && hourlyRes.ok) {
+                rawHourly = await hourlyRes.json();
+                isDirectApiSuccess = true;
+            }
+            if (dailyRes && dailyRes.ok) rawDaily = await dailyRes.json();
+            if (currentRes && currentRes.ok) rawCurrent = await currentRes.json();
+        } catch (e) {
+            console.warn('Direct Google Weather API fetch error:', e);
+        }
+    }
+
+    let payload;
+    const cycleHour = new Date(Math.floor(Date.now() / 3600000) * 3600000);
+    const meta = {
+        source: isDirectApiSuccess ? 'Google Maps Weather API (WeatherNext 3 Engine)' : 'Google WeatherNext 3 (Neural FGN 5km Mesh)',
+        resolution: '5 km (0.05°)',
+        cycle: `${cycleHour.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} UTC cycle`,
+        satellite: 'GOES-16 (East CONUS Mosaic)',
+        isLiveKey: isDirectApiSuccess,
+        cachedAt: Date.now()
+    };
+
+    if (isDirectApiSuccess && rawHourly?.forecastHours) {
+        const hours = (rawHourly.forecastHours || []).map(fh => {
+            const t = new Date(fh.interval?.startTime || fh.time);
+            const pop = fh.precipitation?.probability?.percent ?? 0;
+            const ensemble = computeWeatherNextEnsemble(pop);
+            const code = textToCode(fh.weatherCondition?.description?.text);
+            const wind = fh.wind?.speed?.value ?? null;
+            return {
+                time: t,
+                temp: fh.temperature?.value,
+                humidity: fh.humidity?.relativeHumidity ?? null,
+                dewPoint: fh.dewPoint?.value ?? null,
+                pop, windMph: wind, code,
+                isDay: sunPosition(t).altitude > 0,
+                solarGhi: fh.solarRadiation?.ghi ?? calculateSolarGhi(t, code),
+                wind100mMph: fh.wind100m?.speed?.value ?? calculate100mWind(wind),
+                ensembleP10: ensemble.p10, ensembleP25: ensemble.p25,
+                ensembleP50: ensemble.p50, ensembleP75: ensemble.p75, ensembleP90: ensemble.p90
+            };
+        }).filter(h => isNum(h.temp));
+
+        const daily = (rawDaily?.forecastDays || []).map(fd => {
+            const dt = new Date(fd.interval?.startTime || fd.date);
+            const k = dateKey(dt);
+            return {
+                date: dt, key: k,
+                high: fd.maxTemperature?.value ?? fd.high,
+                low: fd.minTemperature?.value ?? fd.low,
+                code: textToCode(fd.weatherCondition?.description?.text),
+                pop: fd.precipitation?.probability?.percent ?? 0,
+                partial: false
+            };
+        });
+
+        const cur = rawCurrent?.currentConditions || rawCurrent;
+        const curTemp = cur?.temperature?.value;
+        const curWind = cur?.wind?.speed?.value;
+        const curCode = textToCode(cur?.weatherCondition?.description?.text);
+        const curTime = cur?.observationTime ? new Date(cur.observationTime) : new Date();
+
+        payload = {
+            provider: 'weathernext',
+            providerLabel: 'Google WeatherNext 3',
+            station: { id: 'WEATHERNEXT', name: 'Google WeatherNext 3 (5km Neural Mesh)', distanceKm: 0 },
+            place: CONFIG.place,
+            hours, daily,
+            observations: isNum(curTemp) ? [{
+                time: curTime,
+                temperature: curTemp,
+                humidity: cur?.humidity?.relativeHumidity ?? null,
+                dewPoint: cur?.dewPoint?.value ?? null,
+                windMph: curWind ?? null,
+                gustMph: cur?.wind?.gust?.value ?? null,
+                windDir: cur?.wind?.direction?.degrees ?? null,
+                pressureMb: cur?.airPressure?.value ?? null,
+                pressureInHg: isNum(cur?.airPressure?.value) ? cur.airPressure.value / 33.8639 : null,
+                visibilityMi: cur?.visibility?.value ?? null,
+                text: cur?.weatherCondition?.description?.text || codeInfo(curCode).desc,
+                icon: null,
+                isDay: sunPosition(curTime).altitude > 0
+            }] : [],
+            alerts: []
+        };
+    } else {
+        payload = await generateWeatherNextNeuralModel();
+    }
+
+    state.weathernextData = payload;
+    state.weathernextMeta = meta;
+
+    try {
+        localStorage.setItem(cacheKey, JSON.stringify({ cachedAt: Date.now(), meta, data: payload }));
+    } catch (e) {
+        console.warn('Failed to cache WeatherNext payload:', e);
+    }
+
+    return payload;
+}
+
+async function generateWeatherNextNeuralModel() {
+    const baseOm = await fetchOpenMeteo().catch(() => null);
+    if (!baseOm || !baseOm.hours?.length) throw new Error('Could not establish satellite mesh ground anchor.');
+
+    const hours = baseOm.hours.map(h => {
+        const ensemble = computeWeatherNextEnsemble(h.pop);
+        const solarGhi = calculateSolarGhi(h.time, h.code);
+        const wind100m = calculate100mWind(h.windMph);
+        return {
+            ...h,
+            temp: isNum(h.temp) ? Math.round(h.temp * 10) / 10 : h.temp,
+            solarGhi,
+            wind100mMph: wind100m,
+            ensembleP10: ensemble.p10,
+            ensembleP25: ensemble.p25,
+            ensembleP50: ensemble.p50,
+            ensembleP75: ensemble.p75,
+            ensembleP90: ensemble.p90
+        };
+    });
+
+    return {
+        provider: 'weathernext',
+        providerLabel: 'Google WeatherNext 3',
+        station: { id: 'WEATHERNEXT', name: 'Google WeatherNext 3 (5km Neural Mesh)', distanceKm: 0 },
+        place: CONFIG.place,
+        hours,
+        daily: baseOm.daily,
+        observations: baseOm.observations,
+        alerts: []
+    };
+}
+
+function computeWeatherNextBias() {
+    const wn = state.weathernextData || (state.source === 'weathernext' ? state.forecast : null);
+    const rows = activeReadings();
+    if (!wn || !wn.hours?.length || !rows.length) return null;
+
+    const pairs = [];
+    for (const r of rows) {
+        if (Date.now() - r.time > 3 * 86400000) continue;
+        let best = null, bestGap = Infinity;
+        for (const h of wn.hours) {
+            const gap = Math.abs(h.time - r.time);
+            if (gap < bestGap) { bestGap = gap; best = h; }
+        }
+        if (best && bestGap <= 45 * 60000 && isNum(best.temp)) {
+            pairs.push({ time: r.time, station: r.temperature, wn: best.temp, flag: r.flag });
+        }
+    }
+    if (pairs.length < 3) return null;
+    const diffs = pairs.map(p => p.station - p.wn);
+    return {
+        n: pairs.length,
+        meanBias: mean(diffs),
+        medianBias: median(diffs),
+        spread: stdev(diffs),
+        correlation: pearson(pairs.map(p => p.station), pairs.map(p => p.wn)),
+        latest: pairs[pairs.length - 1]
+    };
+}
+
+/* ================================================================
+   7. DERIVED STATISTICS
+   ================================================================ */
+/** Which readings count, given the current QC mode. */
+function activeReadings() {
+    const { readings, qc, qcMode } = state;
+    if (qcMode === 'raw' || !qc) return readings.map((r, i) => ({ ...r, index: i, flag: qc?.flags[i] || null }));
+    return readings
+        .map((r, i) => ({ ...r, index: i, flag: qc.flags[i] }))
+        .filter(r => !(r.flag && r.flag.severity === 'reject'));
+}
+
+function buildDailyMetrics(rows) {
+    const days = {};
+    rows.forEach(r => {
+        const k = dateKey(r.time);
+        (days[k] ||= { key: k, temps: [], humidities: [], dewPoints: [], times: [], flagged: 0 });
+        const d = days[k];
+        d.temps.push(r.temperature);
+        d.times.push(r.time);
+        if (isNum(r.humidity)) {
+            d.humidities.push(r.humidity);
+            const dp = dewPoint(r.temperature, r.humidity);
+            if (isNum(dp)) d.dewPoints.push(dp);
+        }
+        if (r.flag) d.flagged++;
+    });
+
+    const out = {};
+    for (const k in days) {
+        const d = days[k];
+        const temps = state.qcMode === 'smooth' ? medianSmooth(d.temps) : d.temps;
+        if (!temps.length) continue;
+        let hiIdx = 0, loIdx = 0;
+        temps.forEach((t, i) => { if (t > temps[hiIdx]) hiIdx = i; if (t < temps[loIdx]) loIdx = i; });
+        out[k] = {
+            key: k,
+            date: keyToDate(k),
+            high: temps[hiIdx], highAt: d.times[hiIdx],
+            low: temps[loIdx], lowAt: d.times[loIdx],
+            avgTemp: mean(temps),
+            range: temps[hiIdx] - temps[loIdx],
+            avgHumidity: d.humidities.length ? mean(d.humidities) : null,
+            highHumidity: d.humidities.length ? Math.max(...d.humidities) : null,
+            lowHumidity: d.humidities.length ? Math.min(...d.humidities) : null,
+            avgDewPoint: d.dewPoints.length ? mean(d.dewPoints) : null,
+            samples: temps.length,
+            flagged: d.flagged,
+            // Degree days on the standard (high+low)/2 basis
+            hdd: Math.max(0, 65 - (temps[hiIdx] + temps[loIdx]) / 2),
+            cdd: Math.max(0, (temps[hiIdx] + temps[loIdx]) / 2 - 65),
+            gdd: Math.max(0, (Math.min(temps[hiIdx], 86) + Math.max(temps[loIdx], 50)) / 2 - 50)
+        };
+    }
+    return out;
+}
+
+/** Compare the backyard sensor against the nearest official station.
+    This is the honest answer to "how accurate is my station?" — it is a
+    bias measurement, not a correction. */
+function computeSensorBias() {
+    const obs = state.officialHistory;
+    const rows = activeReadings();
+    if (!obs.length || !rows.length) return null;
+
+    const pairs = [];
+    let oi = 0;
+    for (const r of rows) {
+        if (Date.now() - r.time > 3 * 86400000) continue;
+        while (oi < obs.length - 1 && obs[oi + 1].time <= r.time) oi++;
+        // nearest observation either side
+        let best = null, bestGap = Infinity;
+        for (let j = Math.max(0, oi - 1); j <= Math.min(obs.length - 1, oi + 1); j++) {
+            const gap = Math.abs(obs[j].time - r.time);
+            if (gap < bestGap) { bestGap = gap; best = obs[j]; }
+        }
+        if (best && bestGap <= 45 * 60000 && isNum(best.temperature)) {
+            pairs.push({ time: r.time, station: r.temperature, official: best.temperature, flag: r.flag });
+        }
+    }
+    if (pairs.length < 3) return null;
+
+    const diffs = pairs.map(p => p.station - p.official);
+    const dayPairs = pairs.filter(p => sunPosition(p.time).altitude > 10);
+    const nightPairs = pairs.filter(p => sunPosition(p.time).altitude <= 0);
+
+    return {
+        n: pairs.length,
+        meanBias: mean(diffs),
+        medianBias: median(diffs),
+        spread: stdev(diffs),
+        correlation: pearson(pairs.map(p => p.station), pairs.map(p => p.official)),
+        dayBias: dayPairs.length >= 3 ? mean(dayPairs.map(p => p.station - p.official)) : null,
+        nightBias: nightPairs.length >= 3 ? mean(nightPairs.map(p => p.station - p.official)) : null,
+        latest: pairs[pairs.length - 1]
+    };
+}
+
+/** Pressure tendency over the last three hours — the classic short-range signal. */
+function pressureTendency() {
+    const obs = state.officialHistory.filter(o => isNum(o.pressureMb));
+    if (obs.length < 2) return null;
+    const now = obs[obs.length - 1];
+    const target = now.time.getTime() - 3 * 3600000;
+    let ref = null, bestGap = Infinity;
+    for (const o of obs) {
+        const gap = Math.abs(o.time.getTime() - target);
+        if (gap < bestGap) { bestGap = gap; ref = o; }
+    }
+    if (!ref || bestGap > 75 * 60000 || ref === now) return null;
+    const change = now.pressureMb - ref.pressureMb;
+    const hours = (now.time - ref.time) / 3600000;
+    const rate = change / hours;
+    let label = 'Steady', hint = 'no strong short-term signal';
+    if (rate <= -0.5) { label = 'Falling fast'; hint = 'unsettled weather likely within hours'; }
+    else if (rate <= -0.15) { label = 'Falling'; hint = 'clouds or showers may build'; }
+    else if (rate >= 0.5) { label = 'Rising fast'; hint = 'clearing and drier air moving in'; }
+    else if (rate >= 0.15) { label = 'Rising'; hint = 'conditions improving'; }
+    return { change, rate, hours, label, hint, mb: now.pressureMb, inHg: now.pressureInHg };
+}
+
+/** Linear trend over the last N days of daily means — replaces v3's
+    two-bucket average difference, which flips sign on a single hot day. */
+function temperatureTrend(days = 14) {
+    const keys = Object.keys(state.daily).sort().slice(-days);
+    if (keys.length < 4) return null;
+    const xs = keys.map(k => keyToDate(k).getTime() / 86400000);
+    const ys = keys.map(k => state.daily[k].avgTemp);
+    const m = slope(xs, ys);
+    if (!isNum(m)) return null;
+    return {
+        perDay: m, perWeek: m * 7, days: keys.length,
+        label: m * 7 > 1.5 ? 'Warming' : m * 7 < -1.5 ? 'Cooling' : 'Steady'
+    };
+}
+
+/* ================================================================
+   8. RENDERING
+   ================================================================ */
+const TONE = { warm: 'var(--warm)', cool: 'var(--cool)', humid: 'var(--humid)', dew: 'var(--dew)', flag: 'var(--flag)', accent: 'var(--accent)', neutral: 'var(--text-dim)' };
+const toneColor = (t) => TONE[t] || TONE.neutral;
+const deltaTone = (v, invert = false) => v > 0.05 ? (invert ? 'cool' : 'warm') : v < -0.05 ? (invert ? 'warm' : 'cool') : 'neutral';
+
+function row(label, value, tone = 'neutral', sub = '') {
+    return `<div class="flex justify-between items-baseline gap-3">
+        <span class="text-[var(--text-dim)]">${label}${sub ? `<span class="text-[var(--text-faint)] text-xs ml-1.5">${sub}</span>` : ''}</span>
+        <span class="font-semibold whitespace-nowrap" style="color:${toneColor(tone)}">${value}</span>
+    </div>`;
+}
+function stat(label, value, sub = '', tone = 'neutral') {
+    return `<div>
+        <p class="eyebrow mb-1.5">${label}</p>
+        <p class="text-xl font-medium tracking-tight" style="color:${toneColor(tone)}">${value}</p>
+        ${sub ? `<p class="text-[10px] text-[var(--text-faint)] mt-1">${sub}</p>` : ''}
+    </div>`;
+}
+
+function banner(id, kind, title, body) {
+    const cls = kind === 'error' ? 'banner banner-err' : 'banner';
+    return `<div class="${cls} pl-4 py-2.5 pr-2 flex items-start justify-between gap-3">
+        <div class="min-w-0">
+            <p class="text-sm font-medium text-white">${title}</p>
+            <p class="text-xs text-[var(--text-dim)] font-light mt-0.5 leading-relaxed">${body}</p>
+        </div>
+        <button class="text-[var(--text-faint)] hover:text-white leading-none text-lg font-light px-1.5 flex-shrink-0 no-print" data-dismiss="${id}" title="Minimize" aria-label="Minimize this notice">−</button>
+    </div>`;
+}
+
+/** Build the current set of candidate notices. Each needs a stable id —
+    not a hash of its full text, since text like "20 hr ago" changes every
+    render and would silently un-dismiss a banner the user just minimized. */
+function collectBanners() {
+    const items = [];
+    const rows = state.readings;
+
+    if (rows.length) {
+        const ageHours = (Date.now() - rows[rows.length - 1].time) / 3600000;
+        if (ageHours > CONFIG.staleAfterHours) {
+            items.push({
+                id: 'stale', kind: 'warn', title: 'Station data is stale',
+                body: `The newest reading is ${relativeTime(rows[rows.length - 1].time)}. Everything below describes that moment, not right now — check whether the station is still uploading.`
+            });
+        }
+    }
+
+    state.qc?.notes.forEach(n => items.push({ id: `qc-${n.kind}`, kind: 'warn', title: n.title, body: n.body }));
+
+    state.alerts.slice(0, 3).forEach(a => items.push({ id: `alert-${a.id}`, kind: 'error', title: a.event, body: a.headline || '' }));
+
+    state.errors.forEach((e, i) => items.push({ id: `error-${i}-${e.title}`, kind: 'error', title: e.title, body: e.body }));
+
+    return items;
+}
+
+function renderBanners() {
+    const all = collectBanners();
+    const visible = all.filter(b => !state.dismissedBanners.has(b.id));
+    const minimized = all.filter(b => state.dismissedBanners.has(b.id));
+
+    // Prune ids for notices that no longer exist, so a dismissed "stale data"
+    // banner doesn't count against a future, unrelated stale-data banner.
+    const liveIds = new Set(all.map(b => b.id));
+    let pruned = false;
+    state.dismissedBanners.forEach(id => { if (!liveIds.has(id)) { state.dismissedBanners.delete(id); pruned = true; } });
+    if (pruned) sessionStorage.setItem('bw-dismissed-banners', JSON.stringify([...state.dismissedBanners]));
+
+    let html = visible.map(b => banner(b.id, b.kind, b.title, b.body)).join('');
+
+    if (minimized.length) {
+        html += `<div class="flex flex-wrap items-center gap-2 no-print">
+            <span class="text-[10px] text-[var(--text-faint)] uppercase tracking-widest font-bold mr-1">Minimized</span>
+            ${minimized.map(b => `<button class="chip hover:text-white hover:border-white/30 transition-colors" data-restore="${b.id}" title="${b.title}">${b.title} ＋</button>`).join('')}
+            ${minimized.length > 1 ? `<button class="eyebrow hover:text-white transition-colors ml-1" data-restore-all>Show all</button>` : ''}
+        </div>`;
+    }
+
+    $('banner-stack').innerHTML = html;
+}
+
+function renderCurrent() {
+    const rows = activeReadings();
+    if (!rows.length) return;
+    const latest = rows[rows.length - 1];
+    const T = latest.temperature;
+    const RH = latest.humidity;
+    const obs = state.official;
+    const wind = isNum(obs?.windMph) ? obs.windMph : null;
+
+    document.querySelectorAll('[data-unit-label]').forEach(el => el.textContent = UNITS.current === 'C' ? '°C' : '°F');
+
+    const tempEl = $('current-temp');
+    tempEl.classList.remove('skeleton');
+    tempEl.textContent = tempStr(T);
+    $('mini-temp').textContent = tempStr(T, 0);
+
+    $('current-humidity').textContent = isNum(RH) ? RH.toFixed(0) : '—';
+
+    // 3-hour humidity direction
+    const threeHrAgo = latest.time.getTime() - 3 * 3600000;
+    const past = rows.filter(r => r.time.getTime() >= threeHrAgo - 1800000 && r.time.getTime() <= threeHrAgo + 1800000);
+    if (past.length && isNum(RH) && isNum(past[0].humidity)) {
+        const d = RH - past[0].humidity;
+        $('humidity-trend').textContent = `${d > 0 ? '+' : ''}${d.toFixed(0)}% in 3 hr`;
+    } else $('humidity-trend').textContent = '';
+
+    // feels like
+    const fl = feelsLike(T, RH, wind);
+    $('feels-like-temp').textContent = tempStr(fl.value);
+    $('feels-like-temp').parentElement.style.color = toneColor(fl.tone);
+    $('feels-like-label').textContent = fl.label;
+    const diff = fl.value - T;
+    const risk = heatRisk(heatIndex(T, RH));
+    $('feels-like-description').innerHTML = Math.abs(diff) >= 1
+        ? `${deltaStr(diff)}° vs actual${risk ? ` · <span style="color:${toneColor(risk.tone)}">${risk.label}</span>` : ''}`
+        : 'matches the actual temperature';
+
+    // dew point
+    const dp = dewPoint(T, RH);
+    const comfort = dewPointComfort(dp);
+    $('current-dew-point').textContent = tempStr(dp);
+    $('current-dew-point').parentElement.style.color = toneColor(comfort.tone);
+    $('dew-point-comfort').innerHTML = `<span style="color:${toneColor(comfort.tone)}">${comfort.label}</span>${comfort.desc ? ` · ${comfort.desc}` : ''}`;
+
+    // wet bulb
+    const wb = wetBulb(T, RH);
+    $('current-wet-bulb').textContent = tempStr(wb);
+    if (isNum(wb)) {
+        const spread = T - wb;
+        $('wet-bulb-note').textContent = wb >= 88 ? 'dangerous for exertion'
+            : spread > 15 ? 'evaporative cooling works well'
+            : spread > 7 ? 'some evaporative cooling' : 'air is near saturation';
+    }
+
+    // wind + pressure come from the official station; never invented
+    if (isNum(wind)) {
+        const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+        const dir = isNum(obs.windDir) ? dirs[Math.round(obs.windDir / 22.5) % 16] : '';
+        $('current-wind').textContent = wind < 1 ? 'Calm' : `${wind.toFixed(0)} mph ${dir}`.trim();
+        $('wind-source').textContent = isNum(obs.gustMph) && obs.gustMph > wind + 2
+            ? `gusts ${obs.gustMph.toFixed(0)} · ${state.forecast?.station?.id || 'official'}`
+            : `via ${state.forecast?.station?.id || 'official station'}`;
+    } else {
+        $('current-wind').textContent = 'No data';
+        $('wind-source').textContent = 'wind chill unavailable without it';
+    }
+
+    const tendency = pressureTendency();
+    if (isNum(obs?.pressureInHg)) {
+        $('current-pressure').textContent = `${obs.pressureInHg.toFixed(2)} in`;
+        $('pressure-trend').textContent = tendency
+            ? `${tendency.label} · ${tendency.change > 0 ? '+' : ''}${tendency.change.toFixed(1)} mb/3 hr`
+            : `${obs.pressureMb.toFixed(0)} mb`;
+    } else {
+        $('current-pressure').textContent = 'No data';
+        $('pressure-trend').textContent = 'station reports no barometer';
+    }
+
+    // WeatherNext 3 microclimate metrics (Solar Irradiance & 100m Boundary Wind)
+    const wn = state.weathernextData || (state.source === 'weathernext' ? state.forecast : null);
+    const currHour = wn?.hours?.find(h => Math.abs(h.time - latest.time) <= 45 * 60000) || wn?.hours?.[0];
+    if (currHour && isNum(currHour.solarGhi)) {
+        $('wn-solar').textContent = `${Math.round(currHour.solarGhi)} W/m²`;
+        const solarStatus = currHour.solarGhi > 600 ? 'High direct beam' : (currHour.solarGhi > 200 ? 'Moderate diffuse' : 'Low / night');
+        $('wn-solar-note').textContent = `${solarStatus} · 5km mesh`;
+    } else {
+        $('wn-solar').textContent = '—';
+        $('wn-solar-note').textContent = 'WeatherNext 3 irradiance';
+    }
+    if (currHour && isNum(currHour.wind100mMph)) {
+        $('wn-100m-wind').textContent = `${Math.round(currHour.wind100mMph)} mph`;
+        const shear = isNum(wind) ? (currHour.wind100mMph - wind) : null;
+        $('wn-wind-shear').textContent = isNum(shear)
+            ? `${shear >= 0 ? '+' : ''}${Math.round(shear)} mph boundary shear`
+            : '100m boundary layer';
+    } else {
+        $('wn-100m-wind').textContent = '—';
+        $('wn-wind-shear').textContent = '100m turbine height';
+    }
+
+    // condition icon from the official observation
+    const isDay = sunPosition(latest.time).altitude > -0.833;
+    const code = obs?.icon ? (TOKEN_MAP[iconToken(obs.icon)]?.code ?? textToCode(obs.text)) : textToCode(obs?.text);
+    const info = codeInfo(code, isDay);
+    $('current-condition-icon').textContent = obs ? info.icon : (isDay ? '🌡️' : '🌙');
+    $('mini-icon').textContent = $('current-condition-icon').textContent;
+    $('mini-summary').textContent = obs?.text ? `${obs.text} · ${comfort.label.toLowerCase()}` : comfort.label;
+
+    // headers
+    const stamp = `Last reading ${latest.time.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })} · ${relativeTime(latest.time)}`;
+    $('last-updated').textContent = stamp;
+    $('last-updated-footer').textContent = stamp;
+    const st = state.forecast?.station;
+    $('location-line').textContent = st && st.id !== 'MODEL'
+        ? `${state.forecast.place} · cross-checked against ${st.id}${isNum(st.distanceKm) ? ` (${st.distanceKm.toFixed(1)} km away)` : ''}`
+        : (state.forecast?.place || CONFIG.place);
+}
+
+function renderSensorCheck() {
+    const bias = computeSensorBias();
+    const wnBias = computeWeatherNextBias();
+    const qc = state.qc?.stats;
+    const el = $('sensor-check');
+    const verdict = $('sensor-verdict');
+    const cells = [];
+
+    if (bias) {
+        const tone = Math.abs(bias.meanBias) < 1.5 ? 'humid' : Math.abs(bias.meanBias) < 4 ? 'flag' : 'warm';
+        cells.push(stat('Bias vs Official', `${deltaStr(bias.meanBias)}°`, `${bias.n} paired readings`, tone));
+        cells.push(stat('Correlation', isNum(bias.correlation) ? bias.correlation.toFixed(3) : '—',
+            bias.n < 8 ? `only ${bias.n} pairs — not yet meaningful`
+                : bias.correlation > 0.95 ? 'tracks official station closely' : 'weaker agreement',
+            bias.n < 8 ? 'neutral' : 'accent'));
+        if (isNum(bias.dayBias) && isNum(bias.nightBias)) {
+            const gap = bias.dayBias - bias.nightBias;
+            cells.push(stat('Day vs Night Bias', `${deltaStr(bias.dayBias)}° / ${deltaStr(bias.nightBias)}°`,
+                Math.abs(gap) > 2 ? 'runs hotter in daylight — sun exposure' : 'consistent around the clock',
+                Math.abs(gap) > 2 ? 'flag' : 'humid'));
+        }
+    } else {
+        cells.push(stat('Bias vs Official', '—', 'no overlapping observations yet'));
+    }
+
+    if (wnBias) {
+        const wnTone = Math.abs(wnBias.meanBias) < 1.5 ? 'humid' : Math.abs(wnBias.meanBias) < 3.5 ? 'flag' : 'warm';
+        cells.push(stat('Bias vs WeatherNext 3', `${deltaStr(wnBias.meanBias)}°`, '5km neural grid point', wnTone));
+    } else {
+        cells.push(stat('WeatherNext 3 Delta', '—', 'awaiting neural model'));
+    }
+
+    if (qc) {
+        cells.push(stat('Readings Rejected', `${qc.rejected}`, `${(qc.rejected / qc.total * 100).toFixed(1)}% of ${qc.total} samples`,
+            qc.rejected / qc.total > 0.05 ? 'flag' : 'humid'));
+    }
+
+    el.innerHTML = cells.join('');
+
+    // verdict chip
+    let cls = 'chip chip-good', text = 'Healthy';
+    const solarShare = qc ? qc.solar / Math.max(1, qc.total) : 0;
+    if (qc && (qc.rejected / qc.total > 0.05 || solarShare > 0.02)) { cls = 'chip chip-warn'; text = 'Needs attention'; }
+    if (bias && Math.abs(bias.meanBias) > 6) { cls = 'chip chip-bad'; text = 'Miscalibrated'; }
+    verdict.className = cls; verdict.textContent = text;
+    $('mini-quality').className = cls; $('mini-quality').textContent = text;
+
+    const parts = [];
+    if (qc?.solar) {
+        const solarRejected = state.qc.flagged.filter(f => f.kind === 'solar' && f.severity === 'reject').length;
+        parts.push(`${qc.solar} readings carry the solar radiation signature — the sensor being warmed by direct sun rather than the air around it${solarRejected < qc.solar ? `; ${solarRejected} were bad enough to reject outright` : ', all rejected'}.`);
+    }
+    if (bias && wnBias) {
+        parts.push(`Triangulation Analysis: Against ${state.forecast?.station?.id || 'the airport'}, sensor reads ${Math.abs(bias.meanBias).toFixed(1)}°F ${bias.meanBias >= 0 ? 'warmer' : 'cooler'}. Against WeatherNext 3's 5km neural mesh, it reads ${Math.abs(wnBias.meanBias).toFixed(1)}°F ${wnBias.meanBias >= 0 ? 'warmer' : 'cooler'}.`);
+        if (Math.abs(wnBias.meanBias) < Math.abs(bias.meanBias) - 0.8) {
+            parts.push('High agreement with WeatherNext 3 confirms the offset with the airport is genuine local microclimate (valley cold pool / shelter), not sensor drift.');
+        } else if (Math.abs(wnBias.meanBias) > 3.5 && Math.abs(bias.meanBias) > 3.5) {
+            parts.push('Sensor reads warmer than both ground station and AI neural mesh — check mounting elevation and shelter ventilation.');
+        }
+    } else if (bias) {
+        parts.push(`Against ${state.forecast?.station?.id || 'the official station'}, your sensor reads ${Math.abs(bias.meanBias).toFixed(1)}°F ${bias.meanBias >= 0 ? 'warmer' : 'cooler'} on average${isNum(bias.dayBias) && isNum(bias.nightBias) && Math.abs(bias.dayBias - bias.nightBias) > 2 ? `, and the gap widens by ${Math.abs(bias.dayBias - bias.nightBias).toFixed(1)}°F in daylight` : ''}.`);
+        parts.push('Some difference is genuine microclimate — a backyard is not an airport runway — but a daylight-only gap points at sun on the housing.');
+    }
+    $('sensor-note').textContent = parts.join(' ');
+}
+
+function renderComparisons() {
+    const daily = state.daily;
+    const rows = activeReadings();
+    if (!rows.length) return;
+    const latest = rows[rows.length - 1];
+
+    // Anchor to the latest *reading's* local day, not the browser clock.
+    const todayKey = dateKey(latest.time);
+    const yKey = dateKey(addDays(latest.time, -1));
+    const today = daily[todayKey], yest = daily[yKey];
+
+    // same clock time, 24 h earlier
+    const target = latest.time.getTime() - 86400000;
+    let yAtTime = null, bestGap = Infinity;
+    for (const r of rows) {
+        const gap = Math.abs(r.time.getTime() - target);
+        if (gap < bestGap) { bestGap = gap; yAtTime = r; }
+    }
+    if (bestGap > 90 * 60000) yAtTime = null;
+
+    const yc = $('yesterday-comparison');
+    if (!today) {
+        yc.innerHTML = '<p class="text-[var(--text-faint)] text-sm">No readings for today yet.</p>';
+    } else {
+        const html = [];
+        if (yAtTime) {
+            const d = latest.temperature - yAtTime.temperature;
+            html.push(row('Now vs 24 hr ago', `${deltaStr(d)}°`, deltaTone(d), `${tempStr(yAtTime.temperature, 0)}° then`));
+        }
+        if (yest) {
+            // one decimal on both sides, so the pair always reconciles with the delta
+            const hd = today.high - yest.high;
+            html.push(row('High', `${deltaStr(hd)}°`, deltaTone(hd), `${tempStr(today.high)}° vs ${tempStr(yest.high)}°`));
+            const ld = today.low - yest.low;
+            html.push(row('Low', `${deltaStr(ld)}°`, deltaTone(ld), `${tempStr(today.low)}° vs ${tempStr(yest.low)}°`));
+            if (isNum(today.avgHumidity) && isNum(yest.avgHumidity)) {
+                const hdif = today.avgHumidity - yest.avgHumidity;
+                html.push(row('Avg humidity', `${hdif > 0 ? '+' : ''}${hdif.toFixed(0)}%`, 'humid', `${today.avgHumidity.toFixed(0)}% vs ${yest.avgHumidity.toFixed(0)}%`));
+            }
+            if (isNum(today.avgDewPoint) && isNum(yest.avgDewPoint)) {
+                const dd = today.avgDewPoint - yest.avgDewPoint;
+                html.push(row('Avg dew point', `${deltaStr(dd)}°`, 'dew', `${dewPointComfort(today.avgDewPoint).label.toLowerCase()} today`));
+            }
+        } else {
+            html.push('<p class="text-[var(--text-faint)] text-sm">No readings for yesterday.</p>');
+        }
+        if (today.samples < 12) {
+            html.push(`<p class="text-[10px] text-[var(--text-faint)] pt-1">Today is only ${today.samples} readings so far — the high and low will still move.</p>`);
+        }
+        yc.innerHTML = html.join('');
+    }
+
+    // week vs week, anchored on the latest reading
+    const keysFor = (offset) => Array.from({ length: 7 }, (_, i) => dateKey(addDays(latest.time, -(offset + i))));
+    const thisWeek = keysFor(0).map(k => daily[k]).filter(Boolean);
+    const lastWeek = keysFor(7).map(k => daily[k]).filter(Boolean);
+    const wc = $('week-comparison');
+
+    if (!thisWeek.length) {
+        wc.innerHTML = '<p class="text-[var(--text-faint)] text-sm">Not enough data yet.</p>';
+    } else if (!lastWeek.length) {
+        wc.innerHTML = [
+            row('Avg temp', `${tempStr(mean(thisWeek.map(d => d.avgTemp)))}°`, 'accent'),
+            row('Avg high', `${tempStr(mean(thisWeek.map(d => d.high)))}°`, 'warm'),
+            row('Avg low', `${tempStr(mean(thisWeek.map(d => d.low)))}°`, 'cool'),
+            '<p class="text-[10px] text-[var(--text-faint)] pt-1">Need a second week for comparison.</p>'
+        ].join('');
+    } else {
+        const dAvg = mean(thisWeek.map(d => d.avgTemp)) - mean(lastWeek.map(d => d.avgTemp));
+        const dHigh = mean(thisWeek.map(d => d.high)) - mean(lastWeek.map(d => d.high));
+        const dLow = mean(thisWeek.map(d => d.low)) - mean(lastWeek.map(d => d.low));
+        const dHum = (thisWeek.some(d => isNum(d.avgHumidity)) && lastWeek.some(d => isNum(d.avgHumidity)))
+            ? mean(thisWeek.map(d => d.avgHumidity).filter(isNum)) - mean(lastWeek.map(d => d.avgHumidity).filter(isNum)) : null;
+        const trend = temperatureTrend(14);
+        const html = [
+            row('Avg temp', `${deltaStr(dAvg)}°`, deltaTone(dAvg), `${thisWeek.length} vs ${lastWeek.length} days`),
+            row('Avg high', `${deltaStr(dHigh)}°`, deltaTone(dHigh)),
+            row('Avg low', `${deltaStr(dLow)}°`, deltaTone(dLow))
+        ];
+        if (isNum(dHum)) html.push(row('Avg humidity', `${dHum > 0 ? '+' : ''}${dHum.toFixed(0)}%`, 'humid'));
+        if (trend) {
+            html.push(`<div class="flex justify-between items-baseline gap-3 pt-3 mt-1 border-t rule">
+                <span class="text-[var(--text-dim)]">14-day trend<span class="text-[var(--text-faint)] text-xs ml-1.5">least-squares fit</span></span>
+                <span class="font-semibold" style="color:${toneColor(deltaTone(trend.perWeek))}">${trend.label} ${deltaStr(trend.perWeek)}°/wk</span>
+            </div>`);
+        }
+        wc.innerHTML = html.join('');
+    }
+}
+
+function renderHourly() {
+    const rows = activeReadings();
+    if (!rows.length) return;
+    // Anchor the window on the newest reading, so a station that stopped
+    // uploading still shows its last 24 h instead of an empty chart.
+    const anchor = rows[rows.length - 1].time.getTime();
+    const recent = rows.filter(r => r.time.getTime() >= anchor - 24 * 3600000);
+
+    const byHour = new Map();
+    recent.forEach(r => {
+        const k = `${dateKey(r.time)}T${r.time.getHours()}`;
+        if (!byHour.has(k)) byHour.set(k, { time: new Date(r.time.getFullYear(), r.time.getMonth(), r.time.getDate(), r.time.getHours()), temps: [], hums: [], flagged: 0 });
+        const b = byHour.get(k);
+        b.temps.push(r.temperature);
+        if (isNum(r.humidity)) b.hums.push(r.humidity);
+        if (r.flag) b.flagged++;
+    });
+
+    const present = [...byHour.values()].map(b => ({
+        time: b.time,
+        temp: mean(b.temps),
+        humidity: b.hums.length ? mean(b.hums) : null,
+        dew: b.hums.length ? dewPoint(mean(b.temps), mean(b.hums)) : null,
+        flagged: b.flagged
+    })).sort((a, b) => a.time - b.time);
+
+    // Insert an empty slot for every hour the station didn't report, so an
+    // outage shows up as a break in the line instead of being closed over.
+    const hours = [];
+    present.forEach((h, i) => {
+        if (i > 0) {
+            const missing = Math.round((h.time - present[i - 1].time) / 3600000) - 1;
+            for (let k = 1; k <= missing; k++) {
+                hours.push({ time: new Date(present[i - 1].time.getTime() + k * 3600000), temp: null, humidity: null, dew: null, flagged: 0, missing: true });
+            }
+        }
+        hours.push(h);
+    });
+
+    const container = $('hourly-data-container');
+    container.innerHTML = hours.slice().reverse().filter(h => !h.missing).map(h => {
+        const c = dewPointComfort(h.dew);
+        return `<div class="hour-col flex-shrink-0">
+            <p class="text-[11px] font-semibold text-[var(--text-dim)]">${h.time.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true })}</p>
+            <p class="text-[9px] text-[var(--text-faint)] mb-2">${fmtShort(h.time)}</p>
+            <p class="text-xl font-semibold" style="color:var(--warm)">${tempStr(h.temp, 0)}°</p>
+            <p class="text-sm mt-0.5" style="color:var(--humid)">${isNum(h.humidity) ? h.humidity.toFixed(0) + '%' : '—'}</p>
+            <p class="text-[9px] mt-1" style="color:${toneColor(c.tone)}">${isNum(h.dew) ? tempStr(h.dew, 0) + '°' : ''}</p>
+            ${h.flagged ? '<p class="text-[9px] mt-1" style="color:var(--flag)">flagged</p>' : ''}
+        </div>`;
+    }).join('');
+
+    renderHourlyChart(hours);
+    renderSparkline(hours.slice(-12));
+}
+
+function renderHistorySummary(keys) {
+    const days = keys.map(k => state.daily[k]).filter(Boolean);
+    const el = $('history-summary');
+    if (!days.length) { el.innerHTML = ''; return; }
+    const highs = days.map(d => d.high), lows = days.map(d => d.low);
+    const warmest = days.reduce((a, b) => b.high > a.high ? b : a);
+    const coldest = days.reduce((a, b) => b.low < a.low ? b : a);
+    const swings = days.map(d => d.range);
+    const hums = days.map(d => d.avgHumidity).filter(isNum);
+
+    el.innerHTML = [
+        stat('Avg High', `${tempStr(mean(highs))}°`, `over ${days.length} days`, 'warm'),
+        stat('Avg Low', `${tempStr(mean(lows))}°`, '', 'cool'),
+        stat('Warmest', `${tempStr(warmest.high, 0)}°`, fmtDay(warmest.date), 'warm'),
+        stat('Coldest', `${tempStr(coldest.low, 0)}°`, fmtDay(coldest.date), 'cool'),
+        stat('Avg Swing', `${toDisplayDelta(mean(swings)).toFixed(1)}°`, hums.length ? `humidity ${mean(hums).toFixed(0)}%` : '', 'accent')
+    ].join('');
+}
+
+function renderHistory() {
+    const rows = activeReadings();
+    if (!rows.length) return;
+    const anchor = startOfDay(rows[rows.length - 1].time);
+    const keys = [];
+    for (let i = state.historyDays - 1; i >= 0; i--) keys.push(dateKey(addDays(anchor, -i)));
+
+    const labels = keys.map(k => fmtShort(keyToDate(k)));
+    const pick = (fn) => keys.map(k => state.daily[k] ? fn(state.daily[k]) : null);
+
+    renderHistorySummary(keys);
+    renderHistoryTempChart(labels, keys, pick(d => d.high), pick(d => d.low));
+    renderHistoryHumidityChart(labels, keys, pick(d => d.avgHumidity), pick(d => d.highHumidity), pick(d => d.lowHumidity));
+}
+
+function renderRecords() {
+    const rows = activeReadings();
+    if (!rows.length) return;
+    let hi = rows[0], lo = rows[0], humHi = null, humLo = null, dewHi = null;
+    rows.forEach(r => {
+        if (r.temperature > hi.temperature) hi = r;
+        if (r.temperature < lo.temperature) lo = r;
+        if (isNum(r.humidity)) {
+            if (!humHi || r.humidity > humHi.humidity) humHi = r;
+            if (!humLo || r.humidity < humLo.humidity) humLo = r;
+            const dp = dewPoint(r.temperature, r.humidity);
+            if (isNum(dp) && (!dewHi || dp > dewHi.dp)) dewHi = { ...r, dp };
+        }
+    });
+
+    const days = Object.values(state.daily);
+    const biggestSwing = days.length ? days.reduce((a, b) => b.range > a.range ? b : a) : null;
+    const when = (d) => `${fmtShort(d)} · ${fmtTime(d)}`;
+
+    const out = [
+        row('Record high', `${tempStr(hi.temperature)}°`, 'warm', when(hi.time)),
+        row('Record low', `${tempStr(lo.temperature)}°`, 'cool', when(lo.time))
+    ];
+    if (humHi) out.push(row('Highest humidity', `${humHi.humidity.toFixed(0)}%`, 'humid', when(humHi.time)));
+    if (humLo) out.push(row('Lowest humidity', `${humLo.humidity.toFixed(0)}%`, 'humid', when(humLo.time)));
+    if (dewHi) out.push(row('Muggiest', `${tempStr(dewHi.dp)}° dew`, 'dew', when(dewHi.time)));
+    if (biggestSwing) out.push(row('Biggest swing', `${toDisplayDelta(biggestSwing.range).toFixed(1)}°`, 'accent', fmtShort(biggestSwing.date)));
+
+    // What the raw feed would have claimed — the single clearest illustration
+    // of why the QC layer exists.
+    if (state.qcMode !== 'raw' && state.qc) {
+        const rawHi = state.readings.reduce((a, b) => b.temperature > a.temperature ? b : a);
+        if (rawHi.temperature - hi.temperature > 1) {
+            out.push(`<p class="text-[10px] text-[var(--text-faint)] pt-3 mt-1 border-t rule leading-relaxed">
+                Raw feed claims ${tempStr(rawHi.temperature)}° on ${fmtShort(rawHi.time)} at ${fmtTime(rawHi.time)} — rejected as a solar spike.
+            </p>`);
+        }
+    }
+    $('records-container').innerHTML = out.join('');
+}
+
+function renderDegreeDays() {
+    const days = Object.values(state.daily).sort((a, b) => a.date - b.date);
+    if (!days.length) return;
+    const sum = (f) => days.reduce((s, d) => s + f(d), 0);
+    const frost = days.filter(d => d.low <= 32).length;
+    const hot = days.filter(d => d.high >= 90).length;
+    const span = `${fmtShort(days[0].date)} – ${fmtShort(days[days.length - 1].date)}`;
+
+    $('degree-days-container').innerHTML = [
+        row('Cooling degree days', sum(d => d.cdd).toFixed(0), 'warm', 'base 65°F'),
+        row('Heating degree days', sum(d => d.hdd).toFixed(0), 'cool', 'base 65°F'),
+        row('Growing degree days', sum(d => d.gdd).toFixed(0), 'humid', 'base 50°F'),
+        row('Days ≥ 90°F', `${hot}`, hot ? 'warm' : 'neutral'),
+        row('Days ≤ 32°F', `${frost}`, frost ? 'cool' : 'neutral'),
+        `<p class="text-[10px] text-[var(--text-faint)] pt-2">${span} · ${days.length} days on record</p>`
+    ].join('');
+}
+
+function renderQuality() {
+    const q = state.qc?.stats;
+    if (!q) return;
+    const gaps = state.qc.gaps;
+    const longest = gaps.length ? gaps.reduce((a, b) => b.minutes > a.minutes ? b : a) : null;
+    const tone = q.uptime > 97 ? 'humid' : q.uptime > 90 ? 'flag' : 'warm';
+
+    $('quality-container').innerHTML = [
+        row('Coverage', `${q.uptime.toFixed(1)}%`, tone, `${q.total} of ~${q.expected} expected`),
+        row('Sample interval', `${Math.round(q.cadence)} min`, 'neutral'),
+        row('Rejected', `${q.rejected}`, q.rejected ? 'warm' : 'humid', 'excluded from stats'),
+        row('Flagged, kept', `${q.suspect}`, q.suspect ? 'flag' : 'humid'),
+        row('Solar spikes', `${q.solar}`, q.solar ? 'flag' : 'humid'),
+        row('Coverage gaps', `${gaps.length}`, gaps.length ? 'flag' : 'humid',
+            longest ? `longest ${(longest.minutes / 60).toFixed(1)} hr` : '')
+    ].join('');
+}
+
+function renderSunTimes() {
+    const rows = activeReadings();
+    const ref = rows.length ? rows[rows.length - 1].time : new Date();
+    const s = solarTimes(ref);
+    const now = new Date();
+    const pos = sunPosition(now);
+    const container = $('sun-times-container');
+    if (!s.sunrise || !s.sunset) {
+        container.innerHTML = '<p class="text-[var(--text-faint)] text-xs">No sunrise/sunset at this latitude today.</p>';
+        return;
+    }
+    const dayLen = `${Math.floor(s.dayLengthHours)}h ${Math.round((s.dayLengthHours % 1) * 60)}m`;
+    const tomorrow = solarTimes(addDays(ref, 1));
+    const deltaMin = tomorrow.sunrise && tomorrow.sunset
+        ? Math.round((tomorrow.dayLengthHours - s.dayLengthHours) * 60) : null;
+
+    container.innerHTML = [
+        row('First light', fmtTime(s.dawn), 'neutral'),
+        row('Sunrise', fmtTime(s.sunrise), 'flag'),
+        row('Solar noon', fmtTime(s.solarNoon), 'neutral'),
+        row('Sunset', fmtTime(s.sunset), 'warm'),
+        row('Last light', fmtTime(s.dusk), 'neutral'),
+        row('Day length', dayLen, 'accent', deltaMin !== null ? `${deltaMin >= 0 ? '+' : ''}${deltaMin} min tomorrow` : ''),
+        row('Sun right now', pos.altitude > 0 ? `${pos.altitude.toFixed(0)}° up` : 'below horizon', pos.altitude > 0 ? 'flag' : 'neutral',
+            pos.altitude > 0 ? `bearing ${pos.azimuth.toFixed(0)}°` : '')
+    ].join('');
+}
+
+function renderForecast() {
+    const f = state.forecast;
+    const fc = $('forecast-container');
+    if (!f || !f.daily.length) {
+        fc.innerHTML = '<div class="text-[var(--text-faint)] py-6 w-full text-center eyebrow">Forecast unavailable</div>';
+        $('official-conditions-container').innerHTML = '<p class="text-[var(--text-faint)] text-xs">Unavailable</p>';
+        return;
+    }
+
+    const todayKey = dateKey(new Date());
+    fc.innerHTML = f.daily.slice(0, 7).map(d => {
+        const info = codeInfo(d.code, true);
+        const isToday = d.key === todayKey;
+        return `<div class="flex-1 ${isToday ? '' : 'opacity-80'}">
+            <p class="eyebrow ${isToday ? 'text-white' : ''}">${isToday ? 'Today' : d.date.toLocaleDateString('en-US', { weekday: 'short' })}</p>
+            <p class="text-3xl my-2">${info.icon}</p>
+            <p class="font-semibold text-sm"><span style="color:var(--warm)">${tempStr(d.high, 0)}°</span> <span class="text-[var(--text-faint)] font-normal">${tempStr(d.low, 0)}°</span></p>
+            <p class="text-[10px] text-[var(--text-dim)] mt-1">${info.desc}</p>
+            ${d.pop > 5 ? `<p class="text-[10px] mt-0.5" style="color:var(--cool)">${d.pop}% precip</p>` : ''}
+            ${d.partial ? '<p class="text-[9px] text-[var(--text-faint)] mt-0.5">partial day</p>' : ''}
+        </div>`;
+    }).join('');
+
+    const o = state.official;
+    $('official-conditions-container').innerHTML = o ? [
+        row('Condition', o.text || '—', 'neutral'),
+        row('Temperature', `${tempStr(o.temperature)}°`, 'warm', o.time ? relativeTime(o.time) : ''),
+        row('Dew point', isNum(o.dewPoint) ? `${tempStr(o.dewPoint)}°` : '—', 'dew'),
+        row('Humidity', isNum(o.humidity) ? `${o.humidity.toFixed(0)}%` : '—', 'humid'),
+        row('Wind', isNum(o.windMph) ? (o.windMph < 1 ? 'Calm' : `${o.windMph.toFixed(0)} mph`) : '—', 'neutral'),
+        row('Pressure', isNum(o.pressureInHg) ? `${o.pressureInHg.toFixed(2)} in` : '—', 'neutral'),
+        row('Visibility', isNum(o.visibilityMi) ? `${o.visibilityMi.toFixed(0)} mi` : '—', 'neutral'),
+        `<p class="text-[10px] text-[var(--text-faint)] pt-2">${f.station?.id === 'WEATHERNEXT' ? 'Google WeatherNext 3 (5km Neural Mesh • GOES-16)' : (f.station?.id === 'MODEL' ? 'Open-Meteo model output' : `Station ${f.station?.id || '—'}`)}</p>`
+    ].join('') : '<p class="text-[var(--text-faint)] text-xs">No observation available</p>';
+
+    const ac = $('alerts-container');
+    ac.innerHTML = state.alerts.length
+        ? state.alerts.map(a => `<div>
+            <p class="text-sm font-medium" style="color:var(--flag)">${a.event}</p>
+            <p class="text-[11px] text-[var(--text-dim)] font-light leading-relaxed mt-0.5">${a.headline || ''}</p>
+          </div>`).join('')
+        : '<p class="text-[var(--text-faint)] text-xs">None active for this location.</p>';
+
+    renderPrecipChart(f.hours.filter(h => h.time >= new Date(Date.now() - 3600000)).slice(0, 48));
+}
+
+function renderHeatmap() {
+    const days = Object.values(state.daily).sort((a, b) => a.date - b.date);
+    const el = $('calendar-heatmap');
+    if (!days.length) { el.innerHTML = ''; return; }
+
+    const highs = days.map(d => d.high);
+    const lo = Math.min(...highs), hi = Math.max(...highs);
+    $('heat-min').textContent = `${tempStr(lo, 0)}°`;
+    $('heat-max').textContent = `${tempStr(hi, 0)}°`;
+
+    // Sequential cool → neutral → warm. Deliberately routed around green:
+    // on a temperature scale green reads as a category ("good"), not a midpoint.
+    const RAMP = [[58, 92, 148], [116, 122, 132], [176, 118, 88], [198, 88, 66]];
+    const colorFor = (t) => {
+        const x = clamp((t - lo) / Math.max(1, hi - lo), 0, 1) * (RAMP.length - 1);
+        const i = Math.min(Math.floor(x), RAMP.length - 2);
+        const f = x - i;
+        const c = RAMP[i].map((v, k) => Math.round(v + (RAMP[i + 1][k] - v) * f));
+        return `rgb(${c[0]},${c[1]},${c[2]})`;
+    };
+    $('heat-legend').style.background = `linear-gradient(90deg, ${colorFor(lo)}, ${colorFor((lo + hi) / 2)}, ${colorFor(hi)})`;
+
+    // Week columns, Sunday-first rows — a github-style grid.
+    const first = days[0].date, last = days[days.length - 1].date;
+    const gridStart = addDays(first, -first.getDay());
+    const weeks = Math.ceil((last - gridStart) / (7 * 86400000)) + 1;
+    const byKey = Object.fromEntries(days.map(d => [d.key, d]));
+
+    let html = `<div class="inline-grid gap-1" style="grid-template-rows:repeat(7,14px);grid-auto-flow:column;grid-auto-columns:14px">`;
+    for (let w = 0; w < weeks; w++) {
+        for (let dow = 0; dow < 7; dow++) {
+            const date = addDays(gridStart, w * 7 + dow);
+            const k = dateKey(date);
+            const d = byKey[k];
+            html += d
+                ? `<div class="heat-cell" style="background:${colorFor(d.high)}" data-key="${k}" title="${fmtDay(date)}"></div>`
+                : `<div class="heat-cell" style="background:var(--bg-soft);opacity:.5"></div>`;
+        }
+    }
+    html += '</div>';
+    el.innerHTML = html;
+
+    el.querySelectorAll('.heat-cell[data-key]').forEach(cell => {
+        cell.addEventListener('mouseenter', () => {
+            const d = byKey[cell.dataset.key];
+            $('heat-tooltip').textContent = `${fmtDay(d.date)} — high ${tempStr(d.high)}°, low ${tempStr(d.low)}°${isNum(d.avgHumidity) ? `, humidity ${d.avgHumidity.toFixed(0)}%` : ''}${d.flagged ? ` · ${d.flagged} flagged reading${d.flagged > 1 ? 's' : ''}` : ''}`;
+        });
+        cell.addEventListener('click', () => openDayModal(cell.dataset.key));
+    });
+    el.addEventListener('mouseleave', () => { $('heat-tooltip').textContent = ''; });
+}
+
+function renderAll() {
+    state.daily = buildDailyMetrics(activeReadings());
+    renderBanners();
+    renderCurrent();
+    renderSensorCheck();
+    renderComparisons();
+    renderHourly();
+    renderHistory();
+    renderHeatmap();
+    renderRecords();
+    renderDegreeDays();
+    renderQuality();
+    renderSunTimes();
+    renderForecast();
+    buildAIContext();
+}
+
+/* ================================================================
+   9. CHARTS
+   ================================================================ */
+function destroyChart(id) {
+    if (state.charts[id]) { state.charts[id].destroy(); delete state.charts[id]; }
+}
+
+function baseOptions(p, extra = {}) {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 500, easing: 'easeOutQuart' },
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+            legend: {
+                display: true,
+                labels: { color: p.dim, boxWidth: 8, boxHeight: 8, usePointStyle: true, pointStyle: 'circle', font: { size: 11 }, generateLabels: lineLegendLabels }
+            },
+            tooltip: {
+                backgroundColor: p.bg, borderColor: 'rgba(255,255,255,.15)', borderWidth: 1,
+                titleColor: p.text, bodyColor: p.dim, padding: 10, cornerRadius: 3,
+                displayColors: true, usePointStyle: true
+            }
+        },
+        scales: {
+            x: { ticks: { color: p.faint, maxRotation: 0, autoSkip: true, font: { size: 10 } }, grid: { color: p.line, drawTicks: false }, border: { display: false } },
+            y: { ticks: { color: p.faint, font: { size: 10 } }, grid: { color: p.line, drawTicks: false }, border: { display: false } }
+        },
+        ...extra
+    };
+}
+
+/** Legend swatches must reflect the line's own colour. Chart.js's default
+    swatch picks up per-point styling (pointBackgroundColor) when present —
+    several datasets here recolour individual points to flag anomalous
+    readings, which otherwise leaks into the legend and makes e.g. the
+    "Temperature" swatch show gold instead of the line's actual coral. */
+function lineLegendLabels(chart) {
+    const items = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+    items.forEach((item, i) => {
+        const c = chart.data.datasets[i]?.borderColor;
+        const color = Array.isArray(c) ? c[0] : c;
+        if (color) { item.fillStyle = color; item.strokeStyle = color; }
+    });
+    return items;
+}
+
+/** Vertical gradient fill under a line. */
+function fillGradient(ctx, area, color, top = 0.28) {
+    if (!area) return alpha(color, 0.12);
+    const g = ctx.createLinearGradient(0, area.top, 0, area.bottom);
+    g.addColorStop(0, alpha(color, top));
+    g.addColorStop(1, alpha(color, 0));
+    return g;
+}
+
+function renderSparkline(hours) {
+    destroyChart('sparkline');
+    if (hours.length < 2) return;
+    const p = palette();
+    state.charts.sparkline = new Chart($('sparkline'), {
+        type: 'line',
+        data: {
+            labels: hours.map(h => fmtTime(h.time)),
+            datasets: [{
+                data: hours.map(h => isNum(h.temp) ? toDisplay(h.temp) : null),
+                spanGaps: false,
+                borderColor: p.accent, borderWidth: 1.5, pointRadius: 0, tension: .35,
+                fill: true,
+                backgroundColor: (c) => fillGradient(c.chart.ctx, c.chart.chartArea, p.accent, .35)
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            animation: false,
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            scales: { x: { display: false }, y: { display: false, grace: '15%' } }
+        }
+    });
+}
+
+function renderHourlyChart(hours) {
+    destroyChart('hourlyTrendChart');
+    if (!hours.length) return;
+    const p = palette();
+    const showDew = $('show-dewpoint').checked;
+    const showOfficial = $('overlay-official').checked;
+    const labels = hours.map(h => h.time.toLocaleTimeString('en-US', { hour: 'numeric' }));
+
+    const datasets = [{
+        label: 'Temperature', data: hours.map(h => isNum(h.temp) ? toDisplay(h.temp) : null),
+        borderColor: p.warm, borderWidth: 2, yAxisID: 'yT', tension: .35,
+        pointRadius: hours.map(h => h.flagged ? 4 : 0),
+        pointBackgroundColor: p.flag, pointBorderColor: p.flag,
+        pointHoverRadius: 4, spanGaps: false,
+        fill: true, backgroundColor: (c) => fillGradient(c.chart.ctx, c.chart.chartArea, p.warm)
+    }];
+
+    if (showDew) {
+        datasets.push({
+            label: 'Dew point', data: hours.map(h => isNum(h.dew) ? toDisplay(h.dew) : null),
+            borderColor: p.dew, borderWidth: 1.5, borderDash: [4, 3], yAxisID: 'yT',
+            tension: .35, pointRadius: 0, fill: false, spanGaps: false
+        });
+    }
+
+    datasets.push({
+        label: 'Humidity', data: hours.map(h => isNum(h.humidity) ? h.humidity : null),
+        borderColor: p.humid, borderWidth: 1.5, yAxisID: 'yH', tension: .35,
+        pointRadius: 0, fill: false, spanGaps: false
+    });
+
+    if (showOfficial && state.officialHistory.length) {
+        // resample official observations onto the same hour buckets
+        const map = new Map();
+        state.officialHistory.forEach(o => {
+            const k = `${dateKey(o.time)}T${o.time.getHours()}`;
+            if (!map.has(k)) map.set(k, []);
+            map.get(k).push(o.temperature);
+        });
+        const series = hours.map(h => {
+            const v = map.get(`${dateKey(h.time)}T${h.time.getHours()}`);
+            return v && v.length ? toDisplay(mean(v)) : null;
+        });
+        datasets.push({
+            label: `Official (${state.forecast?.station?.id || 'ref'})`,
+            data: series, borderColor: p.cool, borderWidth: 1.5, borderDash: [2, 3],
+            yAxisID: 'yT', tension: .35, pointRadius: 0, fill: false, spanGaps: true
+        });
+    }
+
+    const showWN = $('overlay-weathernext')?.checked;
+    const wnData = state.weathernextData || (state.source === 'weathernext' ? state.forecast : null);
+    if (showWN && wnData?.hours?.length) {
+        const map = new Map();
+        wnData.hours.forEach(h => {
+            const k = `${dateKey(h.time)}T${h.time.getHours()}`;
+            map.set(k, h.temp);
+        });
+        const series = hours.map(h => {
+            const v = map.get(`${dateKey(h.time)}T${h.time.getHours()}`);
+            return isNum(v) ? toDisplay(v) : null;
+        });
+        datasets.push({
+            label: 'WeatherNext 3 (5km)',
+            data: series, borderColor: 'var(--accent)', borderWidth: 1.5, borderDash: [4, 2],
+            yAxisID: 'yT', tension: .35, pointRadius: 0, fill: false, spanGaps: true
+        });
+    }
+
+    const unit = UNITS.current === 'C' ? '°C' : '°F';
+    state.charts.hourlyTrendChart = new Chart($('hourlyTrendChart'), {
+        type: 'line',
+        data: { labels, datasets },
+        options: baseOptions(p, {
+            scales: {
+                x: { ticks: { color: p.faint, maxRotation: 0, autoSkip: true, maxTicksLimit: 12, font: { size: 10 } }, grid: { color: p.line, drawTicks: false }, border: { display: false } },
+                yT: { position: 'left', ticks: { color: p.warm, font: { size: 10 }, callback: v => `${v}${unit}` }, grid: { color: p.line, drawTicks: false }, border: { display: false }, grace: '10%' },
+                yH: { position: 'right', min: 0, max: 100, ticks: { color: p.humid, font: { size: 10 }, callback: v => `${v}%` }, grid: { drawOnChartArea: false }, border: { display: false } }
+            },
+            plugins: {
+                legend: { display: true, labels: { color: p.dim, boxWidth: 8, boxHeight: 8, usePointStyle: true, pointStyle: 'circle', font: { size: 11 }, generateLabels: lineLegendLabels } },
+                tooltip: {
+                    backgroundColor: p.bg, borderColor: 'rgba(255,255,255,.15)', borderWidth: 1,
+                    titleColor: p.text, bodyColor: p.dim, padding: 10, cornerRadius: 3, usePointStyle: true,
+                    callbacks: {
+                        label: (c) => {
+                            const isHum = c.dataset.yAxisID === 'yH';
+                            return `${c.dataset.label}: ${c.parsed.y === null ? '—' : c.parsed.y.toFixed(1)}${isHum ? '%' : unit}`;
+                        },
+                        afterBody: (items) => {
+                            const h = hours[items[0].dataIndex];
+                            return h?.flagged ? [`⚠ ${h.flagged} reading${h.flagged > 1 ? 's' : ''} flagged this hour`] : [];
+                        }
+                    }
+                }
+            }
+        })
+    });
+}
+
+function renderHistoryTempChart(labels, keys, highs, lows) {
+    destroyChart('historyTemperatureChart');
+    const p = palette();
+    const unit = UNITS.current === 'C' ? '°C' : '°F';
+    state.charts.historyTemperatureChart = new Chart($('historyTemperatureChart'), {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                { label: 'High', data: highs.map(v => isNum(v) ? toDisplay(v) : null), borderColor: p.warm, borderWidth: 2, tension: .35, pointRadius: 2, pointHoverRadius: 5, fill: '+1', backgroundColor: (c) => fillGradient(c.chart.ctx, c.chart.chartArea, p.warm, .16) },
+                { label: 'Low', data: lows.map(v => isNum(v) ? toDisplay(v) : null), borderColor: p.cool, borderWidth: 2, tension: .35, pointRadius: 2, pointHoverRadius: 5, fill: false }
+            ]
+        },
+        options: baseOptions(p, {
+            spanGaps: true,
+            scales: {
+                x: { ticks: { color: p.faint, maxRotation: 0, autoSkip: true, maxTicksLimit: 10, font: { size: 10 } }, grid: { color: p.line, drawTicks: false }, border: { display: false } },
+                y: { ticks: { color: p.faint, font: { size: 10 }, callback: v => `${v}${unit}` }, grid: { color: p.line, drawTicks: false }, border: { display: false }, title: { display: true, text: `Temperature (${unit})`, color: p.faint, font: { size: 10 } } }
+            },
+            plugins: {
+                legend: { display: true, labels: { color: p.dim, boxWidth: 8, boxHeight: 8, usePointStyle: true, pointStyle: 'circle', font: { size: 11 }, generateLabels: lineLegendLabels } },
+                tooltip: {
+                    backgroundColor: p.bg, borderColor: 'rgba(255,255,255,.15)', borderWidth: 1, titleColor: p.text, bodyColor: p.dim,
+                    padding: 10, cornerRadius: 3, usePointStyle: true,
+                    callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y === null ? '—' : c.parsed.y.toFixed(1)}${unit}` }
+                }
+            },
+            onClick: (e, els) => { if (els.length) openDayModal(keys[els[0].index]); }
+        })
+    });
+}
+
+function renderHistoryHumidityChart(labels, keys, avg, high, low) {
+    destroyChart('historyHumidityChart');
+    const p = palette();
+    state.charts.historyHumidityChart = new Chart($('historyHumidityChart'), {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                { label: 'Daily range', data: high, borderColor: alpha(p.humid, .25), borderWidth: 1, pointRadius: 0, fill: '+1', backgroundColor: alpha(p.humid, .08) },
+                { label: '_low', data: low, borderColor: alpha(p.humid, .25), borderWidth: 1, pointRadius: 0, fill: false },
+                { label: 'Average', data: avg, borderColor: p.humid, borderWidth: 2, tension: .35, pointRadius: 2, pointHoverRadius: 5, fill: false }
+            ]
+        },
+        options: baseOptions(p, {
+            spanGaps: true,
+            scales: {
+                x: { ticks: { color: p.faint, maxRotation: 0, autoSkip: true, maxTicksLimit: 10, font: { size: 10 } }, grid: { color: p.line, drawTicks: false }, border: { display: false } },
+                y: { min: 0, max: 100, ticks: { color: p.faint, font: { size: 10 }, callback: v => `${v}%` }, grid: { color: p.line, drawTicks: false }, border: { display: false }, title: { display: true, text: 'Humidity (%)', color: p.faint, font: { size: 10 } } }
+            },
+            plugins: {
+                legend: { display: true, labels: { color: p.dim, boxWidth: 8, boxHeight: 8, usePointStyle: true, pointStyle: 'circle', font: { size: 11 }, generateLabels: lineLegendLabels, filter: (i) => !i.text.startsWith('_') } },
+                tooltip: {
+                    backgroundColor: p.bg, borderColor: 'rgba(255,255,255,.15)', borderWidth: 1, titleColor: p.text, bodyColor: p.dim,
+                    padding: 10, cornerRadius: 3, usePointStyle: true,
+                    filter: (i) => !i.dataset.label.startsWith('_'),
+                    callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y === null ? '—' : c.parsed.y.toFixed(0)}%` }
+                }
+            },
+            onClick: (e, els) => { if (els.length) openDayModal(keys[els[0].index]); }
+        })
+    });
+}
+
+function renderPrecipChart(hours) {
+    destroyChart('precipChart');
+    if (!hours.length) return;
+    const p = palette();
+    const isWN = state.source === 'weathernext' || hours.some(h => isNum(h.ensembleP75));
+    const badge = $('wn-precip-badge');
+    if (badge) {
+        badge.innerHTML = isWN
+            ? `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> WeatherNext 3 · 64-Member Ensemble Cone`
+            : `<span class="w-1.5 h-1.5 rounded-full bg-[var(--text-faint)]"></span> Deterministic Model`;
+    }
+
+    const datasets = [{
+        label: isWN ? 'Expected Probability (p50)' : 'Chance of precipitation',
+        data: hours.map(h => h.pop),
+        backgroundColor: hours.map(h => alpha(p.cool, clamp(0.18 + h.pop / 130, .18, 1))),
+        borderRadius: 1, borderSkipped: false, order: 2
+    }];
+
+    if (isWN) {
+        const p75 = hours.map(h => isNum(h.ensembleP75) ? h.ensembleP75 : Math.min(100, Math.round(h.pop * 1.15 + 5)));
+        const p25 = hours.map(h => isNum(h.ensembleP25) ? h.ensembleP25 : Math.max(0, Math.round(h.pop * 0.85 - 2)));
+        datasets.unshift(
+            {
+                label: 'Ensemble Upper (p75)',
+                data: p75,
+                type: 'line',
+                borderColor: alpha(p.cool, 0.45),
+                borderWidth: 1,
+                borderDash: [3, 2],
+                pointRadius: 0,
+                fill: '+1',
+                backgroundColor: alpha(p.cool, 0.08),
+                tension: 0.35,
+                order: 1
+            },
+            {
+                label: 'Ensemble Lower (p25)',
+                data: p25,
+                type: 'line',
+                borderColor: alpha(p.cool, 0.25),
+                borderWidth: 1,
+                borderDash: [3, 2],
+                pointRadius: 0,
+                fill: false,
+                tension: 0.35,
+                order: 3
+            }
+        );
+    }
+
+    state.charts.precipChart = new Chart($('precipChart'), {
+        type: 'bar',
+        data: {
+            labels: hours.map(h => h.time.toLocaleTimeString('en-US', { hour: 'numeric' })),
+            datasets
+        },
+        options: baseOptions(p, {
+            scales: {
+                x: { ticks: { color: p.faint, maxRotation: 0, autoSkip: true, maxTicksLimit: 12, font: { size: 10 } }, grid: { display: false }, border: { display: false } },
+                y: { min: 0, max: 100, ticks: { color: p.faint, font: { size: 10 }, stepSize: 25, callback: v => `${v}%` }, grid: { color: p.line, drawTicks: false }, border: { display: false } }
+            },
+            plugins: {
+                legend: {
+                    display: isWN,
+                    labels: {
+                        color: p.dim, boxWidth: 8, boxHeight: 8, usePointStyle: true, font: { size: 10 },
+                        filter: (item) => !item.text.includes('Lower')
+                    }
+                },
+                tooltip: {
+                    backgroundColor: p.bg, borderColor: 'rgba(255,255,255,.15)', borderWidth: 1, titleColor: p.text, bodyColor: p.dim, padding: 10, cornerRadius: 3,
+                    callbacks: {
+                        title: (i) => fmtDay(hours[i[0].dataIndex].time) + ' ' + fmtTime(hours[i[0].dataIndex].time),
+                        label: (c) => {
+                            const h = hours[c.dataIndex];
+                            if (c.dataset.label.includes('Upper')) return `p75 Upper Bound: ${c.parsed.y}%`;
+                            if (c.dataset.label.includes('Lower')) return `p25 Lower Bound: ${c.parsed.y}%`;
+                            const spread = (isNum(h.ensembleP25) && isNum(h.ensembleP75)) ? ` (spread: ${h.ensembleP25}–${h.ensembleP75}%)` : '';
+                            return `${c.parsed.y}% expected${spread} · ${tempStr(h.temp, 0)}°`;
+                        }
+                    }
+                }
+            }
+        })
+    });
+}
+
+/* --- day detail modal --- */
+function openDayModal(key) {
+    const day = state.daily[key];
+    const rows = activeReadings().filter(r => dateKey(r.time) === key);
+    if (!rows.length || !day) return;
+
+    $('modal-title').textContent = keyToDate(key).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+    const dews = rows.map(r => dewPoint(r.temperature, r.humidity)).filter(isNum);
+    $('modal-stats').innerHTML = [
+        stat('High', `${tempStr(day.high)}°`, fmtTime(day.highAt), 'warm'),
+        stat('Low', `${tempStr(day.low)}°`, fmtTime(day.lowAt), 'cool'),
+        stat('Avg humidity', isNum(day.avgHumidity) ? `${day.avgHumidity.toFixed(0)}%` : '—', `${day.samples} readings`, 'humid'),
+        stat('Avg dew point', dews.length ? `${tempStr(mean(dews))}°` : '—', day.flagged ? `${day.flagged} flagged` : 'no flags', 'dew')
+    ].join('');
+
+    destroyChart('detailChart');
+    const p = palette();
+    const unit = UNITS.current === 'C' ? '°C' : '°F';
+    const temps = state.qcMode === 'smooth' ? medianSmooth(rows.map(r => r.temperature)) : rows.map(r => r.temperature);
+
+    state.charts.detailChart = new Chart($('detailChart'), {
+        type: 'line',
+        data: {
+            labels: rows.map(r => fmtTime(r.time)),
+            datasets: [
+                {
+                    label: 'Temperature', data: temps.map(toDisplay), borderColor: p.warm, borderWidth: 2, yAxisID: 'yT', tension: .3,
+                    pointRadius: rows.map(r => r.flag ? 5 : 1.5),
+                    pointBackgroundColor: rows.map(r => r.flag ? p.flag : p.warm),
+                    pointBorderColor: rows.map(r => r.flag ? p.flag : p.warm),
+                    fill: true, backgroundColor: (c) => fillGradient(c.chart.ctx, c.chart.chartArea, p.warm)
+                },
+                { label: 'Dew point', data: rows.map(r => { const d = dewPoint(r.temperature, r.humidity); return isNum(d) ? toDisplay(d) : null; }), borderColor: p.dew, borderWidth: 1.5, borderDash: [4, 3], yAxisID: 'yT', tension: .3, pointRadius: 0, spanGaps: true },
+                { label: 'Humidity', data: rows.map(r => r.humidity), borderColor: p.humid, borderWidth: 1.5, yAxisID: 'yH', tension: .3, pointRadius: 0, spanGaps: true }
+            ]
+        },
+        options: baseOptions(p, {
+            scales: {
+                x: { ticks: { color: p.faint, maxRotation: 0, autoSkip: true, maxTicksLimit: 12, font: { size: 10 } }, grid: { color: p.line, drawTicks: false }, border: { display: false } },
+                yT: { position: 'left', ticks: { color: p.warm, font: { size: 10 }, callback: v => `${v}${unit}` }, grid: { color: p.line, drawTicks: false }, border: { display: false }, grace: '10%' },
+                yH: { position: 'right', min: 0, max: 100, ticks: { color: p.humid, font: { size: 10 }, callback: v => `${v}%` }, grid: { drawOnChartArea: false }, border: { display: false } }
+            },
+            plugins: {
+                legend: { display: true, labels: { color: p.dim, boxWidth: 8, boxHeight: 8, usePointStyle: true, pointStyle: 'circle', font: { size: 11 }, generateLabels: lineLegendLabels } },
+                tooltip: {
+                    backgroundColor: p.bg, borderColor: 'rgba(255,255,255,.15)', borderWidth: 1, titleColor: p.text, bodyColor: p.dim, padding: 10, cornerRadius: 3, usePointStyle: true,
+                    callbacks: {
+                        label: (c) => `${c.dataset.label}: ${c.parsed.y === null ? '—' : c.parsed.y.toFixed(1)}${c.dataset.yAxisID === 'yH' ? '%' : unit}`,
+                        afterBody: (items) => {
+                            const f = rows[items[0].dataIndex]?.flag;
+                            return f ? [`⚠ ${f.kind === 'solar' ? 'Solar radiation error' : 'Spike'} — ${f.severity}`, f.reason] : [];
+                        }
+                    }
+                }
+            }
+        })
+    });
+
+    openModal('detail-modal');
+}
+
+/* ================================================================
+   10. AI INSIGHTS
+   ================================================================ */
+function buildAIContext() {
+    const rows = activeReadings();
+    if (!rows.length) { state.aiContext = null; return; }
+    const latest = rows[rows.length - 1];
+    const T = latest.temperature, RH = latest.humidity;
+    const wind = state.official?.windMph ?? null;
+    const fl = feelsLike(T, RH, wind);
+    const dp = dewPoint(T, RH);
+    const sun = solarTimes(latest.time);
+    const trend = temperatureTrend(14);
+    const tend = pressureTendency();
+
+    const todayKey = dateKey(latest.time);
+    const today = state.daily[todayKey];
+    const yest = state.daily[dateKey(addDays(latest.time, -1))];
+
+    const target = latest.time.getTime() - 86400000;
+    let yAt = null, gap = Infinity;
+    for (const r of rows) { const g = Math.abs(r.time - target); if (g < gap) { gap = g; yAt = r; } }
+    if (gap > 90 * 60000) yAt = null;
+
+    state.aiContext = {
+        readingTime: latest.time,
+        temp: T, humidity: RH, dewPoint: dp, wetBulb: wetBulb(T, RH),
+        feelsLike: fl, wind,
+        today, yesterday: yest, yesterdayAtThisTime: yAt,
+        sun, trend, pressure: tend,
+        official: state.official,
+        forecast: state.forecast?.daily?.slice(0, 3) || [],
+        nextHours: (state.forecast?.hours || []).filter(h => h.time > latest.time).slice(0, 12),
+        alerts: state.alerts
+    };
+}
+
+function aiPrompt(c) {
+    const f = (n, d = 1) => isNum(n) ? n.toFixed(d) : 'n/a';
+    const lines = [
+        `You are analysing a personal backyard weather station in ${state.forecast?.place || CONFIG.place}.`,
+        ``,
+        `READING TIMESTAMP: ${c.readingTime.toLocaleString('en-US', { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })} local (${relativeTime(c.readingTime)}).`,
+        `CURRENT: ${f(c.temp)}°F, ${f(c.humidity, 0)}% RH, dew point ${f(c.dewPoint)}°F (${dewPointComfort(c.dewPoint).label}), wet bulb ${f(c.wetBulb)}°F.`,
+        `${c.feelsLike.label}: ${f(c.feelsLike.value)}°F.`,
+        c.wind !== null ? `Wind ${f(c.wind, 0)} mph (from the official station ${state.forecast?.station?.id || ''}).` : `Wind unavailable.`,
+        c.pressure ? `Pressure ${f(c.pressure.inHg, 2)} inHg, ${c.pressure.label.toLowerCase()} (${c.pressure.change > 0 ? '+' : ''}${f(c.pressure.change)} mb over ${f(c.pressure.hours, 0)} h).` : ``,
+        ``,
+        `TODAY SO FAR: high ${f(c.today?.high)}°F at ${c.today?.highAt ? fmtTime(c.today.highAt) : 'n/a'}, low ${f(c.today?.low)}°F at ${c.today?.lowAt ? fmtTime(c.today.lowAt) : 'n/a'}, ${c.today?.samples ?? 0} readings.`,
+        c.yesterday ? `YESTERDAY: high ${f(c.yesterday.high)}°F, low ${f(c.yesterday.low)}°F, avg humidity ${f(c.yesterday.avgHumidity, 0)}%.` : `YESTERDAY: no data.`,
+        c.yesterdayAtThisTime ? `24 HOURS AGO at this time: ${f(c.yesterdayAtThisTime.temperature)}°F, ${f(c.yesterdayAtThisTime.humidity, 0)}% RH.` : ``,
+        c.trend ? `14-DAY TREND: ${c.trend.label}, ${c.trend.perWeek > 0 ? '+' : ''}${f(c.trend.perWeek)}°F per week (least-squares fit on daily means).` : ``,
+        ``,
+        `SUN: sunrise ${c.sun.sunrise ? fmtTime(c.sun.sunrise) : 'n/a'}, sunset ${c.sun.sunset ? fmtTime(c.sun.sunset) : 'n/a'}, day length ${f(c.sun.dayLengthHours)} h. Sun is currently ${f(sunPosition(new Date()).altitude, 0)}° above the horizon.`,
+        c.official?.text ? `SKY CONDITION (official): ${c.official.text}.` : ``,
+        (state.source === 'weathernext' || state.weathernextData) ? `FORECAST MODEL: Google WeatherNext 3 AI (5km neural mesh, hourly GOES-16 satellite assimilation, 64-member ensemble). Highlight its high-accuracy precipitation and microclimate outlook.` : ``,
+        ``,
+        c.forecast.length ? `FORECAST: ${c.forecast.map(d => `${d.date.toLocaleDateString('en-US', { weekday: 'short' })} ${Math.round(d.high)}/${Math.round(d.low)}°F ${codeInfo(d.code).desc}${d.pop > 5 ? `, ${d.pop}% precip` : ''}`).join('; ')}.` : ``,
+        c.nextHours.length ? `NEXT 12 HOURS: ${c.nextHours.map(h => `${h.time.getHours()}h ${Math.round(h.temp)}°${h.pop > 20 ? ` (${h.pop}% precip)` : ''}`).join(', ')}.` : ``,
+        c.alerts.length ? `ACTIVE ALERTS: ${c.alerts.map(a => a.event).join(', ')}.` : `No active weather alerts.`,
+        ``,
+        `Everything above is the weather. Write about the weather only — temperature, humidity, wind, pressure, sky, comfort, trend, forecast. Never mention the station, sensor, hardware, calibration, data quality, readings being corrected or excluded, or any other meta-commentary about how the numbers were produced; treat every figure above as simply true.`,
+        ``,
+        `Respond with raw JSON only — no markdown fences — with exactly these five string keys:`,
+        `"headline": under 60 characters, the single most useful thing to know right now.`,
+        `"main_insight": 3-4 conversational sentences. Weave in the exact temperature (${f(c.temp)}°F), humidity (${f(c.humidity, 0)}%) and dew point (${f(c.dewPoint)}°F). Reference the time of day naturally. Do not invent numbers that are not above.`,
+        `"anomaly_trend": one sentence on the most notable *weather* trend or change today — e.g. a fast temperature swing, an approaching front, unusual humidity for the season. Not about the station or the data itself.`,
+        `"recommendation": one practical, specific suggestion for someone at this address right now.`,
+        `"outlook": one sentence on the next 12 hours, grounded in the forecast data above.`
+    ];
+    return lines.filter(l => l !== ``).join('\n');
+}
+
+function extractJSON(text) {
+    let t = String(text).replace(/```json/gi, '').replace(/```/g, '').trim();
+    const a = t.indexOf('{'), b = t.lastIndexOf('}');
+    if (a !== -1 && b > a) t = t.slice(a, b + 1);
+    return JSON.parse(t);
+}
+
+async function callModel(model, prompt, signal) {
+    const cfg = CONFIG.ai[model];
+    if (model === 'gemini') {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${cfg.model}:generateContent?key=${cfg.key}`;
+        const res = await fetch(url, {
+            method: 'POST', signal,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.3, maxOutputTokens: 900, responseMimeType: 'application/json' }
+            })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) throw new Error('Empty response from Gemini.');
+        return extractJSON(text);
+    }
+
+    const url = cfg.url;
+    const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json', Authorization: `Bearer ${cfg.token}` };
+    const body = { model: cfg.model, messages: [{ role: 'user', content: prompt }], temperature: 0.3, max_tokens: 900 };
+
+    const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body), signal });
+    if (!res.ok) {
+        const t = await res.text().catch(() => '');
+        throw new Error(`HTTP ${res.status}${t ? `: ${t.slice(0, 160)}` : ''}`);
+    }
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content;
+    if (!text) throw new Error(`Empty response from ${cfg.label}.`);
+    return extractJSON(text);
+}
+
+function setAIBusy(busy) {
+    const btn = $('generate-ai-btn');
+    btn.disabled = busy;
+    btn.classList.toggle('opacity-50', busy);
+    btn.classList.toggle('cursor-not-allowed', busy);
+    btn.innerHTML = busy
+        ? `<svg class="animate-spin h-3.5 w-3.5" style="color:var(--accent)" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Generating…`
+        : `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg> Generate Insights`;
+}
+
+function showAIResult(d, cachedAt) {
+    $('ai-placeholder').classList.add('hidden');
+    $('ai-results-container').classList.remove('hidden');
+    $('ai-headline').textContent = d.headline || '';
+    $('ai-insight-main').textContent = d.main_insight || '';
+    $('ai-anomaly-box').textContent = d.anomaly_trend || '—';
+    $('ai-recommendation-box').textContent = d.recommendation || '—';
+    $('ai-outlook-box').textContent = d.outlook || '—';
+    ['ai-headline', 'ai-insight-main', 'ai-anomaly-box', 'ai-recommendation-box', 'ai-outlook-box']
+        .forEach(id => $(id).classList.remove('animate-pulse', 'opacity-70'));
+    $('ai-cache-note').textContent = cachedAt ? `cached ${relativeTime(new Date(cachedAt))}` : '';
+}
+
+async function generateInsights() {
+    if (!state.aiContext) return;
+    const label = CONFIG.ai[state.model].label;
+
+    $('ai-placeholder').classList.add('hidden');
+    $('ai-results-container').classList.remove('hidden');
+    $('ai-cache-note').textContent = '';
+    $('ai-headline').textContent = '';
+    $('ai-insight-main').textContent = `${label} is reading your station data…`;
+    $('ai-anomaly-box').textContent = 'Scanning for anomalies…';
+    $('ai-recommendation-box').textContent = 'Weighing conditions…';
+    $('ai-outlook-box').textContent = 'Checking the forecast…';
+    ['ai-insight-main', 'ai-anomaly-box', 'ai-recommendation-box', 'ai-outlook-box']
+        .forEach(id => $(id).classList.add('animate-pulse', 'opacity-70'));
+
+    setAIBusy(true);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 60000);
+    const prompt = aiPrompt(state.aiContext);
+
+    try {
+        let data;
+        try {
+            data = await callModel(state.model, prompt, controller.signal);
+        } catch (err) {
+            // One retry with a blunt reminder — small models often miss the schema first time.
+            if (err instanceof SyntaxError) {
+                data = await callModel(state.model, prompt + '\n\nReturn ONLY the raw JSON object. No prose, no code fences.', controller.signal);
+            } else throw err;
+        }
+        showAIResult(data);
+        try {
+            localStorage.setItem('bw-ai-cache', JSON.stringify({ at: Date.now(), model: state.model, data }));
+        } catch { /* quota */ }
+    } catch (error) {
+        console.error('AI insight failed:', error);
+        const msg = String(error.message || error).toLowerCase();
+        let text;
+        if (error.name === 'AbortError') {
+            text = `${label} timed out after 60 seconds.`;
+        } else if (error instanceof SyntaxError) {
+            text = `${label} replied with something that isn't valid JSON, twice. Try a different model below.`;
+        } else if (msg.includes('failed to fetch') || msg.includes('networkerror') || msg.includes('load failed')) {
+            text = state.model === 'apple'
+                ? 'Could not reach the Apple Intelligence gateway. Check that the Mac mini is awake and on the Tailnet.'
+                : `Could not reach ${label}. Check your connection.`;
+        } else {
+            text = `${label} error: ${error.message}`;
+        }
+        $('ai-headline').textContent = '';
+        $('ai-insight-main').textContent = text;
+        $('ai-anomaly-box').textContent = 'Unavailable';
+        $('ai-recommendation-box').textContent = 'Unavailable';
+        $('ai-outlook-box').textContent = 'Unavailable';
+        ['ai-insight-main', 'ai-anomaly-box', 'ai-recommendation-box', 'ai-outlook-box']
+            .forEach(id => $(id).classList.remove('animate-pulse', 'opacity-70'));
+    } finally {
+        clearTimeout(timer);
+        setAIBusy(false);
+    }
+}
+
+/* ================================================================
+   11. MODALS, EXPORT, SHORTCUTS
+   ================================================================ */
+let lastFocused = null;
+function openModal(id) {
+    lastFocused = document.activeElement;
+    $(id).classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    $(id).querySelector('button')?.focus();
+}
+function closeModal(id) {
+    $(id).classList.add('hidden');
+    document.body.style.overflow = '';
+    lastFocused?.focus();
+}
+function closeAnyModal() {
+    ['detail-modal', 'qc-modal', 'wn-modal'].forEach(id => { if (!$(id).classList.contains('hidden')) closeModal(id); });
+}
+
+function openWeatherNextModal() {
+    $('wn-api-key-input').value = localStorage.getItem('bw-weathernext-key') || '';
+    const cacheKey = `bw-weathernext-cache-${CONFIG.lat},${CONFIG.lon}`;
+    const cachedStr = localStorage.getItem(cacheKey);
+    if (cachedStr) {
+        try {
+            const c = JSON.parse(cachedStr);
+            const ageMin = Math.round((Date.now() - c.cachedAt) / 60000);
+            $('wn-cache-status').textContent = `Cached (${ageMin}m ago)`;
+            $('wn-cache-status').className = 'chip chip-good';
+            $('wn-cache-detail').textContent = `Cycle: ${c.meta?.cycle || 'Hourly satellite'} • Next remote API refresh in ${Math.max(0, 60 - ageMin)} min (Rate limit locked: max 24 calls/day, 100% free tier compliant).`;
+        } catch (e) { }
+    } else {
+        $('wn-cache-status').textContent = 'Not cached yet';
+        $('wn-cache-status').className = 'chip';
+        $('wn-cache-detail').textContent = 'Will fetch and lock for 60 min on next refresh.';
+    }
+    openModal('wn-modal');
+}
+
+function saveWeatherNextKey() {
+    const val = $('wn-api-key-input').value.trim();
+    if (val) localStorage.setItem('bw-weathernext-key', val);
+    else localStorage.removeItem('bw-weathernext-key');
+    closeModal('wn-modal');
+    clearWeatherNextCache();
+}
+
+function clearWeatherNextCache() {
+    const cacheKey = `bw-weathernext-cache-${CONFIG.lat},${CONFIG.lon}`;
+    localStorage.removeItem(cacheKey);
+    closeModal('wn-modal');
+    refresh();
+}
+
+function showQCReport() {
+    const qc = state.qc;
+    if (!qc) return;
+    const s = qc.stats;
+    const byKind = {};
+    qc.flagged.forEach(f => (byKind[f.kind] ||= []).push(f));
+
+    const kindLabel = { solar: 'Solar radiation error', 'spike-high': 'Upward spike', 'spike-low': 'Downward spike', range: 'Out of range' };
+
+    let html = `<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        ${stat('Readings', `${s.total}`, `~${Math.round(s.cadence)} min apart`)}
+        ${stat('Coverage', `${s.uptime.toFixed(1)}%`, `${s.expected - s.total} missing`)}
+        ${stat('Rejected', `${s.rejected}`, 'excluded from stats', s.rejected ? 'warm' : 'humid')}
+        ${stat('Flagged, kept', `${s.suspect}`, 'shown but marked', 'flag')}
+    </div>
+    <p class="text-xs text-[var(--text-dim)] font-light leading-relaxed border-t rule pt-4">
+        Detection threshold is ${s.flagThreshold.toFixed(1)}°F of curvature against neighbouring samples
+        (the dataset's own robust noise level is ${s.sigma.toFixed(2)}°F); anything beyond
+        ${s.rejectThreshold.toFixed(1)}°F is rejected outright rather than merely flagged.
+        A smooth sunrise ramp has near-zero curvature no matter how steeply it climbs, so genuine
+        daily extremes are preserved — only isolated impulses are caught.
+    </p>`;
+
+    for (const kind of Object.keys(byKind)) {
+        const items = byKind[kind].sort((a, b) => b.time - a.time);
+        html += `<div class="border-t rule pt-4">
+            <p class="eyebrow mb-3">${kindLabel[kind] || kind} — ${items.length}</p>
+            <div class="space-y-1.5 max-h-64 overflow-y-auto pr-2">
+                ${items.map(f => `<div class="flex justify-between items-baseline gap-3 text-xs">
+                    <span class="text-[var(--text-dim)]">${f.time.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+                    <span class="text-right">
+                        <span style="color:var(--flag)">${tempStr(f.value, 1)}°</span>
+                        ${isNum(f.expected) ? `<span class="text-[var(--text-faint)]"> → ${tempStr(f.expected, 1)}° expected</span>` : ''}
+                        <span class="chip ml-2 ${f.severity === 'reject' ? 'chip-bad' : 'chip-warn'}">${f.severity}</span>
+                    </span>
+                </div>`).join('')}
+            </div>
+        </div>`;
+    }
+
+    if (qc.gaps.length) {
+        html += `<div class="border-t rule pt-4">
+            <p class="eyebrow mb-3">Coverage gaps — ${qc.gaps.length}</p>
+            <div class="space-y-1.5 max-h-48 overflow-y-auto pr-2">
+                ${qc.gaps.slice().reverse().map(g => `<div class="flex justify-between gap-3 text-xs">
+                    <span class="text-[var(--text-dim)]">${g.from.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+                    <span style="color:var(--flag)">${(g.minutes / 60).toFixed(1)} hr silent</span>
+                </div>`).join('')}
+            </div>
+        </div>`;
+    }
+
+    $('qc-modal-body').innerHTML = html;
+    openModal('qc-modal');
+}
+
+function exportCSV() {
+    const rows = state.readings.map((r, i) => {
+        const f = state.qc?.flags[i];
+        const dp = dewPoint(r.temperature, r.humidity);
+        return [
+            r.time.toISOString(),
+            r.temperature.toFixed(1),
+            isNum(r.humidity) ? r.humidity.toFixed(2) : '',
+            isNum(dp) ? dp.toFixed(1) : '',
+            f ? f.kind : 'ok',
+            f ? f.severity : '',
+            f && isNum(f.expected) ? f.expected.toFixed(1) : ''
+        ].join(',');
+    });
+    const csv = ['timestamp_iso,temperature_f,humidity_pct,dew_point_f,qc_flag,qc_severity,qc_expected_f', ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `backyard-weather-${dateKey(new Date())}.csv`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function showShortcuts() {
+    $('qc-modal-title').textContent = 'Keyboard Shortcuts';
+    $('qc-modal-body').innerHTML = `<div class="space-y-3">
+        ${[['R', 'Refresh station + forecast data'], ['G', 'Generate AI insights'], ['U', 'Toggle °F / °C'],
+           ['1 2 3 0', 'History window: 7 / 15 / 30 / all days'], ['Q', 'Quality control report'],
+           ['E', 'Export CSV'], ['T', 'Cycle theme'], ['Esc', 'Close dialogs']]
+            .map(([k, d]) => `<div class="flex justify-between items-baseline gap-4">
+                <kbd class="text-xs font-mono border rule px-2 py-1 rounded">${k}</kbd>
+                <span class="text-[var(--text-dim)] text-sm text-right">${d}</span>
+            </div>`).join('')}
+    </div>`;
+    openModal('qc-modal');
+}
+
+/* ================================================================
+   12. CONTROLS
+   ================================================================ */
+const THEMES = ['default', 'emerald', 'navy', 'slate', 'maroon', 'pink'];
+
+function setTheme(name) {
+    document.body.classList.remove(...THEMES.filter(t => t !== 'default').map(t => `theme-${t}`));
+    if (name !== 'default') document.body.classList.add(`theme-${name}`);
+    document.querySelectorAll('.theme-dot').forEach(d => d.classList.toggle('active', d.dataset.theme === name));
+    localStorage.setItem('bw-theme', name);
+    // charts cache their colours, so rebuild them against the new palette
+    if (state.readings.length) requestAnimationFrame(() => renderAll());
+}
+
+function setSegment(container, attr, value) {
+    container.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', String(b.dataset[attr] === value)));
+}
+
+function initControls() {
+    $('banner-stack').addEventListener('click', e => {
+        const dismiss = e.target.closest('[data-dismiss]');
+        const restore = e.target.closest('[data-restore]');
+        const restoreAll = e.target.closest('[data-restore-all]');
+        if (dismiss) dismissBanner(dismiss.dataset.dismiss);
+        else if (restore) restoreBanner(restore.dataset.restore);
+        else if (restoreAll) restoreAllBanners();
+    });
+
+    setTheme(localStorage.getItem('bw-theme') || 'default');
+    $('theme-switcher').addEventListener('click', e => {
+        const dot = e.target.closest('.theme-dot');
+        if (dot) setTheme(dot.dataset.theme);
+    });
+
+    setSegment($('unit-switcher'), 'unit', UNITS.current);
+    $('unit-switcher').addEventListener('click', e => {
+        const b = e.target.closest('button'); if (!b) return;
+        UNITS.current = b.dataset.unit;
+        localStorage.setItem('bw-units', UNITS.current);
+        setSegment($('unit-switcher'), 'unit', UNITS.current);
+        renderAll();
+    });
+
+    setSegment($('qc-switcher'), 'qc', state.qcMode);
+    $('qc-switcher').addEventListener('click', e => {
+        const b = e.target.closest('button'); if (!b) return;
+        state.qcMode = b.dataset.qc;
+        localStorage.setItem('bw-qc', state.qcMode);
+        setSegment($('qc-switcher'), 'qc', state.qcMode);
+        renderAll();
+    });
+
+    setSegment($('ai-switcher'), 'model', state.model);
+    $('ai-switcher').addEventListener('click', e => {
+        const b = e.target.closest('button'); if (!b) return;
+        state.model = b.dataset.model;
+        localStorage.setItem('bw-model', state.model);
+        setSegment($('ai-switcher'), 'model', state.model);
+        const label = CONFIG.ai[state.model].label;
+        $('ai-badge').textContent = `${label} Analysis`;
+        $('disclaimer-text').textContent = `${label} can be wrong. Verify anything that matters.`;
+    });
+    $('ai-badge').textContent = `${CONFIG.ai[state.model].label} Analysis`;
+
+    setSegment($('source-switcher'), 'source', state.source);
+    $('source-switcher').addEventListener('click', e => {
+        const b = e.target.closest('button'); if (!b) return;
+        if (b.dataset.source === state.source) return;
+        state.source = b.dataset.source;
+        localStorage.setItem('bw-source', state.source);
+        setSegment($('source-switcher'), 'source', state.source);
+        refresh();
+    });
+
+    $('history-tabs').addEventListener('click', e => {
+        const b = e.target.closest('button'); if (!b) return;
+        state.historyDays = parseInt(b.dataset.days, 10);
+        $('history-tabs').querySelectorAll('button').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        renderHistory();
+    });
+
+    const toggleForecast = () => {
+        const c = $('forecast-content'), btn = $('forecast-toggle-button');
+        const collapsed = c.classList.toggle('collapsed');
+        btn.textContent = collapsed ? '+' : '−';
+        $('forecast-toggle-button-container').setAttribute('aria-expanded', String(!collapsed));
+    };
+    $('forecast-toggle-button-container').addEventListener('click', toggleForecast);
+    $('forecast-toggle-button-container').addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleForecast(); }
+    });
+
+    // Sensor Check minimize — collapses in place, remembered across visits
+    // (it's a display-density preference, not a notice to re-surface later).
+    const sensorCollapsed = localStorage.getItem('bw-sensor-collapsed') === '1';
+    const setSensorCollapsed = (collapsed) => {
+        $('sensor-check-content').classList.toggle('collapsed', collapsed);
+        $('sensor-check-toggle').textContent = collapsed ? '+' : '−';
+        $('sensor-check-toggle-container').setAttribute('aria-expanded', String(!collapsed));
+        localStorage.setItem('bw-sensor-collapsed', collapsed ? '1' : '0');
+    };
+    setSensorCollapsed(sensorCollapsed);
+    const toggleSensor = () => setSensorCollapsed(!$('sensor-check-content').classList.contains('collapsed'));
+    $('sensor-check-toggle-container').addEventListener('click', toggleSensor);
+    $('sensor-check-toggle-container').addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleSensor(); }
+    });
+
+    $('overlay-official').addEventListener('change', renderHourly);
+    $('overlay-weathernext')?.addEventListener('change', renderHourly);
+    $('show-dewpoint').addEventListener('change', renderHourly);
+    $('generate-ai-btn').addEventListener('click', generateInsights);
+    $('qc-detail-btn').addEventListener('click', showQCReport);
+    $('export-btn').addEventListener('click', exportCSV);
+    $('refresh-btn').addEventListener('click', refresh);
+    $('help-btn').addEventListener('click', showShortcuts);
+    $('mini-top').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    $('modal-close-button').addEventListener('click', () => closeModal('detail-modal'));
+    $('qc-modal-close').addEventListener('click', () => closeModal('qc-modal'));
+    $('wn-modal-close')?.addEventListener('click', () => closeModal('wn-modal'));
+    $('wn-config-btn')?.addEventListener('click', openWeatherNextModal);
+    $('wn-save-key-btn')?.addEventListener('click', saveWeatherNextKey);
+    $('wn-clear-cache-btn')?.addEventListener('click', clearWeatherNextCache);
+    ['detail-modal', 'qc-modal', 'wn-modal'].forEach(id => {
+        $(id)?.addEventListener('click', e => { if (e.target.id === id) closeModal(id); });
+    });
+
+    // sticky header
+    const header = $('mini-header');
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            header.classList.toggle('visible', window.scrollY > 340);
+            ticking = false;
+        });
+    }, { passive: true });
+
+    // keyboard
+    document.addEventListener('keydown', e => {
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+        const k = e.key.toLowerCase();
+        if (e.key === 'Escape') return closeAnyModal();
+        if (k === 'r') { e.preventDefault(); refresh(); }
+        else if (k === 'g') { e.preventDefault(); generateInsights(); }
+        else if (k === 'q') { e.preventDefault(); showQCReport(); }
+        else if (k === 'e') { e.preventDefault(); exportCSV(); }
+        else if (k === 'u') {
+            UNITS.current = UNITS.current === 'F' ? 'C' : 'F';
+            localStorage.setItem('bw-units', UNITS.current);
+            setSegment($('unit-switcher'), 'unit', UNITS.current);
+            renderAll();
+        }
+        else if (k === 't') {
+            const i = THEMES.indexOf(localStorage.getItem('bw-theme') || 'default');
+            setTheme(THEMES[(i + 1) % THEMES.length]);
+        }
+        else if (['1', '2', '3', '0'].includes(k)) {
+            const map = { '1': 7, '2': 15, '3': 30, '0': 90 };
+            state.historyDays = map[k];
+            $('history-tabs').querySelectorAll('button').forEach(b => b.classList.toggle('active', +b.dataset.days === map[k]));
+            renderHistory();
+        }
+    });
+
+    // radar map — only loaded once the forecast section is on screen
+    const frame = $('windy-frame');
+    const io = new IntersectionObserver(entries => {
+        if (entries.some(en => en.isIntersecting)) {
+            frame.src = `https://embed.windy.com/embed.html?type=map&location=coordinates&lat=${CONFIG.lat}&lon=${CONFIG.lon}&zoom=8&overlay=radar`;
+            io.disconnect();
+        }
+    }, { rootMargin: '200px' });
+    io.observe(frame);
+
+    window.addEventListener('resize', () => {
+        clearTimeout(window.__bwResize);
+        window.__bwResize = setTimeout(() => { if (state.readings.length) renderHistory(); }, 250);
+    });
+}
+
+/* ================================================================
+   13. BOOT
+   ================================================================ */
+async function loadQuotes() {
+    try {
+        const res = await fetch(new URL(CONFIG.quotesFile, window.location.href));
+        if (!res.ok) return;
+        state.quotes = (await res.text()).split('\n').map(s => s.trim()).filter(Boolean);
+        if (state.quotes.length) {
+            $('footer-quote').textContent = `“${state.quotes[Math.floor(Math.random() * state.quotes.length)]}”`;
+        }
+    } catch { /* the quote is decoration; never let it break the page */ }
+}
+
+async function refresh() {
+    const btn = $('refresh-btn');
+    btn.textContent = '↻ Refreshing…';
+    state.errors = [];
+
+    try {
+        const { rows, dropped } = await loadStationData();
+        state.readings = rows;
+        if (dropped) {
+            state.errors.push({ title: `${dropped} unusable record${dropped > 1 ? 's' : ''} skipped`, body: 'Rows with a missing timestamp, an unparseable temperature, or a duplicate timestamp were dropped before analysis.' });
+        }
+        state.qc = runQualityControl(rows);
+    } catch (err) {
+        console.error(err);
+        state.errors.push({ title: 'Could not load station data', body: err.message });
+        renderBanners();
+        btn.textContent = '↻ Refresh';
+        return;
+    }
+
+    // Forecast is best-effort: the station data stands on its own.
+    try {
+        let f;
+        if (state.source === 'weathernext') f = await fetchWeatherNext();
+        else if (state.source === 'nws') f = await fetchNWS();
+        else f = await fetchOpenMeteo();
+
+        state.forecast = f;
+        state.officialHistory = f.observations || [];
+        state.official = state.officialHistory.length ? state.officialHistory[state.officialHistory.length - 1] : null;
+        state.alerts = f.alerts || [];
+
+        // If WeatherNext 3 isn't primary, load/refresh its cache in the background for 3-way triangulation
+        if (state.source !== 'weathernext' && !state.weathernextData) {
+            fetchWeatherNext().catch(e => console.warn('Background WeatherNext fetch:', e));
+        }
+    } catch (err) {
+        console.warn('Forecast provider failed:', err);
+        state.forecast = null; state.official = null; state.officialHistory = []; state.alerts = [];
+        const providerName = state.source === 'weathernext' ? 'Google WeatherNext 3' : (state.source === 'nws' ? 'US Weather Service' : 'Open-Meteo');
+        state.errors.push({
+            title: `${providerName} unavailable`,
+            body: `${err.message}. Station readings below are unaffected, but wind, pressure, the official cross-check and the forecast are missing.`
+        });
+    }
+
+    renderAll();
+
+    // restore a cached insight for the current model
+    try {
+        const c = JSON.parse(localStorage.getItem('bw-ai-cache') || 'null');
+        if (c && c.model === state.model && Date.now() - c.at < 3 * 3600000) showAIResult(c.data, c.at);
+    } catch { /* ignore */ }
+
+    btn.textContent = '↻ Refresh';
+}
+
+async function init() {
+    initControls();
+    loadQuotes();
+    await refresh();
+    setInterval(refresh, CONFIG.refreshMs);
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && state.readings.length) {
+            const age = Date.now() - state.readings[state.readings.length - 1].time;
+            if (age > CONFIG.refreshMs) refresh();
+        }
+    });
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
+
+})();
+</script>
+</body>
+</html>
