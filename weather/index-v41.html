@@ -312,7 +312,7 @@
         <!-- ============ AI ANALYSIS ============ -->
         <section class="pb-10 border-b rule transition-opacity duration-500" id="ai-container">
             <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <span class="eyebrow flex items-center gap-1.5 border rule px-2 py-1 rounded-sm" id="ai-badge">Apple Intelligence Analysis</span>
+                <span class="eyebrow flex items-center gap-1.5 border rule px-2 py-1 rounded-sm" id="ai-badge">Apple Intelligence · WeatherNext 3 Enhanced</span>
                 <div class="flex items-center gap-2 no-print">
                     <span id="ai-cache-note" class="text-[10px] text-[var(--text-faint)]"></span>
                     <button id="generate-ai-btn" class="text-xs hover:bg-white/5 text-[var(--text-dim)] hover:text-white border rule px-3 py-1.5 rounded transition-all flex items-center gap-1.5">
@@ -341,8 +341,8 @@
                 </div>
             </div>
             <div id="ai-placeholder" class="text-sm text-[var(--text-faint)] font-light mt-2">
-                Insights run on request. The model is handed validated station data, the official
-                observation cross-check, sun times and the live forecast — not raw sensor output.
+                Insights run on request. Both Apple Intelligence and Gemini 3.1 are handed validated station data, the official
+                observation cross-check, sun times, and Google WeatherNext 3 5km satellite neural telemetry.
             </div>
         </section>
 
@@ -2885,6 +2885,24 @@ function buildAIContext() {
     for (const r of rows) { const g = Math.abs(r.time - target); if (g < gap) { gap = g; yAt = r; } }
     if (gap > 90 * 60000) yAt = null;
 
+    // Google WeatherNext 3 neural telemetry for AI synthesis (both Apple Intelligence & Gemini)
+    const wn = state.weathernextData || (state.source === 'weathernext' ? state.forecast : null);
+    const currWnHour = wn?.hours?.find(h => Math.abs(h.time - latest.time) <= 45 * 60000) || wn?.hours?.[0];
+    const wnNext12 = (wn?.hours || []).filter(h => h.time > latest.time).slice(0, 12);
+    const precipSpreads = wnNext12.filter(h => h.pop > 10).map(h => `${h.time.getHours()}h: ${h.pop}% (spread: ${h.ensembleP25 ?? h.pop}–${h.ensembleP75 ?? h.pop}%)`);
+
+    let weathernextCtx = null;
+    if (currWnHour || wn) {
+        weathernextCtx = {
+            solarGhi: currWnHour?.solarGhi ?? null,
+            wind100mMph: currWnHour?.wind100mMph ?? null,
+            shear: (currWnHour && isNum(currWnHour.wind100mMph) && isNum(wind)) ? (currWnHour.wind100mMph - wind) : null,
+            wnBias: computeWeatherNextBias(),
+            bias: computeSensorBias(),
+            precipSpread: precipSpreads.length ? precipSpreads.join(', ') : 'no significant rain (<10% ensemble)'
+        };
+    }
+
     state.aiContext = {
         readingTime: latest.time,
         temp: T, humidity: RH, dewPoint: dp, wetBulb: wetBulb(T, RH),
@@ -2894,7 +2912,8 @@ function buildAIContext() {
         official: state.official,
         forecast: state.forecast?.daily?.slice(0, 3) || [],
         nextHours: (state.forecast?.hours || []).filter(h => h.time > latest.time).slice(0, 12),
-        alerts: state.alerts
+        alerts: state.alerts,
+        weathernext: weathernextCtx
     };
 }
 
@@ -2916,6 +2935,14 @@ function aiPrompt(c) {
         ``,
         `SUN: sunrise ${c.sun.sunrise ? fmtTime(c.sun.sunrise) : 'n/a'}, sunset ${c.sun.sunset ? fmtTime(c.sun.sunset) : 'n/a'}, day length ${f(c.sun.dayLengthHours)} h. Sun is currently ${f(sunPosition(new Date()).altitude, 0)}° above the horizon.`,
         c.official?.text ? `SKY CONDITION (official): ${c.official.text}.` : ``,
+        c.weathernext ? [
+            `GOOGLE WEATHERNEXT 3 NEURAL TELEMETRY (5km Mesh, Live GOES-16 Satellite Ingestion):`,
+            c.weathernext.solarGhi !== null ? `- Surface Solar Irradiance: ${Math.round(c.weathernext.solarGhi)} W/m² (${c.weathernext.solarGhi > 600 ? 'intense direct beam' : c.weathernext.solarGhi > 200 ? 'moderate diffuse' : 'minimal/night'}).` : ``,
+            c.weathernext.wind100mMph !== null ? `- 100m Boundary Layer Wind: ${Math.round(c.weathernext.wind100mMph)} mph${c.weathernext.shear !== null ? ` (${c.weathernext.shear >= 0 ? '+' : ''}${Math.round(c.weathernext.shear)} mph wind shear above ground)` : ''}.` : ``,
+            c.weathernext.wnBias ? `- Microclimate Triangulation: Sensor bias vs 5km neural grid is ${deltaStr(c.weathernext.wnBias.meanBias)}°F${c.weathernext.bias ? ` (vs ${deltaStr(c.weathernext.bias.meanBias)}°F at the official airport station)` : ''}.` : ``,
+            c.weathernext.precipSpread ? `- 64-Member Precipitation Ensemble Outlook: ${c.weathernext.precipSpread}.` : ``,
+            `Weave these neural microclimate insights (solar load, boundary shear, ensemble certainty, microclimate terrain effects) seamlessly into the headline, main insight, and outlook.`
+        ].filter(l => l !== '').join('\n') : ``,
         (state.source === 'weathernext' || state.weathernextData) ? `FORECAST MODEL: Google WeatherNext 3 AI (5km neural mesh, hourly GOES-16 satellite assimilation, 64-member ensemble). Highlight its high-accuracy precipitation and microclimate outlook.` : ``,
         ``,
         c.forecast.length ? `FORECAST: ${c.forecast.map(d => `${d.date.toLocaleDateString('en-US', { weekday: 'short' })} ${Math.round(d.high)}/${Math.round(d.low)}°F ${codeInfo(d.code).desc}${d.pop > 5 ? `, ${d.pop}% precip` : ''}`).join('; ')}.` : ``,
@@ -2962,7 +2989,16 @@ async function callModel(model, prompt, signal) {
 
     const url = cfg.url;
     const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json', Authorization: `Bearer ${cfg.token}` };
-    const body = { model: cfg.model, messages: [{ role: 'user', content: prompt }], temperature: 0.3, max_tokens: 900 };
+    const systemPrompt = `You are an expert meteorological intelligence engine analyzing personal backyard weather station data in ${state.forecast?.place || CONFIG.place}. You are equipped with Google DeepMind WeatherNext 3 high-resolution 5km neural satellite assimilation data (solar irradiance, 100m wind shear, and 64-member probabilistic precipitation cones). Deliver concise, scientifically grounded weather analysis strictly as valid raw JSON matching the required schema.`;
+    const body = {
+        model: cfg.model,
+        messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: prompt }
+        ],
+        temperature: 0.3,
+        max_tokens: 900
+    };
 
     const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body), signal });
     if (!res.ok) {
@@ -3006,10 +3042,10 @@ async function generateInsights() {
     $('ai-results-container').classList.remove('hidden');
     $('ai-cache-note').textContent = '';
     $('ai-headline').textContent = '';
-    $('ai-insight-main').textContent = `${label} is reading your station data…`;
-    $('ai-anomaly-box').textContent = 'Scanning for anomalies…';
-    $('ai-recommendation-box').textContent = 'Weighing conditions…';
-    $('ai-outlook-box').textContent = 'Checking the forecast…';
+    $('ai-insight-main').textContent = `${label} is synthesizing station data & WeatherNext 3 telemetry…`;
+    $('ai-anomaly-box').textContent = 'Triangulating microclimate anomalies…';
+    $('ai-recommendation-box').textContent = 'Weighing conditions & solar load…';
+    $('ai-outlook-box').textContent = 'Analyzing WeatherNext 3 ensemble cone…';
     ['ai-insight-main', 'ai-anomaly-box', 'ai-recommendation-box', 'ai-outlook-box']
         .forEach(id => $(id).classList.add('animate-pulse', 'opacity-70'));
 
@@ -3266,10 +3302,10 @@ function initControls() {
         localStorage.setItem('bw-model', state.model);
         setSegment($('ai-switcher'), 'model', state.model);
         const label = CONFIG.ai[state.model].label;
-        $('ai-badge').textContent = `${label} Analysis`;
+        $('ai-badge').textContent = `${label} · WeatherNext 3 Enhanced`;
         $('disclaimer-text').textContent = `${label} can be wrong. Verify anything that matters.`;
     });
-    $('ai-badge').textContent = `${CONFIG.ai[state.model].label} Analysis`;
+    $('ai-badge').textContent = `${CONFIG.ai[state.model].label} · WeatherNext 3 Enhanced`;
 
     setSegment($('source-switcher'), 'source', state.source);
     $('source-switcher').addEventListener('click', e => {
