@@ -11,30 +11,41 @@
  *
  * Designed, built, and released under MIT license by @mdo. Learn more at
  * https://github.com/poole/poole.
- */
-
-
-/*
- * Contents
  *
- * Body resets
- * Custom type
- * Messages
- * Container
- * Masthead
- * Posts and pages
- * Pagination
- * Reverse layout
- * Themes
+ * Redesigned with dark terminal aesthetic.
  */
 
 
-/*
- * Body resets
- *
- * Update the foundational and global aspects of the page.
- */
- 
+/* ============================================
+   CSS Custom Properties
+   ============================================ */
+
+:root {
+  --bg-primary: #1a1d23;
+  --bg-secondary: #141619;
+  --bg-sidebar: #1a1d23;
+  --bg-card: #1e2127;
+  --text-primary: #c8ccd4;
+  --text-secondary: #7f848e;
+  --text-muted: #5c6370;
+  --accent-green: #3ddc84;
+  --accent-green-dim: #2ea866;
+  --accent-green-glow: rgba(61, 220, 132, 0.15);
+  --border-color: #2a2e36;
+  --border-subtle: #23272e;
+  --code-bg: #141619;
+  --font-mono: 'IBM Plex Mono', 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Monaco, 'Courier New', monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --sidebar-width: 220px;
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+}
+
+
+/* ============================================
+   Body Resets
+   ============================================ */
+
 * {
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
@@ -48,74 +59,100 @@ body {
 }
 
 html {
-  font-family: -apple-system, BlinkMacSystemFont, San Francisco, Helvetica Neue, Helvetica, Ubuntu, Roboto, Noto, Segoe UI, Arial, sans-serif;
-  line-height: 1.0;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
 }
+
 @media (min-width: 38em) {
   html {
-    font-size: 20px;
+    font-size: 17px;
   }
 }
 
 body {
-  color: #2d2d2d;
-  background-color: #f7f7f7;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
   -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
-    font-size: .9rem;
+  font-size: 0.9rem;
 }
 
-/* No `:visited` state is required by default (browsers will use `a`) */
+
+/* ============================================
+   Links
+   ============================================ */
+
 a {
-  color: #62426F;
+  color: var(--accent-green);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
+  transition: color var(--transition-fast), opacity var(--transition-fast);
 }
+
 a strong {
   color: inherit;
 }
-/* `:focus` is linked to `:hover` for basic accessibility */
+
 a:hover,
 a:focus {
-  text-decoration: underline;
+  color: #5aeaa0;
+  text-decoration: none;
 }
 
-/* Headings */
+
+/* ============================================
+   Headings
+   ============================================ */
+
 h1, h2, h3, h4, h5, h6 {
-  margin-bottom: .5rem;
-  font-weight: bold;
-  color: #9a9a9a;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
   text-rendering: optimizeLegibility;
+  line-height: 1.3;
 }
+
 h1 {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
 }
 
 h2 {
-  margin-top: 1rem;
-  font-size: 1.5rem;
+  margin-top: 1.5rem;
+  font-size: 1.35rem;
 }
+
 h3 {
   margin-top: 1.5rem;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
 }
+
 h4, h5, h6 {
   margin-top: 1rem;
   font-size: 1rem;
 }
 
-/* Body text */
+
+/* ============================================
+   Body text
+   ============================================ */
+
 p {
   margin-top: 0;
-  margin-bottom: .75rem;
+  margin-bottom: 0.85rem;
+  line-height: 1.7;
 }
 
 strong {
-  color: #9a9a9a;
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 
-/* Lists */
+/* ============================================
+   Lists
+   ============================================ */
+
 ul, ol, dl {
   margin-top: 0;
   margin-bottom: 1rem;
@@ -124,90 +161,116 @@ ul, ol, dl {
 dt {
   font-weight: bold;
 }
+
 dd {
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
 }
 
-/* Misc */
+
+/* ============================================
+   Misc
+   ============================================ */
+
 hr {
   position: relative;
-    margin-left: auto;
-    margin-right: auto;
-	margin-top:1.2rem;
-	margin-bottom:1.2rem;
-	border: 0;
-  border-top: 1px solid #757575;
-  border-bottom: 1px solid #fff;
-  width: 75%;
+  margin: 1.5rem auto;
+  border: 0;
+  border-top: 1px solid var(--border-color);
+  width: 100%;
 }
 
 abbr {
   font-size: 85%;
   font-weight: bold;
-  color: #555;
+  color: var(--text-secondary);
   text-transform: uppercase;
 }
+
 abbr[title] {
   cursor: help;
-  border-bottom: 1px dotted #e5e5e5;
+  border-bottom: 1px dotted var(--border-color);
 }
 
-/* Code */
+
+/* ============================================
+   Code
+   ============================================ */
+
 code,
 pre {
-  font-family: Menlo, Monaco, "Courier New", monospace;
+  font-family: var(--font-mono);
 }
+
 code {
-  padding: .25em .5em;
+  padding: 0.2em 0.45em;
   font-size: 85%;
-  color: #bf616a;
-  background-color: #f9f9f9;
-  border-radius: 3px;
+  color: var(--accent-green);
+  background-color: var(--code-bg);
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
 }
+
 pre {
   display: block;
   margin-top: 0;
   margin-bottom: 1rem;
   padding: 1rem;
-  font-size: .8rem;
-  line-height: 1.4;
+  font-size: 0.8rem;
+  line-height: 1.5;
   white-space: pre;
   white-space: pre-wrap;
   word-break: break-all;
   word-wrap: break-word;
-  background-color: #f9f9f9;
+  background-color: var(--code-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
 }
+
 pre code {
   padding: 0;
   font-size: 100%;
   color: inherit;
   background-color: transparent;
+  border: none;
 }
 
-/* Pygments via Jekyll */
+
+/* ============================================
+   Pygments / Syntax Highlighting
+   ============================================ */
+
 .highlight {
   margin-bottom: 1rem;
-  border-radius: 4px;
+  border-radius: 6px;
 }
+
 .highlight pre {
   margin-bottom: 0;
 }
 
-/* Gist via GitHub Pages */
+
+/* ============================================
+   Gist via GitHub Pages
+   ============================================ */
+
 .gist .gist-file {
-  font-family: Menlo, Monaco, "Courier New", monospace !important;
+  font-family: var(--font-mono) !important;
 }
+
 .gist .markdown-body {
   padding: 15px;
 }
+
 .gist pre {
   padding: 0;
   background-color: transparent;
 }
+
 .gist .gist-file .gist-data {
-  font-size: .8rem !important;
+  font-size: 0.8rem !important;
   line-height: 1.4;
 }
+
 .gist code {
   padding: 0;
   color: inherit;
@@ -215,309 +278,741 @@ pre code {
   border-radius: 0;
 }
 
-/* Quotes */
+
+/* ============================================
+   Quotes
+   ============================================ */
+
 blockquote {
-  padding: .5rem 1rem;
-  margin: .8rem 0;
-  color: #9a9a9a;
-  border-left: .25rem solid #62426F;
+  padding: 0.5rem 1rem;
+  margin: 0.8rem 0;
+  color: var(--text-secondary);
+  border-left: 3px solid var(--accent-green);
+  background-color: var(--accent-green-glow);
+  border-radius: 0 4px 4px 0;
 }
+
 blockquote p:last-child {
   margin-bottom: 0;
 }
+
 @media (min-width: 30em) {
   blockquote {
-    padding-right: 5rem;
+    padding-right: 3rem;
     padding-left: 1.25rem;
   }
 }
+
+
+/* ============================================
+   Images
+   ============================================ */
 
 img {
   display: block;
   max-width: 100%;
   margin: 0 0 1rem;
-  border-radius: 5px;
+  border-radius: 6px;
 }
 
-/* Tables */
+
+/* ============================================
+   Tables
+   ============================================ */
+
 table {
   margin-bottom: 1rem;
   width: 100%;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--border-color);
   border-collapse: collapse;
 }
+
 td,
 th {
-  padding: .25rem .5rem;
-  border: 1px solid #e5e5e5;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--border-color);
 }
+
+th {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
 tbody tr:nth-child(odd) td,
 tbody tr:nth-child(odd) th {
-  background-color: #f9f9f9;
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 
-/*
- * Custom type
- *
- * Extend paragraphs with `.lead` for larger introductory text.
- */
+/* ============================================
+   Custom type
+   ============================================ */
 
 .lead {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 300;
+  color: var(--text-secondary);
 }
 
 
-/*
- * Messages
- *
- * Show alert messages to users. You may add it to single elements like a `<p>`,
- * or to a parent if there are multiple elements to show.
- */
+/* ============================================
+   Messages
+   ============================================ */
 
 .message {
   margin-bottom: 1rem;
-  padding: 1rem;
-  color: #717171;
-  background-color: #f9f9f9;
+  padding: 1rem 1.25rem;
+  color: var(--text-secondary);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  border-left: 3px solid var(--accent-green);
 }
 
 
-/*
- * Container
- *
- * Center the page content.
- */
+/* ============================================
+   Site Layout - Sidebar + Main
+   ============================================ */
+
+.site-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+
+/* ============================================
+   Sidebar
+   ============================================ */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  padding: 1.5rem 1.25rem;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  text-decoration: none;
+}
+
+.sidebar-logo:hover {
+  opacity: 0.85;
+}
+
+.sidebar-logo-icon {
+  width: 32px;
+  height: 32px;
+  background-color: var(--accent-green);
+  color: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+.sidebar-logo-text {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.sidebar-nav {
+  margin-bottom: 2rem;
+}
+
+.sidebar-nav a {
+  display: block;
+  padding: 0.3rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--accent-green);
+  transition: color var(--transition-fast), padding-left var(--transition-fast);
+}
+
+.sidebar-nav a:hover {
+  color: #5aeaa0;
+  padding-left: 4px;
+}
+
+.sidebar-section-title {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.65rem;
+  margin-top: 0.25rem;
+}
+
+/* Article archive tree */
+.sidebar-archive {
+  flex: 1;
+  margin-bottom: 1.5rem;
+  overflow-y: auto;
+}
+
+.archive-year {
+  margin-bottom: 0.25rem;
+}
+
+.archive-year-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.2rem 0;
+  width: 100%;
+  text-align: left;
+  transition: color var(--transition-fast);
+}
+
+.archive-year-toggle:hover {
+  color: var(--accent-green);
+}
+
+.archive-year-toggle .arrow {
+  font-size: 0.55rem;
+  transition: transform var(--transition-fast);
+  width: 12px;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.archive-year-toggle.open .arrow {
+  transform: rotate(90deg);
+}
+
+.archive-year-count {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin-left: auto;
+}
+
+.archive-months {
+  display: none;
+  padding-left: 1.15rem;
+  margin: 0.15rem 0 0.35rem;
+}
+
+.archive-months.show {
+  display: block;
+}
+
+.archive-month {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.12rem 0;
+}
+
+.archive-month a {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.archive-month a:hover {
+  color: var(--accent-green);
+}
+
+.archive-month-count {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.sidebar-tagline {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+
+/* ============================================
+   Main Content Area
+   ============================================ */
+
+.main-content {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  min-width: 0;
+}
 
 .container {
-  max-width: 41rem;
-  padding-top:25px;
-  padding-left:  1rem;
-  padding-right: 1rem;
-  margin-left:  auto;
+  max-width: 48rem;
+  padding: 2rem 2.5rem;
+  margin-left: 0;
   margin-right: auto;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 
-/*
- * Masthead
- *
- * Super small header above the content for site name and short description.
- */
+/* ============================================
+   Site Header (in main content)
+   ============================================ */
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.site-header-info h1 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.15rem;
+  letter-spacing: -0.01em;
+}
+
+.site-header-info .site-url {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.85rem;
+  display: block;
+}
+
+.site-header-info .site-description {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  max-width: 480px;
+  line-height: 1.65;
+}
+
+.site-header-social {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  flex-shrink: 0;
+  margin-top: 0.35rem;
+}
+
+.site-header-social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  transition: all var(--transition-fast);
+}
+
+.site-header-social a:hover {
+  background-color: var(--accent-green);
+  color: var(--bg-primary);
+  border-color: var(--accent-green);
+  transform: translateY(-1px);
+}
+
+
+/* ============================================
+   Masthead (hidden in new layout, kept for compatibility)
+   ============================================ */
 
 .masthead {
-height: 400px;
-width: 100%;
-/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#4c7a0f+0,22520a+100 */
-background: url(/images/bg.jpg);
-background-repeat: no-repeat;
-background-size: cover;
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c7a0f', endColorstr='#22520a',GradientType=0 ); /* IE6-9 */;
-}
-
-.masthead:before{
-    content: '';
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-background: rgb(0,0,0);
-background: -moz-linear-gradient(0deg, rgba(0,0,0,0.34637605042016806) 0%, rgba(0,0,0,0) 100%);
-background: -webkit-linear-gradient(0deg, rgba(0,0,0,0.34637605042016806) 0%, rgba(0,0,0,0) 100%);
-background: linear-gradient(0deg, rgba(0,0,0,0.34637605042016806) 0%, rgba(0,0,0,0) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endColorstr="#000000",GradientType=1);height:400px;
-}
-
-.masthead-title {
-position:relative;
-  max-width: 41rem;
-  padding-top:205px;
-  padding-left:  1rem;
-  padding-right: 1rem;
-  margin-left:  auto;
-  margin-right: auto;
-  margin-top: 0;
-  margin-bottom: 0;
-  color: #505050;
-  font-weight: 800;
-  padding-left:15px;
-  z-index:99999;
-  padding-bottom:5px;
-}
-
-.masthead-title a {
-  color: #ffffff;
-}
-.masthead-title small {
-  font-size: 75%;
-  font-weight: 400;
-  color: #ffffff;
-  letter-spacing: 0;
-}
-
-.masthead-title small a {
-  font-size: 75%;
-  font-weight: 400;
-  color: #ffffff;
-  letter-spacing: 0;
-}
-
-.banner {
-  margin-top:    -1.5rem;
-  padding-bottom: .01rem;
-  width: 100%;
-  background-color: #ffffff;
-}
-
-.banner a:hover {
-  margin-top:    -1.5rem;
-  padding-bottom: .01rem;
-  width: 100%;
-  background-color: #62426F;
-  color: #ffffff;
-
-}
-
-.banner-text small {
-  color: #000000;
-  font-size: 60%;
-  font-weight: 400;
+  display: none;
 }
 
 
-
-/*
- * Posts and pages
- *
- * Each post is wrapped in `.post` and is used on default and post layouts. Each
- * page is wrapped in `.page` and is only used on the page layout.
- */
+/* ============================================
+   Posts and pages
+   ============================================ */
 
 .page,
 .post {
-  margin-bottom: 4em;
+  margin-bottom: 3rem;
 }
 
 /* Blog post or page title */
 .page-title,
 .post-title,
 .post-title a {
-  color: #62426F;
+  color: var(--accent-green);
+  font-family: var(--font-mono);
 }
+
+.post-title a {
+  transition: color var(--transition-fast);
+}
+
+.post-title a:hover {
+  color: #5aeaa0;
+}
+
 .page-title,
 .post-title {
   margin-top: 0;
+  font-size: 1.35rem;
+  line-height: 1.35;
+}
+
+/* Post item on index */
+.post-item {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.post-item:last-child {
+  border-bottom: none;
+}
+
+.post-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+}
+
+.post-item-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.post-item-category {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+}
+
+.post-item-category::after {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: var(--accent-green);
 }
 
 /* Meta data line below post title */
 .post-date {
   display: block;
-  margin-top: -.5rem;
-  margin-bottom: 1rem;
-  color: #9a9a9a;
+  margin-top: -0.25rem;
+  margin-bottom: 0.65rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-/* Related posts */
+.post-excerpt {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.read-more {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--accent-green);
+  transition: color var(--transition-fast);
+}
+
+.read-more:hover {
+  color: #5aeaa0;
+}
+
+.read-more::after {
+  content: ' →';
+}
+
+
+/* ============================================
+   Post Detail (single post view)
+   ============================================ */
+
+.post h1.post-title {
+  font-size: 1.5rem;
+}
+
+
+/* ============================================
+   Related posts
+   ============================================ */
+
 .related {
   padding-top: 2rem;
   padding-bottom: 2rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-color);
 }
+
+.related h2 {
+  color: var(--text-primary);
+}
+
 .related-posts {
   padding-left: 0;
   list-style: none;
 }
+
 .related-posts h3 {
   margin-top: 0;
 }
+
 .related-posts li small {
   font-size: 75%;
-  color: #999;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
 }
+
 .related-posts li a:hover {
-  text-decoration: underline;
+  text-decoration: none;
+  color: #5aeaa0;
 }
+
 .related-posts li a:hover small {
   color: inherit;
 }
 
 
-/*
- * Pagination
- *
- * Super lightweight (HTML-wise) blog pagination. `span`s are provide for when
- * there are no more previous or next posts to show.
- */
+/* ============================================
+   Pagination
+   ============================================ */
 
 .pagination {
-  overflow: hidden; /* clearfix */
-  margin-left: -1rem;
-  margin-right: -1rem;
-  font-family: "PT Sans", Helvetica, Arial, sans-serif;
-  color: #ccc;
+  overflow: hidden;
+  margin: 2rem 0;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
   text-align: center;
+  display: flex;
+  gap: 0;
 }
 
-/* Pagination items can be `span`s or `a`s */
 .pagination-item {
   display: block;
-  padding: 1rem;
-  border: 1px solid #eee;
+  flex: 1;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  transition: all var(--transition-fast);
 }
+
 .pagination-item:first-child {
-  margin-bottom: -1px;
+  border-radius: 6px 0 0 6px;
 }
 
-/* Only provide a hover state for linked pagination items */
+.pagination-item:last-child {
+  border-radius: 0 6px 6px 0;
+  margin-left: -1px;
+}
+
 a.pagination-item:hover {
-  background-color: #f5f5f5;
+  background-color: var(--bg-card);
+  color: var(--accent-green);
+  border-color: var(--accent-green);
 }
 
-@media (min-width: 30em) {
-  .pagination {
-    margin: 3rem 0;
-  }
-  .pagination-item {
-    float: left;
-    width: 50%;
-  }
-  .pagination-item:first-child {
-    margin-bottom: 0;
-    border-top-left-radius:    4px;
-    border-bottom-left-radius: 4px;
-  }
-  .pagination-item:last-child {
-    margin-left: -1px;
-    border-top-right-radius:    4px;
-    border-bottom-right-radius: 4px;
-  }
-}
+
+/* ============================================
+   Footer
+   ============================================ */
 
 .footer {
-  font-size: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 2rem;
 }
 
-@media (prefers-color-scheme: dark) {
-body {
-background-color: rgb(45, 41, 55);
-color: rgb(255, 255, 255);
+
+/* ============================================
+   Archive link (in default layout)
+   ============================================ */
+
+.archive-link-container {
+  text-align: center;
+  margin: 1.5rem 0;
 }
 
-.post-title a {
-color: #A98CBC;
+.archive-link-container a {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
 }
 
-a {
-color: #A98CBC; }
-    
-blockquote{
-        border-left: .25rem solid #A98CBC;
+
+/* ============================================
+   Mobile Responsive
+   ============================================ */
+
+/* Mobile toggle button */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 200;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
 }
 
-.pagination-item {
-border: 1px solid #1F1C28;
+.sidebar-toggle:hover {
+  border-color: var(--accent-green);
+  color: var(--accent-green);
 }
+
+/* Mobile overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 90;
+}
+
+@media (max-width: 52em) {
+  .sidebar-toggle {
+    display: flex;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform var(--transition-normal);
+    width: 260px;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay.open {
+    display: block;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .container {
+    padding: 3.5rem 1.25rem 2rem;
+  }
+
+  .site-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .site-header-social {
+    align-self: flex-start;
+  }
+
+  .post-item-header {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .post-item-category {
+    align-items: flex-start;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .post-item-category::after {
+    display: none;
+  }
+}
+
+@media (min-width: 52em) and (max-width: 72em) {
+  :root {
+    --sidebar-width: 200px;
+  }
+
+  .container {
+    padding: 2rem 2rem;
+  }
+}
+
+
+/* ============================================
+   Scrollbar styling
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+
+/* ============================================
+   Selection
+   ============================================ */
+
+::selection {
+  background-color: var(--accent-green);
+  color: var(--bg-primary);
 }

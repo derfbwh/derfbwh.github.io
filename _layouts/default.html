@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
 
-<meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% else %}{% endif %}">
+<meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="{{ site.title }}">
 <meta property="og:locale" content="en_US">
@@ -10,33 +10,120 @@
 
   <body>
 
-      <div class="masthead">
-        <h3 class="masthead-title">
-          <a href="/" title="Home">{{ site.title }}</a><br>
-          <small><a href="http://twitter.com/bwhough">{{ site.tagline }}</a></small><br><br>
-          <div style="color: white; font-size: 55% !important; font-weight: 400 !important; --noir-inline-color: #e8e6e3;line-height:1.4;">Follow on <i class="fa-brands fa-mastodon"></i> <strong><a rel="me" href="https://mastodon.social/@brianhough">Mastodon</a></strong>
-          <br>
-          Follow on <i class="fa-brands fa-bluesky"></i> <strong><a rel="me" href="https://bsky.app/profile/brianhough.com">Bluesky</a>
-          </strong>
-                    <br>
-          Follow on <i class="fa-brands fa-threads"></i> <strong><a rel="me" href="https://www.threads.net/@bwhough">Threads</a>
-          </strong>
+    <!-- Mobile sidebar toggle -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <!-- Mobile overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="site-wrapper">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <a href="/" class="sidebar-logo">
+          <span class="sidebar-logo-icon">BH</span>
+          <span class="sidebar-logo-text">brianhough_</span>
+        </a>
+
+        <nav class="sidebar-nav">
+          <a href="/archive">Archive</a>
+          <a href="/about">About</a>
+          <a href="{{ site.baseurl }}atom.xml">RSS</a>
+        </nav>
+
+        <div class="sidebar-section-title">Articles</div>
+
+        <div class="sidebar-archive">
+          {% assign postsByYear = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+          {% for year in postsByYear %}
+          <div class="archive-year">
+            <button class="archive-year-toggle{% if forloop.first %} open{% endif %}" onclick="toggleYear(this)">
+              <span class="arrow">▶</span>
+              {{ year.name }}
+              <span class="archive-year-count">({{ year.items | size }})</span>
+            </button>
+            <div class="archive-months{% if forloop.first %} show{% endif %}">
+              {% assign monthNames = "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec" | split: "," %}
+              {% assign postsByMonth = year.items | group_by_exp: "post", "post.date | date: '%m'" %}
+              {% for month in postsByMonth %}
+              <div class="archive-month">
+                <a href="/archive#{{ year.name }}-{{ month.name }}">{{ monthNames[month.name | minus: 1] }}</a>
+                <span class="archive-month-count">({{ month.items | size }})</span>
+              </div>
+              {% endfor %}
+            </div>
           </div>
-        </h3>
-      </div>
+          {% endfor %}
+        </div>
 
+        <div class="sidebar-tagline">
+          Thoughts on software, productivity, and a quieter internet.
+        </div>
+      </aside>
 
-    <div class="container content">
+      <!-- Main content -->
+      <main class="main-content">
 
-      {{ content }}
-      <div align="center"><p><a href="/archive">Archive</a></p><br/></div>
+        <!-- Old masthead kept hidden for compatibility -->
+        <div class="masthead">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">{{ site.title }}</a><br>
+            <small><a href="http://twitter.com/bwhough">{{ site.tagline }}</a></small><br><br>
+            <div style="color: white; font-size: 55% !important; font-weight: 400 !important; --noir-inline-color: #e8e6e3;line-height:1.4;">Follow on <i class="fa-brands fa-mastodon"></i> <strong><a rel="me" href="https://mastodon.social/@brianhough">Mastodon</a></strong>
+            <br>
+            Follow on <i class="fa-brands fa-bluesky"></i> <strong><a rel="me" href="https://bsky.app/profile/brianhough.com">Bluesky</a>
+            </strong>
+                      <br>
+            Follow on <i class="fa-brands fa-threads"></i> <strong><a rel="me" href="https://www.threads.net/@bwhough">Threads</a>
+            </strong>
+            </div>
+          </h3>
+        </div>
 
-      <div class="footer">
-        <p>
-          &copy; {{ site.time | date: '%Y' }} by Brian Hough. All rights reserved.
-        </p>
-      </div>
+        <div class="container content">
+
+          <!-- Site header with name & social -->
+          <header class="site-header">
+            <div class="site-header-info">
+              <h1>Brian Hough</h1>
+              <span class="site-url">brianhough.com</span>
+              <p class="site-description">I write about software, productivity, and building a calmer, more intentional relationship with technology.</p>
+            </div>
+            <div class="site-header-social">
+              <a rel="me" href="https://mastodon.social/@brianhough" title="Mastodon"><i class="fa-brands fa-mastodon"></i></a>
+              <a rel="me" href="https://bsky.app/profile/brianhough.com" title="Bluesky"><i class="fa-brands fa-bluesky"></i></a>
+              <a rel="me" href="https://www.threads.net/@bwhough" title="Threads"><i class="fa-brands fa-threads"></i></a>
+            </div>
+          </header>
+
+          {{ content }}
+
+          <div class="footer">
+            <p>
+              &copy; {{ site.time | date: '%Y' }} by Brian Hough. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </main>
+
     </div>
+
+    <script>
+      // Sidebar toggle for mobile
+      function toggleSidebar() {
+        document.querySelector('.sidebar').classList.toggle('open');
+        document.querySelector('.sidebar-overlay').classList.toggle('open');
+      }
+
+      // Archive year toggle
+      function toggleYear(btn) {
+        btn.classList.toggle('open');
+        var months = btn.nextElementSibling;
+        months.classList.toggle('show');
+      }
+    </script>
 
   </body>
 </html>

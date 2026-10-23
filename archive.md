@@ -5,6 +5,11 @@ title: Archive
 
 # Blog Posts
 
-{% for post in site.posts %}
-  * {{ post.date | date_to_string }} &raquo; [ {{ post.title }} ]({{ post.url }})
+{% assign postsByYear = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+{% for year in postsByYear %}
+## {{ year.name }}
+
+{% for post in year.items %}
+  * {{ post.date | date: "%b %d, %Y" }} &raquo; [ {{ post.title }} ]({{ post.url }})
+{% endfor %}
 {% endfor %}
