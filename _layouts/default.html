@@ -45,11 +45,10 @@
               <span class="archive-year-count">({{ year.items | size }})</span>
             </button>
             <div class="archive-months{% if forloop.first %} show{% endif %}">
-              {% assign monthNames = "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec" | split: "," %}
-              {% assign postsByMonth = year.items | group_by_exp: "post", "post.date | date: '%m'" %}
+              {% assign postsByMonth = year.items | group_by_exp: "post", "post.date | date: '%b'" %}
               {% for month in postsByMonth %}
               <div class="archive-month">
-                <a href="/archive#{{ year.name }}-{{ month.name }}">{{ monthNames[month.name | minus: 1] }}</a>
+                <a href="/archive#{{ year.name }}">{{ month.name }}</a>
                 <span class="archive-month-count">({{ month.items | size }})</span>
               </div>
               {% endfor %}
