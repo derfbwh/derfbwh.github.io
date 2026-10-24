@@ -5,7 +5,32 @@ title: Home
 
 <div class="posts">
   {% for post in paginator.posts %}
-  <div class="post post-item">
+  {% if forloop.first and paginator.page == 1 %}
+  <!-- Most recent post (Full Content) -->
+  <article class="post post-featured">
+    <div class="post-item-header">
+      <div class="post-item-meta">
+        <span class="post-date">{{ post.date | date: "%b %d, %Y" | upcase }}</span>
+        <h1 class="post-title">
+          <a href="{{ post.url }}">
+            {{ post.title }}
+          </a>
+        </h1>
+      </div>
+      {% if post.categories.size > 0 %}
+      <span class="post-item-category">{{ post.categories | first | upcase }}</span>
+      {% elsif post.tags.size > 0 %}
+      <span class="post-item-category">{{ post.tags | first | upcase }}</span>
+      {% endif %}
+    </div>
+
+    <div class="post-content">
+      {{ post.content }}
+    </div>
+  </article>
+  {% else %}
+  <!-- Older posts (Excerpt) -->
+  <article class="post post-item">
     <div class="post-item-header">
       <div class="post-item-meta">
         <span class="post-date">{{ post.date | date: "%b %d, %Y" | upcase }}</span>
@@ -26,8 +51,9 @@ title: Home
       {{ post.excerpt | strip_html | truncatewords: 50 }}
     </div>
 
-    <a href="{{ post.url }}" class="read-more">Read the full post</a>
-  </div>
+    <a href="{{ post.url }}" class="read-more">Read the full post &rarr;</a>
+  </article>
+  {% endif %}
   {% endfor %}
 </div>
 

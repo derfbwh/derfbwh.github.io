@@ -735,6 +735,36 @@ tbody tr:nth-child(odd) th {
   line-height: 1.35;
 }
 
+/* Featured post on index (shows full content) */
+.post-featured {
+  padding: 1.5rem 0 2.5rem 0;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.post-featured .post-title {
+  font-size: 1.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.post-featured .post-content {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.75;
+  margin-top: 1.25rem;
+}
+
+.post-featured .post-content p {
+  margin-bottom: 1.25rem;
+}
+
+.post-featured .post-content img {
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  margin: 1.5rem 0;
+}
+
 /* Post item on index */
 .post-item {
   padding: 1.25rem 0;
