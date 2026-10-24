@@ -76,17 +76,21 @@
 
         <div class="container content">
 
-          <!-- Site header with name & social -->
+          <!-- Site header with profile photo, name & social -->
           <header class="site-header">
-            <div class="site-header-info">
-              <h1>Brian Hough</h1>
-              <span class="site-url">brianhough.com</span>
-              <p class="site-description">I write about software, productivity, and building a calmer, more intentional relationship with technology.</p>
+            <div class="site-header-profile">
+              <a href="/" class="site-avatar-link">
+                <img src="/images/profile.jpg" alt="Brian Hough" class="site-header-avatar" onerror="this.src='https://via.placeholder.com/80'">
+              </a>
+              <div class="site-header-info">
+                <h1><a href="/">Hello! I'm Brian.</a></h1>
+                <a href="/" class="site-url">brianhough.com</a>
+              </div>
             </div>
             <div class="site-header-social">
-              <a rel="me" href="https://mastodon.social/@brianhough" title="Mastodon"><i class="fa-brands fa-mastodon"></i></a>
-              <a rel="me" href="https://bsky.app/profile/brianhough.com" title="Bluesky"><i class="fa-brands fa-bluesky"></i></a>
-              <a rel="me" href="https://www.threads.net/@bwhough" title="Threads"><i class="fa-brands fa-threads"></i></a>
+              <a rel="me" href="https://mastodon.social/@brianhough" title="Mastodon" aria-label="Mastodon"><i class="fa-brands fa-mastodon"></i></a>
+              <a rel="me" href="https://bsky.app/profile/brianhough.com" title="Bluesky" aria-label="Bluesky"><i class="fa-brands fa-bluesky"></i></a>
+              <a rel="me" href="https://www.threads.net/@bwhough" title="Threads" aria-label="Threads"><i class="fa-brands fa-threads"></i></a>
             </div>
           </header>
 
