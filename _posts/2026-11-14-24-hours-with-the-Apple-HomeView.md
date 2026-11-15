@@ -3,7 +3,7 @@ layout: post
 title: "24-hours with the Apple HomeView"
 tags: Apple, HomeView, Siri, AI
 ---
-<figure class="post-hero">
+<figure class="post-hero" style="--hero-image: url('/images/11-26/homeview1.jpeg');">
   <img src="/images/11-26/homeview1.jpeg" alt="The Apple HomeView looks quite striking in an actual home.">
 </figure>
 

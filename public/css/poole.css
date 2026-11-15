@@ -317,19 +317,52 @@ img {
 
 /* Featured image at the top of a post */
 .post-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 0 0 2rem;
+  padding: 1.25rem;
+  overflow: hidden;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+
+.post-hero::before {
+  content: "";
+  position: absolute;
+  inset: -40px;
+  z-index: 0;
+  background-image: var(--hero-image);
+  background-position: center;
+  background-size: cover;
+  filter: blur(30px) brightness(0.4) saturate(0.9);
+}
+
+.post-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(16, 18, 22, 0.25);
+  pointer-events: none;
 }
 
 .post-hero img,
 .post-featured .post-content .post-hero img {
+  position: relative;
+  z-index: 2;
   display: block;
-  width: 100%;
-  max-height: 340px;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 420px;
   margin: 0;
-  object-fit: cover;
-  object-position: center;
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
+  object-fit: contain;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
 }
 
 /* Thumbnail photo gallery */
@@ -383,9 +416,13 @@ img {
 }
 
 @media (max-width: 40em) {
+  .post-hero {
+    padding: 0.85rem;
+  }
+
   .post-hero img,
   .post-featured .post-content .post-hero img {
-    max-height: 240px;
+    max-height: 300px;
   }
 }
 
