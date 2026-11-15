@@ -3,6 +3,10 @@ layout: post
 title: "24-hours with the Apple HomeView"
 tags: Apple, HomeView, Siri, AI
 ---
+<figure class="post-hero">
+  <img src="/images/11-26/homeview1.jpeg" alt="The Apple HomeView looks quite striking in an actual home.">
+</figure>
+
 ## Design and Setup
 
 The hardware is gorgeous, as expected. I've seen a lot of people say that its smaller than expected, but I actually think its the perfect size for a device like this. The biggest challenge so far? Figuring out the best spot for it in my home.
@@ -28,6 +32,18 @@ Third-party apps streamed from my iPhone look great and work, but they’re slow
 The HomeView is a stunning piece of hardware with a great screen, and I love seeing the photos the Photos face surfaces. But until Siri AI and the software it runs improves, I’m keeping my expectations realistic. This is far from a must-have device in its current state, but if you live in the Apple ecosystem and have built an Apple Home smarthome ecosystem as I have, its a fun toy to play with, and a worthwhile purchase if you don't mind sticking through some growing pains and rough edges.
 
 ## Photos
-![The Apple HomeView looks quite striking in an actual home.](/images/11-26/homeview1.jpeg)
-![The HomeView requires a lengthy update at first run before it can be used.](/images/11-26/homeview5.jpeg)
-![The hello sticker on the display when unboxing is a nice touch!](/images/11-26/homeview4.jpeg)
+
+<div class="photo-gallery">
+  <figure class="photo-thumb">
+    <a href="/images/11-26/homeview5.jpeg" target="_blank" rel="noopener">
+      <img src="/images/11-26/thumbs/homeview5.jpeg" alt="The HomeView requires a lengthy update at first run before it can be used." loading="lazy">
+    </a>
+    <figcaption>The HomeView requires a lengthy update at first run before it can be used.</figcaption>
+  </figure>
+  <figure class="photo-thumb">
+    <a href="/images/11-26/homeview4.jpeg" target="_blank" rel="noopener">
+      <img src="/images/11-26/thumbs/homeview4.jpeg" alt="The hello sticker on the display when unboxing is a nice touch!" loading="lazy">
+    </a>
+    <figcaption>The hello sticker on the display when unboxing is a nice touch!</figcaption>
+  </figure>
+</div>
