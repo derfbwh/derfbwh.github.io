@@ -20,7 +20,7 @@ The sound quality is phenomenal, it’s louder and has much more bass than my ol
 
 ## Siri and Smart Features
 
-I been using Siri, but things got a bit frustrating. When I asked, “Hey Siri, add X to my groceries list,” I got a “I cant add to lists right now.” Even though the hardware is stunning, Siri needs to step up its game. One of the very first things I tried was setting a timer, and it replied, “I need a software update before I can set timers” - a problem that was fixed after a reboot.
+I’ve been using Siri, but things often get a bit frustrating. When I asked, “Hey Siri, add X to my groceries list” this morning, I got a “I can't add to lists right now.” Even though the hardware is stunning, Siri needs to step up its game. One of the very first things I tried after unboxing was setting a timer, and it replied, “I need a software update before I can set timers” - a problem that was fixed after a reboot.
 
 Basic tasks are also much, much slower than my Echo with Alexa Plus. It has no problem turning on and off lights, the thermostat, etc - but my Echo does all of that twice as fast. Right now I have both devices side by side, and my partner has already insisted that the Echo isn't going anywhere anytime fast. Drat!
 
