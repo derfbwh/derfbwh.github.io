@@ -10,6 +10,7 @@ title:            Brian Hough
 tagline:          Big fan of all that tech nonsense, avid walker. 'Do what you like, like what you do.'
 
 description: Musings by Brian Hough.
+image: /images/bg.jpg
 url:              http://brianhough.com
 paginate:         5
 baseurl:          /

@@ -13,6 +13,30 @@
     {% endif %}
   </title>
 
+  <!-- Social sharing -->
+  {% if page.title == "Home" %}
+    {% assign share_title = site.title %}
+  {% else %}
+    {% assign share_title = page.title | default: site.title %}
+  {% endif %}
+  {% assign share_description = page.description | default: page.excerpt | strip_html | strip_newlines | truncate: 200 | default: site.description %}
+  {% assign share_image = page.image | default: site.image %}
+  <meta property="og:title" content="{{ share_title }}">
+  <meta property="og:description" content="{{ share_description }}">
+  <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
+  <meta property="og:site_name" content="{{ site.title }}">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  {% if share_image %}
+  <meta property="og:image" content="{{ share_image | absolute_url }}">
+  <meta property="og:image:alt" content="{{ share_title }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ share_title }}">
+  <meta name="twitter:description" content="{{ share_description }}">
+  <meta name="twitter:image" content="{{ share_image | absolute_url }}">
+  <meta name="twitter:image:alt" content="{{ share_title }}">
+  {% endif %}
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
